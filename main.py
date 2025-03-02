@@ -55,7 +55,8 @@ def find_policy_urls(domain):
     {{"privacy_policy": "URL", "terms_of_service": "URL"}}
     """
     
-    response = openai.chat.completions.create(
+    try:
+        response = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a web crawling assistant."},
                   {"role": "user", "content": prompt}],
@@ -66,10 +67,13 @@ def find_policy_urls(domain):
     import time
     try:
         time.sleep(2)  # Add slight delay to avoid rate limits
+                if not response or not response.choices:
+            logging.error("OpenAI returned an empty response.")
+            return {}
         response_content = response.choices[0].message.content
         return json.loads(response_content)
-    except (json.JSONDecodeError, AttributeError) as e:
-        logging.error(f"Error decoding OpenAI response: {e}")
+    except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
+        logging.error(f"Error decoding OpenAI response: {e}. Response: {response}")
         return {}
 
 # Function to fetch page content
@@ -107,7 +111,8 @@ def analyze_compliance(text, policy_type):
     {text}
     """
     
-    response = openai.chat.completions.create(
+    try:
+        response = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
                   {"role": "user", "content": prompt}],
@@ -116,10 +121,13 @@ def analyze_compliance(text, policy_type):
     
     import json
     try:
+                if not response or not response.choices:
+            logging.error("OpenAI returned an empty response.")
+            return {}
         response_content = response.choices[0].message.content
         return json.loads(response_content)
-    except (json.JSONDecodeError, AttributeError) as e:
-        logging.error(f"Error decoding OpenAI response: {e}")
+    except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
+        logging.error(f"Error decoding OpenAI response: {e}. Response: {response}")
         return {"status": "Fail", "reason": "OpenAI response could not be processed"}
 
 # API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
@@ -158,4 +166,5 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
