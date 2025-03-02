@@ -48,7 +48,7 @@ def find_policy_urls(domain):
     """
     
     response = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a web crawling assistant."},
                   {"role": "user", "content": prompt}],
         max_tokens=100
