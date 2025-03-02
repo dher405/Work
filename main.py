@@ -65,14 +65,17 @@ def find_policy_urls(domain):
     import json
 import time
 import logging
+import openai
     try:
-        logging.info("Sleeping for 2 seconds to avoid rate limits.")
+        logging.info("Delaying request to avoid rate limits.")
         time.sleep(2)  # Add slight delay to avoid rate limits
-                        if not response or not response.choices:
+                                if not response or not response.choices:
+            logging.error("OpenAI returned an empty response.")
             logging.error("OpenAI returned an empty response.")
             logging.error("OpenAI returned an empty response.")
             return {}
-                response_content = response.choices[0].message.content
+                        response_content = response.choices[0].message.content
+        logging.info(f"Received OpenAI Response: {response_content}")
         logging.info(f"OpenAI Response: {response_content}")
         return json.loads(response_content)
     except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
@@ -165,6 +168,10 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
     await db.commit()
     
     return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
     import uvicorn
