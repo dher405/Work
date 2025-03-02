@@ -41,9 +41,16 @@ class PolicyRequest(BaseModel):
 # Function to find Privacy Policy and Terms of Service URLs using OpenAI
 def find_policy_urls(domain):
     import json
+    import json
     prompt = f"""
     Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
-    Consider standard locations like /privacy-policy, /privacy, /legal/privacy-policy, /terms, /terms-of-service, /legal/terms.
+    Try the following paths:
+    - /privacy-policy
+    - /privacy
+    - /legal/privacy
+    - /terms-of-service
+    - /terms
+    - /legal/terms
     Return the URLs as JSON:
     {{"privacy_policy": "URL", "terms_of_service": "URL"}}
     """
@@ -57,6 +64,7 @@ def find_policy_urls(domain):
     
     import json
     try:
+        time.sleep(2)  # Add slight delay to avoid rate limits
         response_content = response.choices[0].message.content
         return json.loads(response_content)
     except (json.JSONDecodeError, AttributeError) as e:
@@ -65,8 +73,11 @@ def find_policy_urls(domain):
 
 # Function to fetch page content
 def extract_text_from_url(url):
+    import time
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br"
     }
     try:
         response = requests.get(url, headers=headers, timeout=10)
