@@ -15,6 +15,19 @@ app = FastAPI()
 # Load PostgreSQL connection URL from environment variable (recommended for security)
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres.kyjqfeyfsnvsyvugsncy:GIE92mhtkxdJw1SD@aws-0-us-west-1.pooler.supabase.com:6543/postgres")
 
+# Enable connection pooling
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    pool_size=10,        # Number of connections in the pool
+    max_overflow=20,     # Max extra connections if pool is full
+    connect_args={"timeout": 60}
+)
+
+async_session = sessionmaker(
+    engine, expire_on_commit=False, class_=AsyncSession
+)
+
 # Set up SQLAlchemy engine & session
 engine = create_async_engine(DATABASE_URL, echo=True)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
