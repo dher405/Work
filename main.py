@@ -7,6 +7,7 @@ import openai
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import asyncpg
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -32,6 +33,10 @@ async def get_db():
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Pydantic model for request validation
+class PolicyRequest(BaseModel):
+    domain: str
 
 # Function to find Privacy Policy and Terms of Service URLs using OpenAI
 def find_policy_urls(domain):
@@ -93,7 +98,8 @@ def analyze_compliance(text, policy_type):
 
 # API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
 @app.post("/validate/policies")
-async def check_policies(domain: str, db: AsyncSession = Depends(get_db)):
+async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_db)):
+    domain = request.domain
     policy_urls = find_policy_urls(domain)
     
     if not policy_urls:
