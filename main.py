@@ -39,10 +39,8 @@ class PolicyRequest(BaseModel):
     domain: str
 
 # Function to find Privacy Policy and Terms of Service URLs using OpenAI
-import json
-import time
-
 def find_policy_urls(domain):
+    import json
     prompt = f"""
     Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
     Try the following paths:
@@ -57,25 +55,29 @@ def find_policy_urls(domain):
     """
     
     try:
-        time.sleep(2)  # Add slight delay to avoid rate limits
         response = openai.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "system", "content": "You are a web crawling assistant."},
-                      {"role": "user", "content": prompt}],
-            max_tokens=100
-        )
-
-        if not response or not response.choices:
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": "You are a web crawling assistant."},
+                  {"role": "user", "content": prompt}],
+        max_tokens=100
+    )
+    
+    import json
+import time
+import logging
+    try:
+        logging.info("Sleeping for 2 seconds to avoid rate limits.")
+        time.sleep(2)  # Add slight delay to avoid rate limits
+                        if not response or not response.choices:
+            logging.error("OpenAI returned an empty response.")
             logging.error("OpenAI returned an empty response.")
             return {}
-
-        response_content = response.choices[0].message.content
+                response_content = response.choices[0].message.content
+        logging.info(f"OpenAI Response: {response_content}")
         return json.loads(response_content)
-    
     except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
         logging.error(f"Error decoding OpenAI response: {e}. Response: {response}")
         return {}
-
 
 # Function to fetch page content
 def extract_text_from_url(url):
@@ -167,3 +169,4 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
