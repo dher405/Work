@@ -2,103 +2,62 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 import requests
 from bs4 import BeautifulSoup
 import logging
-import csv
-import io
-import re
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, MetaData, Table
 import os
+import openai
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import asyncpg
 
 app = FastAPI()
 
-# Load PostgreSQL connection URL from environment variable (recommended for security)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres.kyjqfeyfsnvsyvugsncy:GIE92mhtkxdJw1SD@aws-0-us-west-1.pooler.supabase.com:5432/postgres")
+# Load OpenAI API Key from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("Missing OpenAI API key. Set OPENAI_API_KEY as an environment variable.")
+openai.api_key = OPENAI_API_KEY
 
-# Enable connection pooling
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=True,
-    pool_size=10,        # Number of connections in the pool
-    max_overflow=20,     # Max extra connections if pool is full
-    connect_args={"timeout": 120}
-)
+# Load Supabase Database URL
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("Missing DATABASE_URL. Set this in environment variables.")
 
-async_session = sessionmaker(
-    engine, expire_on_commit=False, class_=AsyncSession
-)
-
-# Set up SQLAlchemy engine & session
+# Set up database connection
 engine = create_async_engine(DATABASE_URL, echo=True)
-async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+Base = declarative_base()
 
-metadata = MetaData()
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
 
-# Define validation results table
-validations = Table(
-    "validations",
-    metadata,
-    Column("id", Integer, primary_key=True, index=True),
-    Column("business_type", String),
-    Column("brand_status", String),
-    Column("campaign_id", String, nullable=True),
-    Column("campaign_status", String, nullable=True),
-)
-
-# Function to save validation results to PostgreSQL
-async def save_validation_result(business_type, brand_status, campaign_id=None, campaign_status=None):
-    async with async_session() as session:
-        async with session.begin():
-            stmt = validations.insert().values(
-                business_type=business_type, brand_status=brand_status,
-                campaign_id=campaign_id, campaign_status=campaign_status
-            )
-            await session.execute(stmt)
-
-# Function to initialize database schema
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(metadata.create_all)
-
-@app.on_event("startup")
-async def startup():
-    await init_db()
-
-# API Endpoints (same logic, just using async save function now)
-@app.get("/validate/business")
-async def validate_business(business_type: str):
-    result = check_prohibited_business(business_type)
-    await save_validation_result(business_type, result["status"])
-    return result
-
-@app.post("/validate/brand")
-async def validate_brand(brand_data: dict):
-    result = validate_brand_info(brand_data)
-    await save_validation_result(brand_data.get("Legal Business Name", "Unknown"), result["status"])
-    return result
-
-@app.get("/validate/campaign_status")
-async def validate_campaign_status(campaign_id: str):
-    result = check_campaign_status(campaign_id)
-    await save_validation_result("N/A", "N/A", campaign_id, result.get("status", "Error"))
-    return result
-
-@app.post("/validate/bulk_csv")
-async def validate_bulk_csv(file: UploadFile = File(...)):
-    try:
-        file_content = file.file.read()
-        results = process_bulk_csv(file_content)
-        return {"status": "Success", "results": results}
-    except Exception as e:
-        logging.error(f"Error processing CSV file: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error processing CSV file.")
-
-# Privacy Policy Validation
+# Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# Function to find Privacy Policy and Terms of Service URLs using OpenAI
+def find_policy_urls(domain):
+    prompt = f"""
+    Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
+    Consider standard locations like /privacy-policy, /privacy, /legal/privacy-policy, /terms, /terms-of-service, /legal/terms.
+    Return the URLs as JSON:
+    {{"privacy_policy": "URL", "terms_of_service": "URL"}}
+    """
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "system", "content": "You are a web crawling assistant."},
+                  {"role": "user", "content": prompt}],
+        max_tokens=100
+    )
+    
+    return response["choices"][0]["message"]["content"]
+
+# Function to fetch page content
 def extract_text_from_url(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         return " ".join([p.get_text() for p in soup.find_all("p")])
@@ -106,29 +65,57 @@ def extract_text_from_url(url):
         logging.error(f"Error fetching URL {url}: {str(e)}")
         return None
 
-def validate_privacy_policy(text):
-    required_terms = {
-        "data_collection": r"data.*(collect|use|store|process)",
-        "third_party_sharing": r"third[-\s]?party.*(share|disclose|sell)",
-        "opt_out": r"opt[-\s]?out|unsubscribe|stop.*message",
-        "sms_consent": r"sms.*consent.*not.*shared"
-    }
+# Function to analyze policy compliance using GPT
+def analyze_compliance(text, policy_type):
+    prompt = f"""
+    Analyze the following {policy_type} and determine if it contains:
+    - Data collection & sharing disclosures
+    - Opt-out & SMS consent details
+    - Third-party data handling (for Privacy Policy)
+    - Message frequency, opt-out, and HELP instructions (for Terms of Service)
+    - Links to Privacy Policy & Terms of Service
     
-    missing_elements = [key for key, regex in required_terms.items() if not re.search(regex, text, re.IGNORECASE)]
+    Return a JSON response with:
+    {{"status": "Pass" or "Fail", "missing_elements": ["list of missing elements"], "recommendations": "suggestions for compliance"}}
     
-    if missing_elements:
-        return {"status": "Fail", "missing_elements": missing_elements, "recommendations": "Ensure your privacy policy includes all required disclosures."}
-    return {"status": "Pass"}
+    Text:
+    {text}
+    """
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
+                  {"role": "user", "content": prompt}],
+        max_tokens=200
+    )
+    
+    return response["choices"][0]["message"]["content"]
 
-@app.post("/validate/privacy_policy")
-def check_privacy_policy(website_url: str):
-    policy_url = f"{website_url.rstrip('/')}/privacy-policy"  # Guess the policy URL
-    text = extract_text_from_url(policy_url)
-    if not text:
-        raise HTTPException(status_code=400, detail="Unable to fetch privacy policy.")
-    return validate_privacy_policy(text)
+# API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
+@app.post("/validate/policies")
+async def check_policies(domain: str, db: AsyncSession = Depends(get_db)):
+    policy_urls = find_policy_urls(domain)
+    
+    if not policy_urls:
+        raise HTTPException(status_code=400, detail="Unable to determine policy URLs.")
+    
+    privacy_text = extract_text_from_url(policy_urls.get("privacy_policy"))
+    terms_text = extract_text_from_url(policy_urls.get("terms_of_service"))
+    
+    privacy_result = analyze_compliance(privacy_text, "Privacy Policy") if privacy_text else {"status": "Fail", "reason": "Privacy Policy not accessible"}
+    terms_result = analyze_compliance(terms_text, "Terms of Service") if terms_text else {"status": "Fail", "reason": "Terms of Service not accessible"}
+    
+    # Store results in Supabase
+    query = """
+    INSERT INTO policy_compliance (domain, privacy_policy_status, terms_status, privacy_missing, terms_missing)
+    VALUES ($1, $2, $3, $4, $5)
+    """
+    await db.execute(query, (domain, privacy_result.get("status"), terms_result.get("status"),
+                             str(privacy_result.get("missing_elements", [])), str(terms_result.get("missing_elements", []))))
+    await db.commit()
+    
+    return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
