@@ -13,7 +13,7 @@ import os
 app = FastAPI()
 
 # Load PostgreSQL connection URL from environment variable (recommended for security)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:GIE92mhtkxdJw1SD@db.kyjqfeyfsnvsyvugsncy.supabase.co:5432/postgres")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:GIE92mhtkxdJw1SD@kyjqfeyfsnvsyvugsncy.supabase.co:5432/postgres")
 
 # Set up SQLAlchemy engine & session
 engine = create_async_engine(DATABASE_URL, echo=True)
