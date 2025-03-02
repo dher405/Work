@@ -41,7 +41,6 @@ class PolicyRequest(BaseModel):
 # Function to find Privacy Policy and Terms of Service URLs using OpenAI
 def find_policy_urls(domain):
     import json
-    import json
     prompt = f"""
     Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
     Try the following paths:
@@ -64,7 +63,7 @@ def find_policy_urls(domain):
     )
     
     import json
-    import time
+import time
     try:
         time.sleep(2)  # Add slight delay to avoid rate limits
                 if not response or not response.choices:
@@ -121,7 +120,7 @@ def analyze_compliance(text, policy_type):
     
     import json
     try:
-                if not response or not response.choices:
+    if not response or not response.choices:
             logging.error("OpenAI returned an empty response.")
             return {}
         response_content = response.choices[0].message.content
@@ -166,5 +165,3 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
