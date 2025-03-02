@@ -56,13 +56,14 @@ def find_policy_urls(domain):
     """
     
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a web crawling assistant."},
                   {"role": "user", "content": prompt}],
         max_tokens=100
     )
     
     import json
+    import time
     try:
         time.sleep(2)  # Add slight delay to avoid rate limits
         response_content = response.choices[0].message.content
@@ -107,7 +108,7 @@ def analyze_compliance(text, policy_type):
     """
     
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
                   {"role": "user", "content": prompt}],
         max_tokens=200
@@ -157,3 +158,4 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
