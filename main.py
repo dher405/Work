@@ -114,12 +114,19 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
     terms_result = analyze_compliance(terms_text, "Terms of Service") if terms_text else {"status": "Fail", "reason": "Terms of Service not accessible"}
     
     # Store results in Supabase
-    query = """
+    from sqlalchemy import text
+
+    query = text("""
     INSERT INTO policy_compliance (domain, privacy_policy_status, terms_status, privacy_missing, terms_missing)
-    VALUES ($1, $2, $3, $4, $5)
-    """
-    await db.execute(query, (domain, privacy_result.get("status"), terms_result.get("status"),
-                             str(privacy_result.get("missing_elements", [])), str(terms_result.get("missing_elements", []))))
+    VALUES (:domain, :privacy_status, :terms_status, :privacy_missing, :terms_missing)
+    """)
+    await db.execute(query, {
+        "domain": domain,
+        "privacy_status": privacy_result.get("status"),
+        "terms_status": terms_result.get("status"),
+        "privacy_missing": str(privacy_result.get("missing_elements", [])),
+        "terms_missing": str(terms_result.get("missing_elements", []))
+    })
     await db.commit()
     
     return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
@@ -127,3 +134,4 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
