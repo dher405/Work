@@ -13,7 +13,7 @@ import os
 app = FastAPI()
 
 # Load PostgreSQL connection URL from environment variable (recommended for security)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres.kyjqfeyfsnvsyvugsncy:GIE92mhtkxdJw1SD@aws-0-us-west-1.pooler.supabase.com:6543/postgres")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres.kyjqfeyfsnvsyvugsncy:GIE92mhtkxdJw1SD@aws-0-us-west-1.pooler.supabase.com:5432/postgres")
 
 # Enable connection pooling
 engine = create_async_engine(
