@@ -40,6 +40,7 @@ class PolicyRequest(BaseModel):
 
 # Function to find Privacy Policy and Terms of Service URLs using OpenAI
 def find_policy_urls(domain):
+    import json
     prompt = f"""
     Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
     Consider standard locations like /privacy-policy, /privacy, /legal/privacy-policy, /terms, /terms-of-service, /legal/terms.
@@ -55,7 +56,12 @@ def find_policy_urls(domain):
     )
     
     import json
-    return json.loads(response.choices[0].message.content)
+    try:
+        response_content = response.choices[0].message.content
+        return json.loads(response_content)
+    except (json.JSONDecodeError, AttributeError) as e:
+        logging.error(f"Error decoding OpenAI response: {e}")
+        return {}
 
 # Function to fetch page content
 def extract_text_from_url(url):
@@ -73,6 +79,7 @@ def extract_text_from_url(url):
 
 # Function to analyze policy compliance using GPT
 def analyze_compliance(text, policy_type):
+    import json
     prompt = f"""
     Analyze the following {policy_type} and determine if it contains:
     - Data collection & sharing disclosures
@@ -96,7 +103,12 @@ def analyze_compliance(text, policy_type):
     )
     
     import json
-    return json.loads(response.choices[0].message.content)
+    try:
+        response_content = response.choices[0].message.content
+        return json.loads(response_content)
+    except (json.JSONDecodeError, AttributeError) as e:
+        logging.error(f"Error decoding OpenAI response: {e}")
+        return {"status": "Fail", "reason": "OpenAI response could not be processed"}
 
 # API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
 @app.post("/validate/policies")
@@ -134,4 +146,3 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
