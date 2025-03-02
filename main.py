@@ -54,15 +54,8 @@ def find_policy_urls(domain):
         max_tokens=100
     )
     
-import json
-def find_policy_urls(domain):
-    prompt = f\"\"\"Given the domain {domain}, determine the most likely URLs...\"\"\"
-    response = openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "You are a web crawling assistant."},
-                  {"role": "user", "content": prompt}],
-        max_tokens=100
-    )
+    import json
+return json.loads(response.choices[0].message.content)
 
 # Function to fetch page content
 def extract_text_from_url(url):
@@ -134,4 +127,5 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
