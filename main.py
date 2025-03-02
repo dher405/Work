@@ -47,7 +47,7 @@ def find_policy_urls(domain):
     {{"privacy_policy": "URL", "terms_of_service": "URL"}}
     """
     
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "system", "content": "You are a web crawling assistant."},
                   {"role": "user", "content": prompt}],
@@ -87,7 +87,7 @@ def analyze_compliance(text, policy_type):
     {text}
     """
     
-    response = openai.ChatCompletion.create(
+    response = openai(
         model="gpt-4",
         messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
                   {"role": "user", "content": prompt}],
