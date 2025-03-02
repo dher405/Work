@@ -48,13 +48,13 @@ def find_policy_urls(domain):
     """
     
     response = openai.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4",
         messages=[{"role": "system", "content": "You are a web crawling assistant."},
                   {"role": "user", "content": prompt}],
         max_tokens=100
     )
     
-    return response.choices[0].message.content
+    return response["choices"][0]["message"]["content"]
 
 # Function to fetch page content
 def extract_text_from_url(url):
@@ -87,7 +87,7 @@ def analyze_compliance(text, policy_type):
     {text}
     """
     
-    response = openai(
+    response = openai.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
                   {"role": "user", "content": prompt}],
