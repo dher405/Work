@@ -93,6 +93,42 @@ async def validate_bulk_csv(file: UploadFile = File(...)):
         logging.error(f"Error processing CSV file: {str(e)}")
         raise HTTPException(status_code=500, detail="Error processing CSV file.")
 
+# Privacy Policy Validation
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+def extract_text_from_url(url):
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        return " ".join([p.get_text() for p in soup.find_all("p")])
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching URL {url}: {str(e)}")
+        return None
+
+def validate_privacy_policy(text):
+    required_terms = {
+        "data_collection": r"data.*(collect|use|store|process)",
+        "third_party_sharing": r"third[-\s]?party.*(share|disclose|sell)",
+        "opt_out": r"opt[-\s]?out|unsubscribe|stop.*message",
+        "sms_consent": r"sms.*consent.*not.*shared"
+    }
+    
+    missing_elements = [key for key, regex in required_terms.items() if not re.search(regex, text, re.IGNORECASE)]
+    
+    if missing_elements:
+        return {"status": "Fail", "missing_elements": missing_elements, "recommendations": "Ensure your privacy policy includes all required disclosures."}
+    return {"status": "Pass"}
+
+@app.post("/validate/privacy_policy")
+def check_privacy_policy(website_url: str):
+    policy_url = f"{website_url.rstrip('/')}/privacy-policy"  # Guess the policy URL
+    text = extract_text_from_url(policy_url)
+    if not text:
+        raise HTTPException(status_code=400, detail="Unable to fetch privacy policy.")
+    return validate_privacy_policy(text)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
