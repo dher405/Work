@@ -54,7 +54,7 @@ def find_policy_urls(domain):
         max_tokens=100
     )
     
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 # Function to fetch page content
 def extract_text_from_url(url):
