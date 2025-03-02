@@ -55,7 +55,7 @@ def find_policy_urls(domain):
     )
     
     import json
-return json.loads(response.choices[0].message.content)
+    return json.loads(response.choices[0].message.content)
 
 # Function to fetch page content
 def extract_text_from_url(url):
@@ -96,7 +96,7 @@ def analyze_compliance(text, policy_type):
     )
     
     import json
-return json.loads(response.choices[0].message.content)
+    return json.loads(response.choices[0].message.content)
 
 # API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
 @app.post("/validate/policies")
@@ -127,5 +127,3 @@ async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
