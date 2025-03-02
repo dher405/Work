@@ -21,7 +21,7 @@ engine = create_async_engine(
     echo=True,
     pool_size=10,        # Number of connections in the pool
     max_overflow=20,     # Max extra connections if pool is full
-    connect_args={"timeout": 60}
+    connect_args={"timeout": 120}
 )
 
 async_session = sessionmaker(
