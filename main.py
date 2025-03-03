@@ -17,7 +17,7 @@ openai.api_key = OPENAI_API_KEY
 app = FastAPI()
 
 def crawl_website(website_url):
-    """Crawl the website to find Privacy Policy and Terms & Conditions links."""
+    """Crawl the website to find Privacy Policy, Terms & Conditions, and Legal pages."""
     try:
         response = requests.get(website_url, timeout=10)
         response.raise_for_status()
@@ -30,11 +30,12 @@ def crawl_website(website_url):
             found_links.add(full_url)
         
         privacy_url = next((link for link in found_links if "privacy" in link), None)
-        terms_url = next((link for link in found_links if "terms" in link or "conditions" in link), None)
+        terms_url = next((link for link in found_links if "terms" in link or "conditions" in link or "terms-of-service" in link), None)
+        legal_url = next((link for link in found_links if "legal" in link), None)
         
-        return privacy_url, terms_url
+        return privacy_url, terms_url, legal_url
     except requests.RequestException:
-        return None, None
+        return None, None, None
 
 def extract_text_from_url(url):
     """Extract text content from a given webpage."""
@@ -49,10 +50,10 @@ def extract_text_from_url(url):
     except requests.RequestException:
         return None
 
-def check_compliance(privacy_text, terms_text):
+def check_compliance(privacy_text, terms_text, legal_text):
     """Send extracted text to GPT-4o-mini for compliance check."""
     prompt = f"""
-    You are an expert in TCR compliance checking. Analyze the provided Privacy Policy and Terms of Service.
+    You are an expert in TCR compliance checking. Analyze the provided Privacy Policy, Terms of Service, and Legal page.
     
     **Privacy Policy Compliance:**
     - Must state that SMS consent information will not be shared with third parties.
@@ -67,8 +68,12 @@ def check_compliance(privacy_text, terms_text):
       - Help available by texting "HELP".
       - Links to Privacy Policy and Terms of Service.
     
+    **Legal Compliance:**
+    - Check for any additional regulatory or compliance-related text.
+    
     **Privacy Policy Extract:** {privacy_text[:2000]}
     **Terms & Conditions Extract:** {terms_text[:2000]}
+    **Legal Page Extract:** {legal_text[:2000] if legal_text else 'No legal page found'}
     
     Return a compliance report indicating if the required elements are present or missing.
     """
@@ -84,16 +89,17 @@ def check_compliance(privacy_text, terms_text):
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
-    privacy_url, terms_url = crawl_website(website_url)
+    privacy_url, terms_url, legal_url = crawl_website(website_url)
     
-    if not privacy_url or not terms_url:
-        raise HTTPException(status_code=400, detail="Could not find Privacy Policy or Terms & Conditions pages.")
+    if not privacy_url and not terms_url and not legal_url:
+        raise HTTPException(status_code=400, detail="Could not find Privacy Policy, Terms & Conditions, or Legal pages.")
     
-    privacy_text = extract_text_from_url(privacy_url)
-    terms_text = extract_text_from_url(terms_url)
+    privacy_text = extract_text_from_url(privacy_url) if privacy_url else None
+    terms_text = extract_text_from_url(terms_url) if terms_url else None
+    legal_text = extract_text_from_url(legal_url) if legal_url else None
     
-    if not privacy_text or not terms_text:
-        raise HTTPException(status_code=400, detail="Could not extract text from one or both pages.")
+    if not privacy_text and not terms_text and not legal_text:
+        raise HTTPException(status_code=400, detail="Could not extract text from any of the pages.")
     
-    compliance_report = check_compliance(privacy_text, terms_text)
+    compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
