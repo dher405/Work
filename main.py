@@ -40,7 +40,7 @@ def crawl_website(website_url):
 def extract_text_from_url(url):
     """Extract text content from a given webpage."""
     if not url:
-        return None
+        return ""
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -48,7 +48,7 @@ def extract_text_from_url(url):
         text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div']))
         return re.sub(r'\s+', ' ', text.strip())
     except requests.RequestException:
-        return None
+        return ""
 
 def check_compliance(privacy_text, terms_text, legal_text):
     """Send extracted text to GPT-4o-mini for compliance check."""
@@ -71,8 +71,8 @@ def check_compliance(privacy_text, terms_text, legal_text):
     **Legal Compliance:**
     - Check for any additional regulatory or compliance-related text.
     
-    **Privacy Policy Extract:** {privacy_text[:2000]}
-    **Terms & Conditions Extract:** {terms_text[:2000]}
+    **Privacy Policy Extract:** {privacy_text[:2000] if privacy_text else 'No privacy policy found'}
+    **Terms & Conditions Extract:** {terms_text[:2000] if terms_text else 'No terms & conditions found'}
     **Legal Page Extract:** {legal_text[:2000] if legal_text else 'No legal page found'}
     
     Return a compliance report indicating if the required elements are present or missing.
@@ -94,9 +94,9 @@ def check_compliance_endpoint(website_url: str):
     if not privacy_url and not terms_url and not legal_url:
         raise HTTPException(status_code=400, detail="Could not find Privacy Policy, Terms & Conditions, or Legal pages.")
     
-    privacy_text = extract_text_from_url(privacy_url) if privacy_url else None
-    terms_text = extract_text_from_url(terms_url) if terms_url else None
-    legal_text = extract_text_from_url(legal_url) if legal_url else None
+    privacy_text = extract_text_from_url(privacy_url)
+    terms_text = extract_text_from_url(terms_url)
+    legal_text = extract_text_from_url(legal_url)
     
     if not privacy_text and not terms_text and not legal_text:
         raise HTTPException(status_code=400, detail="Could not extract text from any of the pages.")
