@@ -2,178 +2,124 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 import requests
 from bs4 import BeautifulSoup
 import logging
-import os
-import openai
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-import asyncpg
-from pydantic import BaseModel
+import csv
+import io
+import re
+import sqlite3
 
 app = FastAPI()
-
-# Load OpenAI API Key from environment variables
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("Missing OpenAI API key. Set OPENAI_API_KEY as an environment variable.")
-openai.api_key = OPENAI_API_KEY
-
-# Load Supabase Database URL
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("Missing DATABASE_URL. Set this in environment variables.")
-
-# Set up database connection
-engine = create_async_engine(DATABASE_URL, echo=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
-Base = declarative_base()
-
-async def get_db():
-    async with SessionLocal() as session:
-        yield session
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Pydantic model for request validation
-class PolicyRequest(BaseModel):
-    domain: str
+# Database setup
+def get_db_connection():
+    conn = sqlite3.connect("validation_results.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS validations (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        business_type TEXT,
+                        brand_status TEXT,
+                        campaign_id TEXT,
+                        campaign_status TEXT
+                    )''')
+    return conn
 
-# Function to find Privacy Policy and Terms of Service URLs using OpenAI
-def find_policy_urls(domain):
-    import json
-    prompt = f"""
-    Given the domain {domain}, determine the most likely URLs where the Privacy Policy and Terms of Service pages are located.
-    Try the following paths:
-    - /privacy-policy
-    - /privacy
-    - /legal/privacy
-    - /terms-of-service
-    - /terms
-    - /legal/terms
-    Return the URLs as JSON:
-    {{"privacy_policy": "URL", "terms_of_service": "URL"}}
-    """
-    
-    try:
-        logging.info("Sending request to OpenAI API")
-        response = openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "You are a web crawling assistant."},
-                  {"role": "user", "content": prompt}],
-        max_tokens=100
-    )
-    
-    import json
-import time
-import logging
-import openai
-from sqlalchemy import text
-    try:
-        logging.info("Delaying request to avoid rate limits.")
-        time.sleep(2)  # Add slight delay to avoid rate limits
-                                        if not response or not response.choices:
-            logging.error("OpenAI returned an empty response.")
-            return {}
-            logging.error("OpenAI returned an empty response.")
-            logging.error("OpenAI returned an empty response.")
-            logging.error("OpenAI returned an empty response.")
-            return {}
-                                response_content = response.choices[0].message.content
-        logging.info(f"Received OpenAI Response: {response_content}")
-        logging.info(f"Received OpenAI Response: {response_content}")
-        logging.info(f"OpenAI Response: {response_content}")
-        return json.loads(response_content)
-    except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
-        logging.error(f"Error decoding OpenAI response: {e}. Response: {response}")
-        return {}
+# Function to save validation results
+def save_validation_result(business_type, brand_status, campaign_id=None, campaign_status=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO validations (business_type, brand_status, campaign_id, campaign_status) VALUES (?, ?, ?, ?)",
+                   (business_type, brand_status, campaign_id, campaign_status))
+    conn.commit()
+    conn.close()
 
-# Function to fetch page content
-def extract_text_from_url(url):
-    import time
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br"
-    }
+# Function to fetch rejection error codes
+def fetch_rejection_codes():
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        url = "https://support.ringcentral.com/article-v2/Troubleshooting-TCR-rejection-codes.html"
+        response = requests.get(url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        return " ".join([p.get_text() for p in soup.find_all("p")])
+        soup = BeautifulSoup(response.text, 'html.parser')
+        error_codes = {code.text: description.text for code, description in zip(soup.find_all('code'), soup.find_all('p'))}
+        return error_codes
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching URL {url}: {str(e)}")
-        return None
+        logging.error(f"Error fetching rejection codes: {str(e)}")
+        return {"error": "Failed to fetch rejection codes. Please check the URL or network connectivity."}
 
-# Function to analyze policy compliance using GPT
-def analyze_compliance(text, policy_type):
-    import json
-    prompt = f"""
-    Analyze the following {policy_type} and determine if it contains:
-    - Data collection & sharing disclosures
-    - Opt-out & SMS consent details
-    - Third-party data handling (for Privacy Policy)
-    - Message frequency, opt-out, and HELP instructions (for Terms of Service)
-    - Links to Privacy Policy & Terms of Service
-    
-    Return a JSON response with:
-    {{"status": "Pass" or "Fail", "missing_elements": ["list of missing elements"], "recommendations": "suggestions for compliance"}}
-    
-    Text:
-    {text}
-    """
-    
+# Function to check prohibited business categories
+def check_prohibited_business(business_type: str):
+    prohibited_categories = [
+        "Indirect Lending", "High-Risk Investment", "Gambling/Sweepstakes", "Debt Relief", "Multi-Level Marketing",
+        "Regulated Items", "Lead Generation"
+    ]
+    if business_type in prohibited_categories:
+        return {"status": "Rejected", "reason": f"{business_type} is a prohibited business category."}
+    return {"status": "Approved"}
+
+# Function to validate brand information
+def validate_brand_info(brand_data: dict):
+    required_fields = ["Legal Business Name", "Brand Name", "Legal Classification", "EIN", "Website URL"]
+    missing_fields = [field for field in required_fields if field not in brand_data]
+    if missing_fields:
+        return {"status": "Rejected", "missing_fields": missing_fields}
+    return {"status": "Approved"}
+
+# Function to check campaign approval status
+def check_campaign_status(campaign_id: str):
     try:
-        response = openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "You are a compliance expert analyzing website policies."},
-                  {"role": "user", "content": prompt}],
-        max_tokens=200
-    )
-    
-    import json
+        url = f"https://csp.campaignregistry.com/api/campaigns/{campaign_id}/status"
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error checking campaign status: {str(e)}")
+        return {"error": "Failed to fetch campaign status. Please check the campaign ID or network connectivity."}
+
+# Function to process bulk CSV validation
+def process_bulk_csv(file_content):
+    results = []
+    csv_reader = csv.DictReader(io.StringIO(file_content.decode("utf-8")))
+    for row in csv_reader:
+        business_check = check_prohibited_business(row.get("business_type", ""))
+        brand_check = validate_brand_info(row)
+        save_validation_result(row.get("business_type", ""), brand_check["status"])
+        results.append({"business": business_check, "brand": brand_check})
+    return results
+
+@app.get("/validate/error_codes")
+def validate_error_codes():
+    error_codes = fetch_rejection_codes()
+    if "error" in error_codes:
+        raise HTTPException(status_code=500, detail=error_codes["error"])
+    return {"status": "Success", "error_codes": error_codes}
+
+@app.get("/validate/business")
+def validate_business(business_type: str):
+    result = check_prohibited_business(business_type)
+    save_validation_result(business_type, result["status"])
+    return result
+
+@app.post("/validate/brand")
+def validate_brand(brand_data: dict):
+    result = validate_brand_info(brand_data)
+    save_validation_result(brand_data.get("Legal Business Name", "Unknown"), result["status"])
+    return result
+
+@app.get("/validate/campaign_status")
+def validate_campaign_status(campaign_id: str):
+    result = check_campaign_status(campaign_id)
+    save_validation_result("N/A", "N/A", campaign_id, result.get("status", "Error"))
+    return result
+
+@app.post("/validate/bulk_csv")
+def validate_bulk_csv(file: UploadFile = File(...)):
     try:
-        logging.info("Analyzing compliance using OpenAI API")
-        if not response or not response.choices:
-            logging.error("OpenAI returned an empty response.")
-            return {}
-        response_content = response.choices[0].message.content
-        return json.loads(response_content)
-    except (json.JSONDecodeError, AttributeError, openai.OpenAIError) as e:
-        logging.error(f"Error decoding OpenAI response: {e}. Response: {response}")
-        return {"status": "Fail", "reason": "OpenAI response could not be processed"}
-
-# API Endpoint to validate Privacy Policy & Terms of Service and store results in Supabase
-@app.post("/validate/policies")
-async def check_policies(request: PolicyRequest, db: AsyncSession = Depends(get_db)):
-    domain = request.domain
-    policy_urls = find_policy_urls(domain)
-    
-    if not policy_urls:
-        raise HTTPException(status_code=400, detail="Unable to determine policy URLs.")
-    
-    privacy_text = extract_text_from_url(policy_urls.get("privacy_policy"))
-    terms_text = extract_text_from_url(policy_urls.get("terms_of_service"))
-    
-    privacy_result = analyze_compliance(privacy_text, "Privacy Policy") if privacy_text else {"status": "Fail", "reason": "Privacy Policy not accessible"}
-    terms_result = analyze_compliance(terms_text, "Terms of Service") if terms_text else {"status": "Fail", "reason": "Terms of Service not accessible"}
-    
-    # Store results in Supabase
-    from sqlalchemy import text
-
-    query = text("""
-    INSERT INTO policy_compliance (domain, privacy_policy_status, terms_status, privacy_missing, terms_missing)
-    VALUES (:domain, :privacy_status, :terms_status, :privacy_missing, :terms_missing)
-    """)
-    await db.execute(query, {
-        "domain": domain,
-        "privacy_status": privacy_result.get("status"),
-        "terms_status": terms_result.get("status"),
-        "privacy_missing": str(privacy_result.get("missing_elements", [])),
-        "terms_missing": str(terms_result.get("missing_elements", []))
-    })
-    await db.commit()
-    
-    return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
+        file_content = file.file.read()
+        results = process_bulk_csv(file_content)
+        return {"status": "Success", "results": results}
+    except Exception as e:
+        logging.error(f"Error processing CSV file: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing CSV file.")
 
 if __name__ == "__main__":
     import uvicorn
