@@ -1,150 +1,99 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 import requests
 from bs4 import BeautifulSoup
-import logging
-import csv
-import io
+import openai
 import re
-import sqlite3
 
-app = FastAPI()
+# OpenAI API Key (Replace with your actual key)
+OPENAI_API_KEY = "OPENAI_API_KEY"
+openai.api_key = OPENAI_API_KEY
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-# Database setup
-def get_db_connection():
-    conn = sqlite3.connect("validation_results.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS validations (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        business_type TEXT,
-                        brand_status TEXT,
-                        campaign_id TEXT,
-                        campaign_status TEXT
-                    )''')
-    return conn
-
-# Function to save validation results
-def save_validation_result(business_type, brand_status, campaign_id=None, campaign_status=None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO validations (business_type, brand_status, campaign_id, campaign_status) VALUES (?, ?, ?, ?)",
-                   (business_type, brand_status, campaign_id, campaign_status))
-    conn.commit()
-    conn.close()
-
-# Function to fetch rejection error codes
-def fetch_rejection_codes():
+def get_policy_links(website_url):
+    """Find Privacy Policy and Terms & Conditions links from the homepage."""
     try:
-        url = "https://support.ringcentral.com/article-v2/Troubleshooting-TCR-rejection-codes.html"
-        response = requests.get(url)
+        response = requests.get(website_url, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
-        error_codes = {code.text: description.text for code, description in zip(soup.find_all('code'), soup.find_all('p'))}
-        return error_codes
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching rejection codes: {str(e)}")
-        return {"error": "Failed to fetch rejection codes. Please check the URL or network connectivity."}
+        
+        privacy_url, terms_url = None, None
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href'].lower()
+            if "privacy" in href:
+                privacy_url = href if "http" in href else website_url.rstrip('/') + '/' + href.lstrip('/')
+            if "terms" in href or "conditions" in href:
+                terms_url = href if "http" in href else website_url.rstrip('/') + '/' + href.lstrip('/')
+        
+        return privacy_url, terms_url
+    except requests.RequestException as e:
+        print(f"Error fetching website: {e}")
+        return None, None
 
-# Function to check prohibited business categories
-def check_prohibited_business(business_type: str):
-    prohibited_categories = [
-        "Indirect Lending", "High-Risk Investment", "Gambling/Sweepstakes", "Debt Relief", "Multi-Level Marketing",
-        "Regulated Items", "Lead Generation"
-    ]
-    if business_type in prohibited_categories:
-        return {"status": "Rejected", "reason": f"{business_type} is a prohibited business category."}
-    return {"status": "Approved"}
-
-# Function to validate brand information
-def validate_brand_info(brand_data: dict):
-    required_fields = ["Legal Business Name", "Brand Name", "Legal Classification", "EIN", "Website URL"]
-    missing_fields = [field for field in required_fields if field not in brand_data]
-    if missing_fields:
-        return {"status": "Rejected", "missing_fields": missing_fields}
-    return {"status": "Approved"}
-
-# Function to check campaign approval status
-def check_campaign_status(campaign_id: str):
+def extract_text_from_url(url):
+    """Extract text content from a given webpage."""
+    if not url:
+        return None
     try:
-        url = f"https://csp.campaignregistry.com/api/campaigns/{campaign_id}/status"
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error checking campaign status: {str(e)}")
-        return {"error": "Failed to fetch campaign status. Please check the campaign ID or network connectivity."}
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div']))
+        return re.sub(r'\s+', ' ', text.strip())
+    except requests.RequestException as e:
+        print(f"Error fetching page {url}: {e}")
+        return None
 
-# Function to process bulk CSV validation
-def process_bulk_csv(file_content):
-    results = []
-    csv_reader = csv.DictReader(io.StringIO(file_content.decode("utf-8")))
-    for row in csv_reader:
-        business_check = check_prohibited_business(row.get("business_type", ""))
-        brand_check = validate_brand_info(row)
-        save_validation_result(row.get("business_type", ""), brand_check["status"])
-        results.append({"business": business_check, "brand": brand_check})
-    return results
+def check_compliance(privacy_text, terms_text):
+    """Send extracted text to GPT-4o-mini for compliance check."""
+    prompt = f"""
+    You are an expert in TCR compliance checking. Analyze the provided Privacy Policy and Terms of Service.
+    
+    **Privacy Policy Compliance:**
+    - Must state that SMS consent information will not be shared with third parties.
+    - Must explain how user information is used, collected, and shared.
+    
+    **Terms & Conditions Compliance:**
+    - Must specify the types of messages users can expect (e.g., order updates, job application status, etc.).
+    - Must include standard messaging disclosures:
+      - Messaging frequency may vary.
+      - Message and data rates may apply.
+      - Opt-out by texting "STOP".
+      - Help available by texting "HELP".
+      - Links to Privacy Policy and Terms of Service.
+    
+    **Privacy Policy Extract:** {privacy_text[:2000]}
+    **Terms & Conditions Extract:** {terms_text[:2000]}
+    
+    Return a compliance report indicating if the required elements are present or missing.
+    """
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": "You are a compliance auditor."},
+                  {"role": "user", "content": prompt}],
+        temperature=0.3
+    )
+    
+    return response['choices'][0]['message']['content']
 
-@app.get("/validate/error_codes")
-def validate_error_codes():
-    error_codes = fetch_rejection_codes()
-    if "error" in error_codes:
-        raise HTTPException(status_code=500, detail=error_codes["error"])
-    return {"status": "Success", "error_codes": error_codes}
-
-@app.get("/validate/business")
-def validate_business(business_type: str):
-    result = check_prohibited_business(business_type)
-    save_validation_result(business_type, result["status"])
-    return result
-
-@app.post("/validate/brand")
-def validate_brand(brand_data: dict):
-    result = validate_brand_info(brand_data)
-    save_validation_result(brand_data.get("Legal Business Name", "Unknown"), result["status"])
-    return result
-
-@app.get("/validate/campaign_status")
-def validate_campaign_status(campaign_id: str):
-    result = check_campaign_status(campaign_id)
-    save_validation_result("N/A", "N/A", campaign_id, result.get("status", "Error"))
-    return result
-
-@app.post("/validate/bulk_csv")
-def validate_bulk_csv(file: UploadFile = File(...)):
-    try:
-        file_content = file.file.read()
-        results = process_bulk_csv(file_content)
-        return {"status": "Success", "results": results}
-    except Exception as e:
-        logging.error(f"Error processing CSV file: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error processing CSV file.")
-
-@app.post("/validate/policies")
-def validate_policies(domain: str):
-    """Endpoint to validate Privacy Policy and Terms of Service."""
-    try:
-        policy_urls = find_policy_urls(domain)
-        if not policy_urls:
-            return {"detail": "Unable to determine policy URLs."}
-        
-        privacy_text = extract_text_from_url(policy_urls.get("privacy_policy"))
-        terms_text = extract_text_from_url(policy_urls.get("terms_of_service"))
-        
-        privacy_result = analyze_compliance(privacy_text, "Privacy Policy") if privacy_text else {"status": "Fail", "reason": "Privacy Policy not accessible"}
-        terms_result = analyze_compliance(terms_text, "Terms of Service") if terms_text else {"status": "Fail", "reason": "Terms of Service not accessible"}
-        
-        return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
-    except Exception as e:
-        logging.error(f"Error validating policies: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error validating policies.")
-
+def main():
+    website_url = input("Enter customer website URL: ")
+    privacy_url, terms_url = get_policy_links(website_url)
+    
+    if not privacy_url or not terms_url:
+        print("Could not find Privacy Policy or Terms & Conditions pages.")
+        return
+    
+    print(f"Found Privacy Policy: {privacy_url}\nFound Terms & Conditions: {terms_url}")
+    
+    privacy_text = extract_text_from_url(privacy_url)
+    terms_text = extract_text_from_url(terms_url)
+    
+    if not privacy_text or not terms_text:
+        print("Could not extract text from one or both pages.")
+        return
+    
+    compliance_report = check_compliance(privacy_text, terms_text)
+    print("\nTCR Compliance Report:\n", compliance_report)
+    
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    main()
 
