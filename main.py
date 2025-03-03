@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import openai
 import re
 from fastapi import FastAPI, HTTPException
+from urllib.parse import urljoin
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -15,23 +16,24 @@ openai.api_key = OPENAI_API_KEY
 
 app = FastAPI()
 
-def get_policy_links(website_url):
-    """Find Privacy Policy and Terms & Conditions links from the homepage."""
+def crawl_website(website_url):
+    """Crawl the website to find Privacy Policy and Terms & Conditions links."""
     try:
         response = requests.get(website_url, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        privacy_url, terms_url = None, None
+        found_links = set()
         for a_tag in soup.find_all('a', href=True):
             href = a_tag['href'].lower()
-            if "privacy" in href:
-                privacy_url = href if "http" in href else website_url.rstrip('/') + '/' + href.lstrip('/')
-            if "terms" in href or "conditions" in href:
-                terms_url = href if "http" in href else website_url.rstrip('/') + '/' + href.lstrip('/')
+            full_url = urljoin(website_url, href)
+            found_links.add(full_url)
+        
+        privacy_url = next((link for link in found_links if "privacy" in link), None)
+        terms_url = next((link for link in found_links if "terms" in link or "conditions" in link), None)
         
         return privacy_url, terms_url
-    except requests.RequestException as e:
+    except requests.RequestException:
         return None, None
 
 def extract_text_from_url(url):
@@ -82,7 +84,7 @@ def check_compliance(privacy_text, terms_text):
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
-    privacy_url, terms_url = get_policy_links(website_url)
+    privacy_url, terms_url = crawl_website(website_url)
     
     if not privacy_url or not terms_url:
         raise HTTPException(status_code=400, detail="Could not find Privacy Policy or Terms & Conditions pages.")
@@ -95,4 +97,3 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text)
     return {"compliance_report": compliance_report}
-
