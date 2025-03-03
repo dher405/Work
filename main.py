@@ -1,10 +1,15 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 import openai
 import re
 
-# OpenAI API Key (Replace with your actual key)
-OPENAI_API_KEY = "OPENAI_API_KEY"
+# Load API Key from environment variable
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+if not OPENAI_API_KEY:
+    raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
+
 openai.api_key = OPENAI_API_KEY
 
 def get_policy_links(website_url):
