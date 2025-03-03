@@ -147,3 +147,4 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
+
