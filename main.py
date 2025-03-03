@@ -121,6 +121,29 @@ def validate_bulk_csv(file: UploadFile = File(...)):
         logging.error(f"Error processing CSV file: {str(e)}")
         raise HTTPException(status_code=500, detail="Error processing CSV file.")
 
+@app.post("/validate/policies")
+def validate_policies(domain: str):
+    """Endpoint to validate Privacy Policy and Terms of Service."""
+    try:
+        policy_urls = find_policy_urls(domain)
+        if not policy_urls:
+            return {"detail": "Unable to determine policy URLs."}
+        
+        privacy_text = extract_text_from_url(policy_urls.get("privacy_policy"))
+        terms_text = extract_text_from_url(policy_urls.get("terms_of_service"))
+        
+        privacy_result = analyze_compliance(privacy_text, "Privacy Policy") if privacy_text else {"status": "Fail", "reason": "Privacy Policy not accessible"}
+        terms_result = analyze_compliance(terms_text, "Terms of Service") if terms_text else {"status": "Fail", "reason": "Terms of Service not accessible"}
+        
+        return {"privacy_policy": privacy_result, "terms_of_service": terms_result}
+    except Exception as e:
+        logging.error(f"Error validating policies: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error validating policies.")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
