@@ -12,7 +12,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
 
-openai.api_key = OPENAI_API_KEY
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 app = FastAPI()
 
@@ -78,14 +78,14 @@ def check_compliance(privacy_text, terms_text, legal_text):
     Return a compliance report indicating if the required elements are present or missing.
     """
     
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a compliance auditor."},
                   {"role": "user", "content": prompt}],
         temperature=0.3
     )
     
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message.content
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
@@ -103,3 +103,4 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
+
