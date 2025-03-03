@@ -6,3 +6,4 @@ beautifulsoup4
 python-multipart
 sqlalchemy
 asyncpg
+fastapi-cors
