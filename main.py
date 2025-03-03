@@ -5,6 +5,8 @@ import openai
 import re
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -15,6 +17,14 @@ if not OPENAI_API_KEY:
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def crawl_website(website_url):
     """Crawl the website to find Privacy Policy, Terms & Conditions, and Legal pages."""
