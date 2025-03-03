@@ -1,12 +1,15 @@
 import os
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 import openai
 import re
+import warnings
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse
 from fastapi.middleware.cors import CORSMiddleware
 
+# Suppress XML warnings to clean up logs
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -60,14 +63,21 @@ def crawl_website(website_url, max_depth=2, visited=None):
         return set()
 
 def extract_text_from_url(url):
-    """Extract text content from a given webpage."""
+    """Extract text content from a given webpage and handle XML documents."""
     if not url:
         return ""
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div']))
+
+        # Try parsing as HTML first
+        try:
+            soup = BeautifulSoup(response.text, "html.parser")
+        except Exception:
+            # If that fails, try XML parsing
+            soup = BeautifulSoup(response.text, "xml")
+
+        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         return re.sub(r'\s+', ' ', text.strip())
     except requests.RequestException:
         return ""
@@ -156,5 +166,4 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
-
 
