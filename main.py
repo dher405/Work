@@ -62,13 +62,30 @@ def extract_text_from_url(url):
 
 def check_compliance(privacy_text, terms_text, legal_text):
     """Send extracted text to GPT-4o-mini for compliance check."""
+    
+    # Define SMS consent-related keywords
+    sms_consent_phrases = [
+        "SMS consent", "text message consent", "we do not share", 
+        "information will not be shared with third parties",
+        "we will not sell or distribute your information",
+        "your SMS data will remain private"
+    ]
+    
+    # Check if any required SMS consent phrase is present
+    sms_consent_found = any(phrase.lower() in privacy_text.lower() for phrase in sms_consent_phrases)
+
+    # If missing, explicitly notify GPT
+    missing_sms_consent = "" if sms_consent_found else "**WARNING:** Privacy Policy does NOT explicitly state that SMS consent information is not shared with third parties.\n\n"
+
     prompt = f"""
     You are an expert in TCR compliance checking. Analyze the provided Privacy Policy, Terms of Service, and Legal page.
-    
+
+    {missing_sms_consent}
+
     **Privacy Policy Compliance:**
     - Must state that SMS consent information will not be shared with third parties.
     - Must explain how user information is used, collected, and shared.
-    
+
     **Terms & Conditions Compliance:**
     - Must specify the types of messages users can expect (e.g., order updates, job application status, etc.).
     - Must include standard messaging disclosures:
@@ -77,25 +94,26 @@ def check_compliance(privacy_text, terms_text, legal_text):
       - Opt-out by texting "STOP".
       - Help available by texting "HELP".
       - Links to Privacy Policy and Terms of Service.
-    
+
     **Legal Compliance:**
     - Check for any additional regulatory or compliance-related text.
-    
-    **Privacy Policy Extract:** {privacy_text[:2000] if privacy_text else 'No privacy policy found'}
-    **Terms & Conditions Extract:** {terms_text[:2000] if terms_text else 'No terms & conditions found'}
-    **Legal Page Extract:** {legal_text[:2000] if legal_text else 'No legal page found'}
-    
-    Return a compliance report indicating if the required elements are present or missing.
+
+    **Privacy Policy Extract:**\n\n{privacy_text[:2000] if privacy_text else 'No privacy policy found'}\n\n
+    **Terms & Conditions Extract:**\n\n{terms_text[:2000] if terms_text else 'No terms & conditions found'}\n\n
+    **Legal Page Extract:**\n\n{legal_text[:2000] if legal_text else 'No legal page found'}\n\n
+
+    Return a well-formatted compliance report indicating if the required elements are present or missing, using line breaks and bullet points where necessary.
     """
-    
+
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": "You are a compliance auditor."},
                   {"role": "user", "content": prompt}],
         temperature=0.3
     )
-    
-    return response.choices[0].message.content
+
+    return response.choices[0].message.content.replace("\n", "\n\n")
+
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
