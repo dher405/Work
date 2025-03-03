@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import openai
 import re
+from fastapi import FastAPI, HTTPException
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -11,6 +12,8 @@ if not OPENAI_API_KEY:
     raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
 
 openai.api_key = OPENAI_API_KEY
+
+app = FastAPI()
 
 def get_policy_links(website_url):
     """Find Privacy Policy and Terms & Conditions links from the homepage."""
@@ -29,7 +32,6 @@ def get_policy_links(website_url):
         
         return privacy_url, terms_url
     except requests.RequestException as e:
-        print(f"Error fetching website: {e}")
         return None, None
 
 def extract_text_from_url(url):
@@ -42,8 +44,7 @@ def extract_text_from_url(url):
         soup = BeautifulSoup(response.text, 'html.parser')
         text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div']))
         return re.sub(r'\s+', ' ', text.strip())
-    except requests.RequestException as e:
-        print(f"Error fetching page {url}: {e}")
+    except requests.RequestException:
         return None
 
 def check_compliance(privacy_text, terms_text):
@@ -79,26 +80,19 @@ def check_compliance(privacy_text, terms_text):
     
     return response['choices'][0]['message']['content']
 
-def main():
-    website_url = input("Enter customer website URL: ")
+@app.get("/check_compliance")
+def check_compliance_endpoint(website_url: str):
     privacy_url, terms_url = get_policy_links(website_url)
     
     if not privacy_url or not terms_url:
-        print("Could not find Privacy Policy or Terms & Conditions pages.")
-        return
-    
-    print(f"Found Privacy Policy: {privacy_url}\nFound Terms & Conditions: {terms_url}")
+        raise HTTPException(status_code=400, detail="Could not find Privacy Policy or Terms & Conditions pages.")
     
     privacy_text = extract_text_from_url(privacy_url)
     terms_text = extract_text_from_url(terms_url)
     
     if not privacy_text or not terms_text:
-        print("Could not extract text from one or both pages.")
-        return
+        raise HTTPException(status_code=400, detail="Could not extract text from one or both pages.")
     
     compliance_report = check_compliance(privacy_text, terms_text)
-    print("\nTCR Compliance Report:\n", compliance_report)
-    
-if __name__ == "__main__":
-    main()
+    return {"compliance_report": compliance_report}
 
