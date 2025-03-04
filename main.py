@@ -115,9 +115,9 @@ def extract_text_from_url(url):
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
-    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR requirements."""
+    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=1)  # Reduced depth for faster execution
+    crawled_links = crawl_website(website_url, max_depth=1)
 
     privacy_text, terms_text, legal_text = "", "", ""
 
@@ -134,17 +134,41 @@ def check_compliance_endpoint(website_url: str):
         elif "legal" in link:
             legal_text += " " + page_text
 
-    return check_compliance(privacy_text, terms_text, legal_text)
+    compliance_results = check_tcr_compliance(privacy_text, terms_text)
+    return compliance_results
 
-def check_compliance(privacy_text, terms_text, legal_text):
-    """Basic Compliance Check - Expand this logic as needed."""
-    return {
-        "privacy_text_length": len(privacy_text),
-        "terms_text_length": len(terms_text),
-        "legal_text_length": len(legal_text),
-        "privacy_policy_found": len(privacy_text) > 100,
-        "terms_found": len(terms_text) > 100,
-        "legal_section_found": len(legal_text) > 100
+def check_tcr_compliance(privacy_text, terms_text):
+    """Check compliance with TCR SMS requirements."""
+
+    privacy_requirements = {
+        "SMS Consent Information Not Shared with Third Parties": "won’t be shared with third parties",
+        "Explanation of How Consumer Information is Used and Collected": "how your consumer information is used",
     }
+
+    terms_requirements = {
+        "Message Types Disclosure": "types of messages the recipient can expect",
+        "Messaging Frequency Disclosure": "messaging frequency may vary",
+        "Message and Data Rates Disclosure": "message and data rates may apply",
+        "Opt-out Information": "opt out at any time by texting STOP",
+        "Help Information": "For assistance, text HELP",
+    }
+
+    privacy_compliance = {key: (value.lower() in privacy_text.lower()) for key, value in privacy_requirements.items()}
+    terms_compliance = {key: (value.lower() in terms_text.lower()) for key, value in terms_requirements.items()}
+
+    return {
+        "privacy_policy": {
+            "text_length": len(privacy_text),
+            "found": len(privacy_text) > 100,
+            "requirements_met": privacy_compliance,
+        },
+        "terms_conditions": {
+            "text_length": len(terms_text),
+            "found": len(terms_text) > 100,
+            "requirements_met": terms_compliance,
+        },
+        "overall_compliance": all(privacy_compliance.values()) and all(terms_compliance.values()),
+    }
+
 
 
