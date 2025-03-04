@@ -97,8 +97,8 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--no-sandbox")  
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            # Use Chromium instead of Chrome (if applicable)
-            chrome_binary = os.getenv("CHROME_BIN", "/usr/bin/chromium-browser")
+            # Use the manually installed Chromium instead of Chrome
+            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/latest/chrome")
             if not os.path.exists(chrome_binary):
                 print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
                 return ""
@@ -107,6 +107,7 @@ def extract_text_from_url(url):
 
             print(f"Using Chromium binary at: {chrome_binary}")
 
+            # Initialize Selenium WebDriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
@@ -142,3 +143,4 @@ def check_compliance_endpoint(website_url: str):
 def check_compliance(privacy_text, terms_text, legal_text):
     """Placeholder function for compliance checking."""
     return {"privacy_text_length": len(privacy_text), "terms_text_length": len(terms_text), "legal_text_length": len(legal_text)}
+
