@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: your-service-name # replace with your service name
+    runtime: python
+    buildCommand: |
+      apt-get update
+      apt-get install -y chromium
+      pip install -r requirements.txt
+    startCommand: python your_script.py # replace with your script's name
+    envVars:
+      - key: CHROMEDRIVER_PATH
+        value: /usr/bin/chromedriver
+      - key: GOOGLE_CHROME_BIN
+        value: /usr/bin/chromium
