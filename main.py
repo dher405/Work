@@ -93,45 +93,50 @@ def extract_text_from_url(url):
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         text = re.sub(r'\s+', ' ', text.strip())
 
-        logger.debug(f"Extracted text from {url}: {text[:500]}")  # Debugging
-
         if not text.strip():
-            logger.warning(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
+            print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
 
             chrome_options = Options()
-            chrome_options.add_argument("--headless")  
-            chrome_options.add_argument("--no-sandbox")  
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            # Use the manually installed Chromium instead of Chrome
+            # Use the manually installed Chromium and ChromeDriver
             chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/latest/chrome")
+            chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
+
             if not os.path.exists(chrome_binary):
-                logger.error(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
+                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
+                return ""
+
+            if not os.path.exists(chromedriver_binary):
+                print(f"ERROR: ChromeDriver binary not found at {chromedriver_binary}. Exiting.")
                 return ""
 
             chrome_options.binary_location = chrome_binary
 
-            logger.debug(f"Using Chromium binary at: {chrome_binary}")
+            print(f"Using Chromium binary at: {chrome_binary}")
+            print(f"Using ChromeDriver binary at: {chromedriver_binary}")
 
-            # Initialize Selenium WebDriver with proper exception handling
             driver = None
             try:
-                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+                service = Service(executable_path=chromedriver_binary)
+                driver = webdriver.Chrome(service=service, options=chrome_options)
                 driver.get(url)
                 text = driver.find_element("xpath", "//body").text
             except Exception:
-                logger.error("ERROR: Selenium extraction failed!", exc_info=True)
+                print("ERROR: Selenium extraction failed!")
+                print(traceback.format_exc())
                 text = ""  # Ensure text is not None
             finally:
                 if driver:
                     driver.quit()
 
-            logger.debug(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
-
         return text
 
     except requests.RequestException:
-        logger.error(f"Requests completely failed for {url}. Falling back to Selenium.", exc_info=True)
+        print(f"Requests completely failed for {url}. Falling back to Selenium.")
+        print(traceback.format_exc())
         return ""
 
 @app.get("/check_compliance")
