@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 import openai
 import re
 import warnings
-import traceback
 import logging
+import traceback
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,11 +74,9 @@ def crawl_website(website_url, max_depth=2, visited=None):
         
         logger.debug(f"Crawled {website_url}, Found Links: {found_links}")  # Debugging
         return found_links
-    except requests.RequestException:
-        logger.error(f"Failed to crawl {website_url}", exc_info=True)
+    except requests.RequestException as e:
+        logger.error(f"Failed to crawl {website_url}: {e}", exc_info=True)
         return set()
-
-import traceback
 
 def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
@@ -96,7 +94,7 @@ def extract_text_from_url(url):
         text = re.sub(r'\s+', ' ', text.strip())
 
         if not text.strip():
-            print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
+            logger.warning(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
 
             chrome_options = Options()
             chrome_options.add_argument("--headless")
@@ -108,17 +106,17 @@ def extract_text_from_url(url):
             chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
 
             if not os.path.exists(chrome_binary):
-                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
-                return ""
+                logger.error(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
+                return "Chromium binary not found."
 
             if not os.path.exists(chromedriver_binary):
-                print(f"ERROR: ChromeDriver binary not found at {chromedriver_binary}. Exiting.")
-                return ""
+                logger.error(f"ERROR: ChromeDriver binary not found at {chromedriver_binary}. Exiting.")
+                return "ChromeDriver binary not found."
 
             chrome_options.binary_location = chrome_binary
 
-            print(f"Using Chromium binary at: {chrome_binary}")
-            print(f"Using ChromeDriver binary at: {chromedriver_binary}")
+            logger.debug(f"Using Chromium binary at: {chrome_binary}")
+            logger.debug(f"Using ChromeDriver binary at: {chromedriver_binary}")
 
             driver = None
             try:
@@ -126,20 +124,18 @@ def extract_text_from_url(url):
                 driver = webdriver.Chrome(service=service, options=chrome_options)
                 driver.get(url)
                 text = driver.find_element("xpath", "//body").text
-            except Exception:
-                print("ERROR: Selenium extraction failed!")
-                print(traceback.format_exc())
-                text = ""  # Ensure text is not None
+            except Exception as e:
+                logger.error("ERROR: Selenium extraction failed!", exc_info=True)
+                text = "Selenium extraction failed."
             finally:
                 if driver:
                     driver.quit()
 
         return text
 
-    except requests.RequestException:
-        print(f"Requests completely failed for {url}. Falling back to Selenium.")
-        print(traceback.format_exc())
-        return ""
+    except requests.RequestException as e:
+        logger.error(f"Requests completely failed for {url}: {e}", exc_info=True)
+        return "Request failed."
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
@@ -161,8 +157,12 @@ def check_compliance_endpoint(website_url: str):
     return check_compliance(privacy_text, terms_text, legal_text)
 
 def check_compliance(privacy_text, terms_text, legal_text):
-    """Placeholder function for compliance checking."""
-    return {"privacy_text_length": len(privacy_text), "terms_text_length": len(terms_text), "legal_text_length": len(legal_text)}
-
-
-
+    """Basic Compliance Check - Expand this logic as needed."""
+    return {
+        "privacy_text_length": len(privacy_text),
+        "terms_text_length": len(terms_text),
+        "legal_text_length": len(legal_text),
+        "privacy_policy_found": len(privacy_text) > 100,
+        "terms_found": len(terms_text) > 100,
+        "legal_section_found": len(legal_text) > 100
+    }
