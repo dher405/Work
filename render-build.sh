@@ -13,17 +13,24 @@ cd $CHROMIUM_DIR
 # Fetch the latest stable Chrome version
 LATEST_STABLE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
 
-echo "Latest stable Chrome version: $LATEST_STABLE"
+# If API request failed, retry with fallback URL
+if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
+    echo "WARNING: Failed to retrieve latest Chrome version from primary source. Trying fallback..."
+    LATEST_STABLE=$(curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version')
+fi
 
-# Ensure we got a valid version
+# Final validation
 if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
     echo "ERROR: Failed to retrieve the latest Chromium version!"
     exit 1
 fi
 
+echo "Latest stable Chrome version: $LATEST_STABLE"
+
 # Fetch Chromium download URL
 CHROMIUM_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chrome[] | select(.platform == \"linux64\") | .url")
 
+# Ensure URL is valid
 if [[ -z "$CHROMIUM_URL" || "$CHROMIUM_URL" == "null" ]]; then
     echo "ERROR: Failed to retrieve Chromium download URL!"
     exit 1
@@ -48,6 +55,7 @@ cd $CHROMEDRIVER_DIR
 # Fetch ChromeDriver download URL
 CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chromedriver[] | select(.platform == \"linux64\") | .url")
 
+# Ensure URL is valid
 if [[ -z "$CHROMEDRIVER_URL" || "$CHROMEDRIVER_URL" == "null" ]]; then
     echo "ERROR: Failed to retrieve ChromeDriver download URL!"
     exit 1
