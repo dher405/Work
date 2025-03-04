@@ -1,62 +1,75 @@
-import traceback
+#!/usr/bin/env bash
 
-def extract_text_from_url(url):
-    """Extract text content from a given webpage. Uses Selenium if needed."""
-    if not url:
-        return ""
+echo "Installing Chromium and matching ChromeDriver..."
 
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
-        }
-        response = requests.get(url, timeout=30, headers=headers)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
-        text = re.sub(r'\s+', ' ', text.strip())
+# Define installation directories
+CHROMIUM_DIR="$HOME/chromium"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
 
-        if not text.strip():
-            print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
+mkdir -p $CHROMIUM_DIR
+mkdir -p $CHROMEDRIVER_DIR
+cd $CHROMIUM_DIR
 
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
+# Fetch the latest stable Chrome version
+LATEST_STABLE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
 
-            # Use the manually installed Chromium and ChromeDriver
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
-            chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
+echo "Latest stable Chrome version: $LATEST_STABLE"
 
-            if not os.path.exists(chrome_binary):
-                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
-                return ""
+# Ensure we got a valid version
+if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
+    echo "ERROR: Failed to retrieve the latest Chromium version!"
+    exit 1
+fi
 
-            if not os.path.exists(chromedriver_binary):
-                print(f"ERROR: ChromeDriver binary not found at {chromedriver_binary}. Exiting.")
-                return ""
+# Fetch Chromium download URL
+CHROMIUM_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chrome[] | select(.platform == \"linux64\") | .url")
 
-            chrome_options.binary_location = chrome_binary
+if [[ -z "$CHROMIUM_URL" || "$CHROMIUM_URL" == "null" ]]; then
+    echo "ERROR: Failed to retrieve Chromium download URL!"
+    exit 1
+fi
 
-            print(f"Using Chromium binary at: {chrome_binary}")
-            print(f"Using ChromeDriver binary at: {chromedriver_binary}")
+echo "Downloading Chromium from: $CHROMIUM_URL"
+curl -# -o chromium.zip "$CHROMIUM_URL"
+unzip chromium.zip
+export CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
 
-            driver = None
-            try:
-                service = Service(executable_path=chromedriver_binary)
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-                driver.get(url)
-                text = driver.find_element("xpath", "//body").text
-            except Exception:
-                print("ERROR: Selenium extraction failed!")
-                print(traceback.format_exc())
-                text = ""  # Ensure text is not None
-            finally:
-                if driver:
-                    driver.quit()
+# Validate Chromium installation
+if [ -f "$CHROME_BIN" ]; then
+    echo "Chromium installed successfully at $CHROME_BIN"
+else
+    echo "ERROR: Chromium installation failed!"
+    exit 1
+fi
 
-        return text
+# --- Install the Correct ChromeDriver ---
+cd $CHROMEDRIVER_DIR
 
-    except requests.RequestException:
-        print(f"Requests completely failed for {url}. Falling back to Selenium.")
-        print(traceback.format_exc())
-        return ""
+# Fetch ChromeDriver download URL
+CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chromedriver[] | select(.platform == \"linux64\") | .url")
+
+if [[ -z "$CHROMEDRIVER_URL" || "$CHROMEDRIVER_URL" == "null" ]]; then
+    echo "ERROR: Failed to retrieve ChromeDriver download URL!"
+    exit 1
+fi
+
+echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+curl -# -o chromedriver.zip "$CHROMEDRIVER_URL"
+
+# Verify the download was successful
+if [ ! -s "chromedriver.zip" ]; then
+    echo "ERROR: ChromeDriver download failed or is empty!"
+    exit 1
+fi
+
+unzip chromedriver.zip -d $CHROMEDRIVER_DIR
+export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
+
+# Validate ChromeDriver installation
+if [ -f "$CHROMEDRIVER_BIN" ]; then
+    echo "ChromeDriver installed successfully at $CHROMEDRIVER_BIN"
+else
+    echo "ERROR: ChromeDriver installation failed!"
+    exit 1
+fi
+
