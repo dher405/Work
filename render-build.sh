@@ -2,14 +2,19 @@
 
 echo "Installing Chrome..."
 
-# Download and extract Chrome
-CHROME_VERSION="google-chrome-stable_current_amd64.deb"
-wget https://dl.google.com/linux/direct/$CHROME_VERSION
-dpkg -x $CHROME_VERSION $HOME/chrome
-mv $HOME/chrome/opt/google/chrome $HOME/chrome-bin
-rm $CHROME_VERSION
+# Create a directory for Chrome
+mkdir -p $HOME/chrome
+cd $HOME/chrome
 
-# Set Chrome binary path
+# Download the latest Chrome binary
+wget -qO- https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb > chrome.deb
+
+# Extract Chrome without sudo
+ar x chrome.deb
+tar -xvf data.tar.xz
+
+# Move Chrome binary to a usable directory
+mv opt/google/chrome $HOME/chrome-bin
 export CHROME_BIN="$HOME/chrome-bin/google-chrome"
 
-echo "Chrome installed at $CHROME_BIN"
+echo "Chrome installed successfully at $CHROME_BIN"
