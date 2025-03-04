@@ -5,6 +5,7 @@ import openai
 import re
 import warnings
 import traceback
+import json
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,8 +42,8 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=1, visited=None):
-    """Recursively crawl a website up to a limited depth to avoid long processing times."""
+def crawl_website(website_url, max_depth=2, visited=None):
+    """Recursively crawl a website up to a limited depth to find all relevant pages."""
     if visited is None:
         visited = set()
 
@@ -117,7 +118,7 @@ def extract_text_from_url(url):
 def check_compliance_endpoint(website_url: str):
     """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements using ChatGPT."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=1)
+    crawled_links = crawl_website(website_url, max_depth=2)
 
     privacy_text, terms_text = "", ""
 
@@ -128,7 +129,7 @@ def check_compliance_endpoint(website_url: str):
     for link, page_text in zip(crawled_links, results):
         if "privacy" in link:
             privacy_text += " " + page_text
-        elif "terms" in link or "conditions" in link or "terms-of-service" in link:
+        elif "terms" in link or "conditions" in link or "terms-of-service" in link or "legal" in link:
             terms_text += " " + page_text
 
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
@@ -167,31 +168,32 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     ```
     """
 
-    # Call OpenAI API for response
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
         max_tokens=1000
     )
 
-    # Extract structured response
-    structured_response = response.choices[0].message.content.strip()
-    
-    return {
-        "privacy_policy": {
-            "text_length": len(privacy_text),
-            "found": len(privacy_text) > 100,
-            "assessment": extract_section(structured_response, '"privacy_policy":')
-        },
-        "terms_conditions": {
-            "text_length": len(terms_text),
-            "found": len(terms_text) > 100,
-            "assessment": extract_section(structured_response, '"terms_conditions":')
-        },
-        "summary_of_compliance": extract_section(structured_response, '"summary_of_compliance":')
-    }
+    try:
+        chatgpt_response = response.choices[0].message.content.strip()
+        parsed_response = json.loads(chatgpt_response)  # Convert string to dictionary
 
-def extract_section(text, section_title):
-    """Extracts a specific section from ChatGPT's structured JSON response."""
-    match = re.search(f'{section_title} "(.*?)"', text, re.DOTALL)
-    return match.group(1).strip() if match else "No details available."
+        return {
+            "privacy_policy": {
+                "text_length": len(privacy_text),
+                "found": bool(privacy_text.strip()),
+                "assessment": parsed_response.get("privacy_policy", {}).get("assessment", "No details available.")
+            },
+            "terms_conditions": {
+                "text_length": len(terms_text),
+                "found": bool(terms_text.strip()),
+                "assessment": parsed_response.get("terms_conditions", {}).get("assessment", "No details available.")
+            },
+            "summary_of_compliance": parsed_response.get("summary_of_compliance", "No summary available.")
+        }
+
+    except json.JSONDecodeError:
+        return {
+            "error": "Failed to parse AI response. Check OpenAI output format.",
+            "raw_response": response.choices[0].message.content.strip()
+        }
