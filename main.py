@@ -5,6 +5,7 @@ import openai
 import re
 import warnings
 import traceback
+import logging
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+
 
 # Suppress XML warnings to clean up logs
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
@@ -23,6 +25,11 @@ if not OPENAI_API_KEY:
     raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("uvicorn.error")
+
+app = FastAPI(debug=True)
 
 app = FastAPI()
 
