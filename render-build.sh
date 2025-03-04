@@ -1,91 +1,62 @@
-#!/usr/bin/env bash
+import traceback
 
-echo "Installing Chromium and matching ChromeDriver..."
+def extract_text_from_url(url):
+    """Extract text content from a given webpage. Uses Selenium if needed."""
+    if not url:
+        return ""
 
-# Define installation directories
-CHROMIUM_DIR="$HOME/chromium"
-CHROMEDRIVER_DIR="$HOME/chromedriver"
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+        }
+        response = requests.get(url, timeout=30, headers=headers)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
+        text = re.sub(r'\s+', ' ', text.strip())
 
-mkdir -p $CHROMIUM_DIR
-mkdir -p $CHROMEDRIVER_DIR
-cd $CHROMIUM_DIR
+        if not text.strip():
+            print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
 
-# Fetch the latest Chromium revision from Google's API
-LASTCHANGE_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media"
-REVISION=$(curl -s -S $LASTCHANGE_URL)
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
 
-echo "Latest Chromium revision is: $REVISION"
+            # Use the manually installed Chromium and ChromeDriver
+            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
+            chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
 
-# Ensure we got a valid revision number
-if [[ -z "$REVISION" || "$REVISION" == "null" ]]; then
-    echo "ERROR: Failed to retrieve the latest Chromium revision!"
-    exit 1
-fi
+            if not os.path.exists(chrome_binary):
+                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
+                return ""
 
-# Define Chromium download URL
-ZIP_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F$REVISION%2Fchrome-linux.zip?alt=media"
-ZIP_FILE="${REVISION}-chrome-linux.zip"
+            if not os.path.exists(chromedriver_binary):
+                print(f"ERROR: ChromeDriver binary not found at {chromedriver_binary}. Exiting.")
+                return ""
 
-echo "Fetching Chromium from: $ZIP_URL"
+            chrome_options.binary_location = chrome_binary
 
-rm -rf $REVISION
-mkdir $REVISION
-pushd $REVISION
+            print(f"Using Chromium binary at: {chrome_binary}")
+            print(f"Using ChromeDriver binary at: {chromedriver_binary}")
 
-curl -# -o $ZIP_FILE "$ZIP_URL"
+            driver = None
+            try:
+                service = Service(executable_path=chromedriver_binary)
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                driver.get(url)
+                text = driver.find_element("xpath", "//body").text
+            except Exception:
+                print("ERROR: Selenium extraction failed!")
+                print(traceback.format_exc())
+                text = ""  # Ensure text is not None
+            finally:
+                if driver:
+                    driver.quit()
 
-# Verify if the download was successful
-if [ ! -s "$ZIP_FILE" ]; then
-    echo "ERROR: Chromium download failed or is empty!"
-    exit 1
-fi
+        return text
 
-echo "Unzipping Chromium..."
-unzip $ZIP_FILE
-popd
-
-rm -f ./latest
-ln -s $REVISION/chrome-linux/ ./latest
-
-export CHROME_BIN="$CHROMIUM_DIR/latest/chrome"
-
-# Validate Chromium installation
-if [ -f "$CHROME_BIN" ]; then
-    echo "Chromium installed successfully at $CHROME_BIN"
-else
-    echo "ERROR: Chromium installation failed!"
-    exit 1
-fi
-
-# --- Install the Correct ChromeDriver ---
-cd $CHROMEDRIVER_DIR
-
-# Fetch the matching ChromeDriver version
-CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$REVISION/linux64/chromedriver-linux64.zip"
-CHROMEDRIVER_ZIP="chromedriver-$REVISION.zip"
-
-echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
-
-curl -# -o $CHROMEDRIVER_ZIP "$CHROMEDRIVER_URL"
-
-# Verify the download was successful
-if [ ! -s "$CHROMEDRIVER_ZIP" ]; then
-    echo "ERROR: ChromeDriver download failed or is empty!"
-    exit 1
-fi
-
-# Extract ChromeDriver
-unzip $CHROMEDRIVER_ZIP -d $CHROMEDRIVER_DIR
-export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
-
-# Validate ChromeDriver installation
-if [ -f "$CHROMEDRIVER_BIN" ]; then
-    echo "ChromeDriver installed successfully at $CHROMEDRIVER_BIN"
-else
-    echo "ERROR: ChromeDriver installation failed!"
-    exit 1
-fi
-
-
-
-
+    except requests.RequestException:
+        print(f"Requests completely failed for {url}. Falling back to Selenium.")
+        print(traceback.format_exc())
+        return ""
