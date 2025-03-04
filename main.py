@@ -90,7 +90,8 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
-            
+            chrome_options.binary_location = "/usr/bin/google-chrome"  # Manually specify Chrome binary for Render
+
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
@@ -107,7 +108,8 @@ def extract_text_from_url(url):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        
+        chrome_options.binary_location = "/usr/bin/google-chrome"  # Specify Chrome binary location for Render
+
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.get(url)
         text = driver.find_element("xpath", "//body").text
@@ -138,3 +140,4 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
+
