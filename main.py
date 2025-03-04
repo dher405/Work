@@ -50,7 +50,7 @@ def crawl_website(website_url, max_depth=2, visited=None):
     
     visited.add(website_url)
     try:
-        response = requests.get(website_url, timeout=10)
+        response = requests.get(website_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         found_links = set()
@@ -63,8 +63,10 @@ def crawl_website(website_url, max_depth=2, visited=None):
                 found_links.add(full_url)
                 found_links.update(crawl_website(full_url, max_depth - 1, visited))
         
+        print(f"Crawled {website_url}, Found Links: {found_links}")  # Debugging
         return found_links
     except requests.RequestException:
+        print(f"Failed to crawl {website_url}")
         return set()
 
 def extract_text_from_url(url):
@@ -72,17 +74,18 @@ def extract_text_from_url(url):
     if not url:
         return ""
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         text = re.sub(r'\s+', ' ', text.strip())
-        
+
+        print(f"Extracted text from {url}: {text[:500]}")  # Debugging
+
         # If extracted text is empty, use Selenium
         if not text.strip():
             print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
             
-            # Selenium setup
             chrome_options = Options()
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
@@ -92,13 +95,14 @@ def extract_text_from_url(url):
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
             driver.quit()
+            
+            print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
         
         return text
 
     except requests.RequestException:
         print(f"Requests completely failed for {url}. Falling back to Selenium.")
         
-        # Final fallback to Selenium
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
@@ -109,6 +113,7 @@ def extract_text_from_url(url):
         text = driver.find_element("xpath", "//body").text
         driver.quit()
         
+        print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
         return text
 
 @app.get("/check_compliance")
