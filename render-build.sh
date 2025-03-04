@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-echo "Installing Chromium..."
+echo "Installing Chromium and matching ChromeDriver..."
 
-# Define installation directory
+# Define installation directories
 CHROMIUM_DIR="$HOME/chromium"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
+
 mkdir -p $CHROMIUM_DIR
+mkdir -p $CHROMEDRIVER_DIR
 cd $CHROMIUM_DIR
 
 # Get the latest Chromium revision number
@@ -13,33 +16,23 @@ REVISION=$(curl -s -S $LASTCHANGE_URL)
 
 echo "Latest Chromium revision is $REVISION"
 
-# If the latest version is already installed, exit early
-if [ -d "$REVISION" ]; then
-  echo "Already have the latest version installed."
-  exit 0
-fi
-
+# Download Chromium
 ZIP_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F$REVISION%2Fchrome-linux.zip?alt=media"
-ZIP_FILE="${REVISION}-chrome-linux.zip"
+ZIP_FILE="chromium-$REVISION.zip"
 
 echo "Fetching Chromium from: $ZIP_URL"
 
-# Remove old versions and create a fresh directory
 rm -rf $REVISION
 mkdir $REVISION
 pushd $REVISION
 
-# Download and extract Chromium
 curl -# -o $ZIP_FILE $ZIP_URL
-echo "Unzipping Chromium..."
 unzip $ZIP_FILE
 popd
 
-# Create a symlink to the latest version
 rm -f ./latest
 ln -s $REVISION/chrome-linux/ ./latest
 
-# Set the correct Chromium binary path
 export CHROME_BIN="$CHROMIUM_DIR/latest/chrome"
 
 # Validate Chromium installation
@@ -49,4 +42,27 @@ else
     echo "ERROR: Chromium installation failed!"
     exit 1
 fi
+
+# --- Install ChromeDriver Matching Chromium Version ---
+cd $CHROMEDRIVER_DIR
+
+# Fetch ChromeDriver matching the Chromium version
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$REVISION/linux64/chromedriver-linux64.zip"
+CHROMEDRIVER_ZIP="chromedriver-$REVISION.zip"
+
+echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+
+curl -# -o $CHROMEDRIVER_ZIP $CHROMEDRIVER_URL
+unzip $CHROMEDRIVER_ZIP
+
+export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
+
+# Validate ChromeDriver installation
+if [ -f "$CHROMEDRIVER_BIN" ]; then
+    echo "ChromeDriver installed successfully at $CHROMEDRIVER_BIN"
+else
+    echo "ERROR: ChromeDriver installation failed!"
+    exit 1
+fi
+
 
