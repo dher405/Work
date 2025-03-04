@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import openai
 import re
 import warnings
-import logging
 import traceback
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
@@ -12,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from concurrent.futures import ThreadPoolExecutor  # Speed up processing
+from concurrent.futures import ThreadPoolExecutor
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -53,7 +52,7 @@ def crawl_website(website_url, max_depth=1, visited=None):
     visited.add(website_url)
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(website_url, timeout=10, headers=headers)  # Reduced timeout
+        response = requests.get(website_url, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         found_links = set()
@@ -62,7 +61,7 @@ def crawl_website(website_url, max_depth=1, visited=None):
             href = a_tag['href']
             full_url = urljoin(website_url, href)
             parsed_url = urlparse(full_url)
-            if parsed_url.netloc == urlparse(website_url).netloc:  # Internal links only
+            if parsed_url.netloc == urlparse(website_url).netloc and full_url not in visited:
                 found_links.add(full_url)
                 if max_depth > 1:
                     found_links.update(crawl_website(full_url, max_depth - 1, visited))
@@ -78,7 +77,7 @@ def extract_text_from_url(url):
 
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(url, timeout=10, headers=headers)  # Reduced timeout
+        response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
@@ -103,8 +102,8 @@ def extract_text_from_url(url):
                 driver = webdriver.Chrome(service=service, options=chrome_options)
                 driver.get(url)
                 text = driver.find_element("xpath", "//body").text
-            except Exception:
-                text = "Selenium extraction failed."
+            except Exception as e:
+                text = f"Selenium extraction failed: {traceback.format_exc()}"  # Improved error message
             finally:
                 if driver:
                     driver.quit()
@@ -123,7 +122,8 @@ def check_compliance_endpoint(website_url: str):
     privacy_text, terms_text, legal_text = "", "", ""
 
     # **Speed Improvement: Use Multithreading to Extract Text Faster**
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    num_threads = max(2, os.cpu_count() or 4)  # Dynamically allocate thread count
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
         results = list(executor.map(extract_text_from_url, crawled_links))
 
     for link, page_text in zip(crawled_links, results):
@@ -146,4 +146,5 @@ def check_compliance(privacy_text, terms_text, legal_text):
         "terms_found": len(terms_text) > 100,
         "legal_section_found": len(legal_text) > 100
     }
+
 
