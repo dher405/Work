@@ -115,7 +115,7 @@ def extract_text_from_url(url):
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
-    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
+    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements using ChatGPT."""
     website_url = ensure_https(website_url)
     crawled_links = crawl_website(website_url, max_depth=1)
 
@@ -134,41 +134,54 @@ def check_compliance_endpoint(website_url: str):
         elif "legal" in link:
             legal_text += " " + page_text
 
-    compliance_results = check_tcr_compliance(privacy_text, terms_text)
+    compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
     return compliance_results
 
-def check_tcr_compliance(privacy_text, terms_text):
-    """Check compliance with TCR SMS requirements."""
+def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
+    """Use ChatGPT to check if the extracted policies meet TCR SMS compliance."""
+    
+    compliance_prompt = f"""
+    You are an expert in SMS compliance regulations. Given the following website policies, check if they comply with TCR SMS standards.
 
-    privacy_requirements = {
-        "SMS Consent Information Not Shared with Third Parties": "won’t be shared with third parties",
-        "Explanation of How Consumer Information is Used and Collected": "how your consumer information is used",
-    }
+    **Privacy Policy:**
+    {privacy_text[:3000]}
 
-    terms_requirements = {
-        "Message Types Disclosure": "types of messages the recipient can expect",
-        "Messaging Frequency Disclosure": "messaging frequency may vary",
-        "Message and Data Rates Disclosure": "message and data rates may apply",
-        "Opt-out Information": "opt out at any time by texting STOP",
-        "Help Information": "For assistance, text HELP",
-    }
+    **Terms and Conditions:**
+    {terms_text[:3000]}
 
-    privacy_compliance = {key: (value.lower() in privacy_text.lower()) for key, value in privacy_requirements.items()}
-    terms_compliance = {key: (value.lower() in terms_text.lower()) for key, value in terms_requirements.items()}
+    **TCR SMS Compliance Requirements:**
+    1. The Privacy Policy must include:
+        - A clear statement indicating that information obtained via SMS consent will not be shared with third parties.
+        - How consumer information is used, collected, and shared.
+    
+    2. The Terms of Service must include:
+        - A description of the types of messages users will receive (e.g., order updates, job notifications).
+        - Standard messaging disclosures:
+          - "Messaging frequency may vary."
+          - "Message and data rates may apply."
+          - "You can opt out at any time by texting STOP."
+          - "For assistance, text HELP or visit [Privacy Policy URL] and [Terms of Service URL]."
+    
+    Provide a structured report including:
+    - Whether each requirement is met (Yes/No).
+    - If a requirement is missing, specify what is missing.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": compliance_prompt}],
+        max_tokens=800
+    )
 
     return {
         "privacy_policy": {
             "text_length": len(privacy_text),
             "found": len(privacy_text) > 100,
-            "requirements_met": privacy_compliance,
+            "compliance_report": response.choices[0].message.content
         },
         "terms_conditions": {
             "text_length": len(terms_text),
             "found": len(terms_text) > 100,
-            "requirements_met": terms_compliance,
-        },
-        "overall_compliance": all(privacy_compliance.values()) and all(terms_compliance.values()),
+            "compliance_report": response.choices[0].message.content
+        }
     }
-
-
-
