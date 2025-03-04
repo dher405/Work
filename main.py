@@ -106,12 +106,17 @@ def extract_text_from_url(url):
 
     except requests.RequestException:
         print(f"Requests completely failed for {url}. Falling back to Selenium.")
-        
+
+        import os
+
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.binary_location = "/usr/bin/google-chrome"  # Specify Chrome binary location for Render
+
+        # Use the custom Chrome binary path
+        chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/chrome-linux/google-chrome")
+        chrome_options.binary_location = chrome_binary
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.get(url)
