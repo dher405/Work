@@ -2,15 +2,37 @@
 
 echo "Installing Chrome..."
 
-# Define installation directory
+# Define the installation directory
 CHROME_DIR="$HOME/chrome"
 mkdir -p $CHROME_DIR
 cd $CHROME_DIR
 
-# Download and extract the latest Chrome binary for Linux
-wget -qO- https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_current_amd64.tar.gz | tar -xz
+# Correct download URL for latest Google Chrome
+wget -q -O $CHROME_DIR/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-# Locate and set Chrome binary path
-export CHROME_BIN=$(find $CHROME_DIR -name "google-chrome" | head -n 1)
+# Verify the download
+if [ ! -f "$CHROME_DIR/chrome.deb" ]; then
+    echo "ERROR: Chrome download failed!"
+    exit 1
+fi
 
-echo "Chrome installed successfully at $CHROME_BIN"
+# Extract Chrome manually (without sudo)
+dpkg-deb -x $CHROME_DIR/chrome.deb $CHROME_DIR
+
+# Verify the extraction
+if [ ! -d "$CHROME_DIR/opt/google/chrome" ]; then
+    echo "ERROR: Chrome extraction failed!"
+    exit 1
+fi
+
+# Set the correct Chrome binary path
+export CHROME_BIN="$CHROME_DIR/opt/google/chrome/google-chrome"
+
+# Validate Chrome binary exists
+if [ -f "$CHROME_BIN" ]; then
+    echo "Chrome installed successfully at $CHROME_BIN"
+else
+    echo "ERROR: Chrome installation failed!"
+    exit 1
+fi
+
