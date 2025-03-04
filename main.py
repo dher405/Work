@@ -28,11 +28,13 @@ client = openai.OpenAI(api_key=OPENAI_API_KEY)
 # FastAPI setup
 app = FastAPI()
 
+FRONTEND_URL = "https://frontend-kbjv.onrender.com"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=[FRONTEND_URL],  # ✅ Only allow the frontend domain
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
