@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
+
 echo "Installing Chrome..."
-wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-sudo apt-get update
-sudo apt-get install -y google-chrome-stable
+
+# Download and extract Chrome
+CHROME_VERSION="google-chrome-stable_current_amd64.deb"
+wget https://dl.google.com/linux/direct/$CHROME_VERSION
+dpkg -x $CHROME_VERSION $HOME/chrome
+mv $HOME/chrome/opt/google/chrome $HOME/chrome-bin
+rm $CHROME_VERSION
+
+# Set Chrome binary path
+export CHROME_BIN="$HOME/chrome-bin/google-chrome"
+
+echo "Chrome installed at $CHROME_BIN"
