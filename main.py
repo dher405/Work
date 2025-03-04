@@ -29,7 +29,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow frontend to call backend
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,7 +42,7 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=2, visited=None):
+def crawl_website(website_url, max_depth=3, visited=None):
     """Recursively crawl a website up to a limited depth to find all relevant pages."""
     if visited is None:
         visited = set()
@@ -72,7 +72,7 @@ def crawl_website(website_url, max_depth=2, visited=None):
         return set()
 
 def extract_text_from_url(url):
-    """Extract text from a webpage using requests first, then fallback to Selenium if needed."""
+    """Extract text from a webpage using requests first, then Selenium if needed."""
     if not url:
         return ""
 
@@ -81,44 +81,51 @@ def extract_text_from_url(url):
         response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
+
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         text = re.sub(r'\s+', ' ', text.strip())
 
-        if not text.strip():  # Fallback to Selenium if empty
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
-            chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
-
-            if not os.path.exists(chrome_binary) or not os.path.exists(chromedriver_binary):
-                return "Chromium or ChromeDriver binary not found."
-
-            chrome_options.binary_location = chrome_binary
-            driver = None
-            try:
-                service = Service(executable_path=chromedriver_binary)
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-                driver.get(url)
-                text = driver.find_element("xpath", "//body").text
-            except Exception as e:
-                text = f"Selenium extraction failed: {traceback.format_exc()}"  # Improved error message
-            finally:
-                if driver:
-                    driver.quit()
+        if len(text) < 500:  # If text is too short, try Selenium
+            return selenium_extract_text(url)
 
         return text
 
     except requests.RequestException:
-        return "Request failed."
+        return selenium_extract_text(url)
+
+def selenium_extract_text(url):
+    """Extracts webpage text using Selenium as a fallback method."""
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
+    chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
+
+    if not os.path.exists(chrome_binary) or not os.path.exists(chromedriver_binary):
+        return "Chromium or ChromeDriver binary not found."
+
+    chrome_options.binary_location = chrome_binary
+    driver = None
+    try:
+        service = Service(executable_path=chromedriver_binary)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver.get(url)
+        text = driver.find_element("xpath", "//body").text
+    except Exception as e:
+        text = f"Selenium extraction failed: {traceback.format_exc()}"
+    finally:
+        if driver:
+            driver.quit()
+
+    return text
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
     """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements using ChatGPT."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=2)
+    crawled_links = crawl_website(website_url, max_depth=3)
 
     privacy_text, terms_text = "", ""
 
@@ -135,37 +142,24 @@ def check_compliance_endpoint(website_url: str):
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
     return compliance_results
 
-import json  # Import JSON for proper parsing
-
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     """Use ChatGPT to check if the extracted policies meet TCR SMS compliance with enhanced accuracy."""
-
+    
     compliance_prompt = f"""
-    You are an expert in SMS compliance regulations. Your task is to analyze the given Privacy Policy and Terms & Conditions 
-    from a website and determine if they comply with TCR SMS compliance requirements.
+    You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
 
-    **Privacy Policy Content:**
+    **Privacy Policy:**
     {privacy_text[:4000]}
 
-    **Terms and Conditions Content:**
+    **Terms and Conditions:**
     {terms_text[:4000]}
 
     **TCR SMS Compliance Standards:**
-    - Privacy Policy must explicitly state that information obtained via SMS consent will not be shared with third parties.
-    - Privacy Policy must explain how consumer information is collected, used, and shared.
-    - Terms must describe the **types of messages users will receive**.
-    - Terms must include required messaging disclosures.
+    - Privacy Policy must state SMS consent data will not be shared.
+    - Privacy Policy must explain data collection and usage.
+    - Terms must specify message types and include mandatory disclosures.
 
-    **Return the results in structured JSON format without Markdown formatting. DO NOT wrap the response in triple backticks or any other formatting characters:**
-    {{
-      "privacy_policy": {{
-        "assessment": "Summary of privacy policy compliance, including missing elements."
-      }},
-      "terms_conditions": {{
-        "assessment": "Summary of terms and conditions compliance, including missing elements."
-      }},
-      "summary_of_compliance": "Overall compliance status, requirements met, and key recommendations."
-    }}
+    Return a **pure JSON response** without Markdown formatting.
     """
 
     response = client.chat.completions.create(
@@ -175,31 +169,14 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     )
 
     try:
-        # Extract response text and clean it
         chatgpt_response = response.choices[0].message.content.strip()
-
-        # **Fix: Remove any Markdown-style JSON formatting**
         chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
-
-        # Convert cleaned response to JSON
         parsed_response = json.loads(chatgpt_response)
 
-        return {
-            "privacy_policy": {
-                "text_length": len(privacy_text),
-                "found": bool(privacy_text.strip()),
-                "assessment": parsed_response.get("privacy_policy", {}).get("assessment", "No details available.")
-            },
-            "terms_conditions": {
-                "text_length": len(terms_text),
-                "found": bool(terms_text.strip()),
-                "assessment": parsed_response.get("terms_conditions", {}).get("assessment", "No details available.")
-            },
-            "summary_of_compliance": parsed_response.get("summary_of_compliance", "No summary available.")
-        }
+        return parsed_response
 
     except json.JSONDecodeError:
         return {
             "error": "Failed to parse AI response. Check OpenAI output format.",
-            "raw_response": chatgpt_response  # Return raw response for debugging
+            "raw_response": chatgpt_response  
         }
