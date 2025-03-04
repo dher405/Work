@@ -14,9 +14,12 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
-
 # Suppress XML warnings to clean up logs
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+
+# Configure detailed logging for debugging
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("uvicorn.error")
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -26,12 +29,7 @@ if not OPENAI_API_KEY:
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger("uvicorn.error")
-
 app = FastAPI(debug=True)
-
-app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,10 +72,10 @@ def crawl_website(website_url, max_depth=2, visited=None):
                 found_links.add(full_url)
                 found_links.update(crawl_website(full_url, max_depth - 1, visited))
         
-        print(f"Crawled {website_url}, Found Links: {found_links}")  # Debugging
+        logger.debug(f"Crawled {website_url}, Found Links: {found_links}")  # Debugging
         return found_links
     except requests.RequestException:
-        print(f"Failed to crawl {website_url}")
+        logger.error(f"Failed to crawl {website_url}", exc_info=True)
         return set()
 
 def extract_text_from_url(url):
@@ -95,10 +93,10 @@ def extract_text_from_url(url):
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         text = re.sub(r'\s+', ' ', text.strip())
 
-        print(f"Extracted text from {url}: {text[:500]}")  # Debugging
+        logger.debug(f"Extracted text from {url}: {text[:500]}")  # Debugging
 
         if not text.strip():
-            print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
+            logger.warning(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
 
             chrome_options = Options()
             chrome_options.add_argument("--headless")  
@@ -106,35 +104,34 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--disable-dev-shm-usage")
 
             # Use the manually installed Chromium instead of Chrome
-            chrome_binary = os.getenv("CHROME_BIN", "/opt/render/chromium/latest/chrome")
+            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/latest/chrome")
             if not os.path.exists(chrome_binary):
-                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
+                logger.error(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
                 return ""
 
             chrome_options.binary_location = chrome_binary
 
-            print(f"Using Chromium binary at: {chrome_binary}")
+            logger.debug(f"Using Chromium binary at: {chrome_binary}")
 
-            # Initialize Selenium WebDriver
+            # Initialize Selenium WebDriver with proper exception handling
             driver = None
             try:
                 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
                 driver.get(url)
                 text = driver.find_element("xpath", "//body").text
-            except Exception as selenium_error:
-                print("ERROR: Selenium extraction failed!")
-                print(traceback.format_exc())  # Print the full error traceback
+            except Exception:
+                logger.error("ERROR: Selenium extraction failed!", exc_info=True)
+                text = ""  # Ensure text is not None
             finally:
                 if driver:
                     driver.quit()
 
-            print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
+            logger.debug(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
 
         return text
 
-    except requests.RequestException as req_err:
-        print(f"Requests completely failed for {url}. Falling back to Selenium.")
-        print(traceback.format_exc())  # Print full traceback
+    except requests.RequestException:
+        logger.error(f"Requests completely failed for {url}. Falling back to Selenium.", exc_info=True)
         return ""
 
 @app.get("/check_compliance")
@@ -146,7 +143,7 @@ def check_compliance_endpoint(website_url: str):
     
     for link in crawled_links:
         page_text = extract_text_from_url(link)
-        print(f"Extracted text from {link}: {page_text[:500]}")
+        logger.debug(f"Extracted text from {link}: {page_text[:500]}")
         if "privacy" in link:
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
@@ -159,5 +156,6 @@ def check_compliance_endpoint(website_url: str):
 def check_compliance(privacy_text, terms_text, legal_text):
     """Placeholder function for compliance checking."""
     return {"privacy_text_length": len(privacy_text), "terms_text_length": len(terms_text), "legal_text_length": len(legal_text)}
+
 
 
