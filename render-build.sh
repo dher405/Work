@@ -10,28 +10,27 @@ mkdir -p $CHROMIUM_DIR
 mkdir -p $CHROMEDRIVER_DIR
 cd $CHROMIUM_DIR
 
-# Get the latest Chromium revision number
-LASTCHANGE_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media"
-REVISION=$(curl -s -S $LASTCHANGE_URL)
+# Fetch the latest stable Chrome version
+LATEST_STABLE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
 
-echo "Latest Chromium revision is $REVISION"
+echo "Latest stable Chrome version: $LATEST_STABLE"
 
 # Download Chromium
-ZIP_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F$REVISION%2Fchrome-linux.zip?alt=media"
-ZIP_FILE="chromium-$REVISION.zip"
+ZIP_URL="https://storage.googleapis.com/chrome-for-testing-public/$LATEST_STABLE/linux64/chrome-linux.zip"
+ZIP_FILE="chromium-$LATEST_STABLE.zip"
 
 echo "Fetching Chromium from: $ZIP_URL"
 
-rm -rf $REVISION
-mkdir $REVISION
-pushd $REVISION
+rm -rf $LATEST_STABLE
+mkdir $LATEST_STABLE
+pushd $LATEST_STABLE
 
 curl -# -o $ZIP_FILE $ZIP_URL
 unzip $ZIP_FILE
 popd
 
 rm -f ./latest
-ln -s $REVISION/chrome-linux/ ./latest
+ln -s $LATEST_STABLE/chrome-linux/ ./latest
 
 export CHROME_BIN="$CHROMIUM_DIR/latest/chrome"
 
@@ -43,17 +42,25 @@ else
     exit 1
 fi
 
-# --- Install ChromeDriver Matching Chromium Version ---
+# --- Install the Correct ChromeDriver ---
 cd $CHROMEDRIVER_DIR
 
-# Fetch ChromeDriver matching the Chromium version
-CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$REVISION/linux64/chromedriver-linux64.zip"
-CHROMEDRIVER_ZIP="chromedriver-$REVISION.zip"
+# Fetch the matching ChromeDriver version
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$LATEST_STABLE/linux64/chromedriver-linux64.zip"
+CHROMEDRIVER_ZIP="chromedriver-$LATEST_STABLE.zip"
 
 echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
 
 curl -# -o $CHROMEDRIVER_ZIP $CHROMEDRIVER_URL
-unzip $CHROMEDRIVER_ZIP
+
+# Verify the download was successful
+if [ ! -s "$CHROMEDRIVER_ZIP" ]; then
+    echo "ERROR: ChromeDriver download failed or is empty!"
+    exit 1
+fi
+
+# Extract ChromeDriver
+unzip $CHROMEDRIVER_ZIP -d $CHROMEDRIVER_DIR
 
 export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 
@@ -64,5 +71,6 @@ else
     echo "ERROR: ChromeDriver installation failed!"
     exit 1
 fi
+
 
 
