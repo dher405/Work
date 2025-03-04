@@ -78,6 +78,8 @@ def crawl_website(website_url, max_depth=2, visited=None):
         logger.error(f"Failed to crawl {website_url}", exc_info=True)
         return set()
 
+import traceback
+
 def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
