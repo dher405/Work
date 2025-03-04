@@ -135,6 +135,8 @@ def check_compliance_endpoint(website_url: str):
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
     return compliance_results
 
+import json  # Import JSON for proper parsing
+
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     """Use ChatGPT to check if the extracted policies meet TCR SMS compliance with enhanced accuracy."""
 
@@ -154,8 +156,7 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     - Terms must describe the **types of messages users will receive**.
     - Terms must include required messaging disclosures.
 
-    **Return the results in structured JSON format:**
-    ```json
+    **Return the results in structured JSON format without Markdown formatting. DO NOT wrap the response in triple backticks or any other formatting characters:**
     {{
       "privacy_policy": {{
         "assessment": "Summary of privacy policy compliance, including missing elements."
@@ -165,7 +166,6 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
       }},
       "summary_of_compliance": "Overall compliance status, requirements met, and key recommendations."
     }}
-    ```
     """
 
     response = client.chat.completions.create(
@@ -175,8 +175,14 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     )
 
     try:
+        # Extract response text and clean it
         chatgpt_response = response.choices[0].message.content.strip()
-        parsed_response = json.loads(chatgpt_response)  # Convert string to dictionary
+
+        # **Fix: Remove any Markdown-style JSON formatting**
+        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
+
+        # Convert cleaned response to JSON
+        parsed_response = json.loads(chatgpt_response)
 
         return {
             "privacy_policy": {
@@ -195,5 +201,5 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     except json.JSONDecodeError:
         return {
             "error": "Failed to parse AI response. Check OpenAI output format.",
-            "raw_response": response.choices[0].message.content.strip()
+            "raw_response": chatgpt_response  # Return raw response for debugging
         }
