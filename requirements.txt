@@ -9,4 +9,4 @@ asyncpg
 fastapi-cors
 selenium
 webdriver-manager
-
+psutil
