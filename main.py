@@ -69,11 +69,19 @@ def crawl_website(website_url, max_depth=2, visited=None):
         print(f"Failed to crawl {website_url}")
         return set()
 
+import os
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
 def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
         return ""
+
     try:
+        # Try using requests first (faster)
         response = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
@@ -85,29 +93,30 @@ def extract_text_from_url(url):
         # If extracted text is empty, use Selenium
         if not text.strip():
             print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
-            
+
+            # Configure Chrome options
             chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--headless")  
+            chrome_options.add_argument("--no-sandbox")  
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            # Use the correct Chrome binary path
+            # Correct Chrome and ChromeDriver paths
             chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
+            chromedriver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
             chrome_options.binary_location = chrome_binary
 
-            # Validate Chrome binary before launching Selenium
-            if not os.path.exists(chrome_binary):
-                print(f"ERROR: Chrome binary not found at {chrome_binary}")
-            else:
-                print(f"Using Chrome binary at: {chrome_binary}")
+            # Print debug info
+            print(f"Using Chrome binary at: {chrome_binary}")
+            print(f"Using ChromeDriver at: {chromedriver_path}")
 
+            # Start Selenium WebDriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
             driver.quit()
-            
+
             print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
-        
+
         return text
 
     except requests.RequestException:
@@ -118,23 +127,21 @@ def extract_text_from_url(url):
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        # Use the correct Chrome binary path
         chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
+        chromedriver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
         chrome_options.binary_location = chrome_binary
 
-        # Validate Chrome binary before launching Selenium
-        if not os.path.exists(chrome_binary):
-            print(f"ERROR: Chrome binary not found at {chrome_binary}")
-        else:
-            print(f"Using Chrome binary at: {chrome_binary}")
+        print(f"Using Chrome binary at: {chrome_binary}")
+        print(f"Using ChromeDriver at: {chromedriver_path}")
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.get(url)
         text = driver.find_element("xpath", "//body").text
         driver.quit()
-        
+
         print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
         return text
+
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
