@@ -1,38 +1,21 @@
 #!/usr/bin/env bash
 
-echo "Installing Chrome..."
+echo "Installing Chromium..."
 
-# Define the installation directory
-CHROME_DIR="$HOME/chrome"
-mkdir -p $CHROME_DIR
-cd $CHROME_DIR
+# Define installation directory
+CHROMIUM_DIR="$HOME/chromium"
+mkdir -p $CHROMIUM_DIR
 
-# Correct download URL for latest Google Chrome
-wget -q -O $CHROME_DIR/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# Install Chromium via apt (without sudo)
+apt-get update && apt-get install -y chromium-browser
 
-# Verify the download
-if [ ! -f "$CHROME_DIR/chrome.deb" ]; then
-    echo "ERROR: Chrome download failed!"
-    exit 1
-fi
+# Set the correct Chromium binary path
+export CHROME_BIN="/usr/bin/chromium-browser"
 
-# Extract Chrome manually (without sudo)
-dpkg-deb -x $CHROME_DIR/chrome.deb $CHROME_DIR
-
-# Verify the extraction
-if [ ! -d "$CHROME_DIR/opt/google/chrome" ]; then
-    echo "ERROR: Chrome extraction failed!"
-    exit 1
-fi
-
-# Set the correct Chrome binary path
-export CHROME_BIN="$CHROME_DIR/opt/google/chrome/google-chrome"
-
-# Validate Chrome binary exists
+# Validate Chromium installation
 if [ -f "$CHROME_BIN" ]; then
-    echo "Chrome installed successfully at $CHROME_BIN"
+    echo "Chromium installed successfully at $CHROME_BIN"
 else
-    echo "ERROR: Chrome installation failed!"
+    echo "ERROR: Chromium installation failed!"
     exit 1
 fi
-
