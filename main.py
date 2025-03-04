@@ -149,22 +149,25 @@ def check_compliance(privacy_text, terms_text, legal_text):
 def check_compliance_endpoint(website_url: str):
     website_url = ensure_https(website_url)
     crawled_links = crawl_website(website_url, max_depth=2)
-    
+
+    print(f"Crawled Links for {website_url}: {crawled_links}")  # Debugging
+
     privacy_text, terms_text, legal_text = "", "", ""
-    
+
     for link in crawled_links:
         page_text = extract_text_from_url(link)
-        print(f"Extracted text from {link}: {page_text[:500]}")
+        print(f"Extracted text from {link}: {page_text[:500]}")  # Debug first 500 characters
+        
         if "privacy" in link:
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
             terms_text += " " + page_text
         elif "legal" in link:
             legal_text += " " + page_text
-    
+
     if not privacy_text and not terms_text and not legal_text:
-        raise HTTPException(status_code=400, detail="Could not extract text from any relevant pages.")
-    
+        raise HTTPException(status_code=400, detail=f"Could not extract text from any relevant pages. Crawled Links: {crawled_links}")
+
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
 
