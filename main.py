@@ -119,7 +119,7 @@ def check_compliance_endpoint(website_url: str):
     website_url = ensure_https(website_url)
     crawled_links = crawl_website(website_url, max_depth=1)
 
-    privacy_text, terms_text, legal_text = "", "", ""
+    privacy_text, terms_text = "", ""
 
     num_threads = max(2, os.cpu_count() or 4)
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
@@ -130,8 +130,6 @@ def check_compliance_endpoint(website_url: str):
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
             terms_text += " " + page_text
-        elif "legal" in link:
-            legal_text += " " + page_text
 
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
     return compliance_results
@@ -143,41 +141,30 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     You are an expert in SMS compliance regulations. Your task is to analyze the given Privacy Policy and Terms & Conditions 
     from a website and determine if they comply with TCR SMS compliance requirements.
 
-    **Privacy Policy:**
+    **Privacy Policy Content:**
     {privacy_text[:4000]}
 
-    **Terms and Conditions:**
+    **Terms and Conditions Content:**
     {terms_text[:4000]}
 
     **TCR SMS Compliance Standards:**
-    The following requirements must be met for full compliance:
+    - Privacy Policy must explicitly state that information obtained via SMS consent will not be shared with third parties.
+    - Privacy Policy must explain how consumer information is collected, used, and shared.
+    - Terms must describe the **types of messages users will receive**.
+    - Terms must include required messaging disclosures.
 
-    ### Privacy Policy Requirements:
-    1. **Clear Statement on SMS Consent and Third-Party Sharing**:
-        - The Privacy Policy must explicitly state that information obtained via SMS consent will not be shared with third parties.
-        - **Examples of Compliant Wording**:
-            - "We do not sell or share customer information."
-            - "Personal data is not disclosed to external parties."
-            - "We will not share user data unless legally required."
-
-    2. **Explanation of Consumer Information Usage, Collection, and Sharing**:
-        - The Privacy Policy must explain how consumer information is collected, used, and shared.
-
-    ### Terms & Conditions Requirements:
-    1. **Types of Messages Users Will Receive**:
-        - The Terms must describe the **types of messages users will receive** (e.g., order updates, job notifications).
-
-    2. **Standard Messaging Disclosures**:
-        - The Terms must include the following:
-            - "Messaging frequency may vary."
-            - "Message and data rates may apply."
-            - "You can opt out at any time by texting STOP."
-            - "For assistance, text HELP or visit [Privacy Policy URL] and [Terms of Service URL]."
-
-    **Assessment Instructions**:
-    - **Check for exact and similar wording** in the provided text.
-    - If a requirement is met, **provide the exact sentence found**.
-    - If missing, **explain what is missing and how it can be fixed**.
+    **Return the results in structured JSON format:**
+    ```json
+    {{
+      "privacy_policy": {{
+        "assessment": "Summary of privacy policy compliance, including missing elements."
+      }},
+      "terms_conditions": {{
+        "assessment": "Summary of terms and conditions compliance, including missing elements."
+      }},
+      "summary_of_compliance": "Overall compliance status, requirements met, and key recommendations."
+    }}
+    ```
     """
 
     # Call OpenAI API for response
@@ -187,16 +174,24 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         max_tokens=1000
     )
 
+    # Extract structured response
+    structured_response = response.choices[0].message.content.strip()
+    
     return {
         "privacy_policy": {
             "text_length": len(privacy_text),
             "found": len(privacy_text) > 100,
-            "compliance_report": response.choices[0].message.content
+            "assessment": extract_section(structured_response, '"privacy_policy":')
         },
         "terms_conditions": {
             "text_length": len(terms_text),
             "found": len(terms_text) > 100,
-            "compliance_report": response.choices[0].message.content
-        }
+            "assessment": extract_section(structured_response, '"terms_conditions":')
+        },
+        "summary_of_compliance": extract_section(structured_response, '"summary_of_compliance":')
     }
 
+def extract_section(text, section_title):
+    """Extracts a specific section from ChatGPT's structured JSON response."""
+    match = re.search(f'{section_title} "(.*?)"', text, re.DOTALL)
+    return match.group(1).strip() if match else "No details available."
