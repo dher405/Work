@@ -91,8 +91,8 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            # Manually set the Chrome binary path
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome-bin/google-chrome")
+            # Use the correct Chrome binary path
+            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
             chrome_options.binary_location = chrome_binary
 
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
@@ -106,8 +106,6 @@ def extract_text_from_url(url):
 
     except requests.RequestException:
         print(f"Requests completely failed for {url}. Falling back to Selenium.")
-
-        import os
 
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -148,4 +146,10 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
+
+# ✅ Fix: Added check_compliance() function
+def check_compliance(privacy_text, terms_text, legal_text):
+    """Placeholder function for compliance checking. Implement logic as needed."""
+    return f"Privacy Text: {len(privacy_text)} characters\nTerms Text: {len(terms_text)} characters\nLegal Text: {len(legal_text)} characters"
+
 
