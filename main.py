@@ -114,8 +114,8 @@ def extract_text_from_url(url):
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        # Use the custom Chrome binary path
-        chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/chrome-linux/google-chrome")
+        # Use the correct Chrome binary path
+        chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
         chrome_options.binary_location = chrome_binary
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
