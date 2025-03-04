@@ -97,14 +97,15 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--no-sandbox")  
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
+            # Use Chromium instead of Chrome (if applicable)
+            chrome_binary = os.getenv("CHROME_BIN", "/usr/bin/chromium-browser")
             if not os.path.exists(chrome_binary):
-                print(f"ERROR: Chrome binary not found at {chrome_binary}. Exiting.")
+                print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
                 return ""
 
             chrome_options.binary_location = chrome_binary
 
-            print(f"Using Chrome binary at: {chrome_binary}")
+            print(f"Using Chromium binary at: {chrome_binary}")
 
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get(url)
