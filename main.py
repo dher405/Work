@@ -40,6 +40,33 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
+def crawl_website(website_url, max_depth=2, visited=None):
+    """Recursively crawl a website up to a maximum depth."""
+    if visited is None:
+        visited = set()
+    
+    if max_depth == 0 or website_url in visited:
+        return set()
+    
+    visited.add(website_url)
+    try:
+        response = requests.get(website_url, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        found_links = set()
+
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            full_url = urljoin(website_url, href)
+            parsed_url = urlparse(full_url)
+            if parsed_url.netloc == urlparse(website_url).netloc:  # Only follow internal links
+                found_links.add(full_url)
+                found_links.update(crawl_website(full_url, max_depth - 1, visited))
+        
+        return found_links
+    except requests.RequestException:
+        return set()
+
 def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
