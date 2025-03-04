@@ -5,8 +5,10 @@ import openai
 import re
 import warnings
 from fastapi import FastAPI, HTTPException
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 # Suppress XML warnings to clean up logs
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
@@ -31,6 +33,7 @@ app.add_middleware(
 
 def ensure_https(url: str) -> str:
     """Ensure the URL starts with https://, adding it if necessary."""
+    url = unquote(url)  # Decode URL
     if not url.startswith("http"):
         return "https://" + url
     return url
@@ -63,24 +66,26 @@ def crawl_website(website_url, max_depth=2, visited=None):
         return set()
 
 def extract_text_from_url(url):
-    """Extract text content from a given webpage and handle XML documents."""
+    """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
         return ""
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
-
-        # Try parsing as HTML first
-        try:
-            soup = BeautifulSoup(response.text, "html.parser")
-        except Exception:
-            # If that fails, try XML parsing
-            soup = BeautifulSoup(response.text, "xml")
-
+        soup = BeautifulSoup(response.text, "html.parser")
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
         return re.sub(r'\s+', ' ', text.strip())
     except requests.RequestException:
-        return ""
+        print(f"Requests failed for {url}. Trying Selenium...")
+        
+        # Use Selenium as fallback
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get(url)
+        text = driver.find_element("xpath", "//body").text
+        driver.quit()
+        return text
 
 def normalize_text(text):
     """Normalize text to improve matching accuracy."""
@@ -101,9 +106,8 @@ def check_compliance(privacy_text, terms_text, legal_text):
     # Check for the exact SMS consent statement
     sms_consent_found = sms_consent_exact_phrase in normalized_text
 
-    # Debugging: Print extracted privacy text (optional, useful for logging)
-    print(f"Extracted Privacy Text:\n{privacy_text}\n")
-    print(f"Normalized Combined Text:\n{normalized_text}\n")
+    print(f"Extracted Privacy Text:\n{privacy_text[:500]}\n")
+    print(f"Normalized Combined Text:\n{normalized_text[:500]}\n")
 
     # If missing, explicitly notify GPT
     missing_sms_consent = "" if sms_consent_found else (
@@ -128,12 +132,8 @@ def check_compliance(privacy_text, terms_text, legal_text):
       - Help available by texting "HELP".
       - Links to Privacy Policy and Terms of Service.
 
-    **Legal Compliance:**
-    - Check for any additional regulatory or compliance-related text.
-
     **Extracted Compliance Text (From Multiple Pages):**\n\n{all_text[:4000] if all_text else 'No relevant text found'}\n\n
     ⚠️ **Important:** If the required information appears anywhere in the extracted text, do NOT mark it as missing.
-    Return a well-formatted compliance report indicating if the required elements are present or missing, using line breaks and bullet points where necessary.
     """
 
     response = client.chat.completions.create(
@@ -154,6 +154,7 @@ def check_compliance_endpoint(website_url: str):
     
     for link in crawled_links:
         page_text = extract_text_from_url(link)
+        print(f"Extracted text from {link}: {page_text[:500]}")
         if "privacy" in link:
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
@@ -166,4 +167,5 @@ def check_compliance_endpoint(website_url: str):
     
     compliance_report = check_compliance(privacy_text, terms_text, legal_text)
     return {"compliance_report": compliance_report}
+
 
