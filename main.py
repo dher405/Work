@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 import openai
 import re
 import warnings
+import traceback
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -98,7 +99,7 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--disable-dev-shm-usage")
 
             # Use the manually installed Chromium instead of Chrome
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/latest/chrome")
+            chrome_binary = os.getenv("CHROME_BIN", "/opt/render/chromium/latest/chrome")
             if not os.path.exists(chrome_binary):
                 print(f"ERROR: Chromium binary not found at {chrome_binary}. Exiting.")
                 return ""
@@ -108,17 +109,25 @@ def extract_text_from_url(url):
             print(f"Using Chromium binary at: {chrome_binary}")
 
             # Initialize Selenium WebDriver
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            driver.get(url)
-            text = driver.find_element("xpath", "//body").text
-            driver.quit()
+            driver = None
+            try:
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+                driver.get(url)
+                text = driver.find_element("xpath", "//body").text
+            except Exception as selenium_error:
+                print("ERROR: Selenium extraction failed!")
+                print(traceback.format_exc())  # Print the full error traceback
+            finally:
+                if driver:
+                    driver.quit()
 
             print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
 
         return text
 
-    except requests.RequestException:
+    except requests.RequestException as req_err:
         print(f"Requests completely failed for {url}. Falling back to Selenium.")
+        print(traceback.format_exc())  # Print full traceback
         return ""
 
 @app.get("/check_compliance")
@@ -143,4 +152,5 @@ def check_compliance_endpoint(website_url: str):
 def check_compliance(privacy_text, terms_text, legal_text):
     """Placeholder function for compliance checking."""
     return {"privacy_text_length": len(privacy_text), "terms_text_length": len(terms_text), "legal_text_length": len(legal_text)}
+
 
