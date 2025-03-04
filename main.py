@@ -104,7 +104,7 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--disable-dev-shm-usage")
 
             # Use the manually installed Chromium and ChromeDriver
-            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/latest/chrome")
+            chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
             chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
 
             if not os.path.exists(chrome_binary):
