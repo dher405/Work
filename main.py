@@ -6,6 +6,7 @@ import re
 import warnings
 import traceback
 import json
+import psutil
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +15,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from concurrent.futures import ThreadPoolExecutor
 
-# Suppress warnings for cleaner output
+# Suppress warnings for cleaner logs
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # Load OpenAI API Key
@@ -42,8 +43,8 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=3, visited=None):
-    """Recursively crawl a website up to a limited depth to find all relevant pages."""
+def crawl_website(website_url, max_depth=2, visited=None):
+    """Recursively crawl a website up to a limited depth to find relevant pages."""
     if visited is None:
         visited = set()
 
@@ -73,59 +74,59 @@ def crawl_website(website_url, max_depth=3, visited=None):
 
 def extract_text_from_url(url):
     """Extract text from a webpage using requests first, then Selenium if needed."""
-    if not url:
-        return ""
-
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
-        text = re.sub(r'\s+', ' ', text.strip())
-
-        if len(text) < 500:  # If text is too short, try Selenium
-            return selenium_extract_text(url)
-
-        return text
-
+        # Extract only first 10,000 characters
+        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span'])[:200])
+        return text[:10000]  # Limit text size
     except requests.RequestException:
         return selenium_extract_text(url)
 
 def selenium_extract_text(url):
     """Extracts webpage text using Selenium as a fallback method."""
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
-    chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
-
-    if not os.path.exists(chrome_binary) or not os.path.exists(chromedriver_binary):
-        return "Chromium or ChromeDriver binary not found."
-
-    chrome_options.binary_location = chrome_binary
-    driver = None
     try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+        chrome_binary = os.getenv("CHROME_BIN", "/home/render/chromium/chrome-linux64/chrome")
+        chromedriver_binary = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
+
+        if not os.path.exists(chrome_binary) or not os.path.exists(chromedriver_binary):
+            return "Chromium or ChromeDriver binary not found."
+
+        chrome_options.binary_location = chrome_binary
         service = Service(executable_path=chromedriver_binary)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
         text = driver.find_element("xpath", "//body").text
-    except Exception as e:
-        text = f"Selenium extraction failed: {traceback.format_exc()}"
+    except Exception:
+        text = "Selenium extraction failed."
     finally:
-        if driver:
-            driver.quit()
+        driver.quit()
+        kill_chrome_processes()  # Kill Chrome processes to free memory
 
     return text
 
+def kill_chrome_processes():
+    """Kill ChromeDriver processes to reduce memory usage."""
+    for process in psutil.process_iter(attrs=['pid', 'name']):
+        if "chrome" in process.info['name'].lower():
+            try:
+                process.terminate()
+            except psutil.NoSuchProcess:
+                pass
+
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
-    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements using ChatGPT."""
+    """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=3)
+    crawled_links = crawl_website(website_url, max_depth=2)
 
     privacy_text, terms_text = "", ""
 
@@ -143,16 +144,16 @@ def check_compliance_endpoint(website_url: str):
     return compliance_results
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
-    """Use ChatGPT to check if the extracted policies meet TCR SMS compliance with enhanced accuracy."""
+    """Optimize ChatGPT request to reduce token usage."""
     
     compliance_prompt = f"""
     You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
 
     **Privacy Policy:**
-    {privacy_text[:4000]}
+    {privacy_text[:2000]}  # Limit token size
 
     **Terms and Conditions:**
-    {terms_text[:4000]}
+    {terms_text[:2000]}  # Limit token size
 
     **TCR SMS Compliance Standards:**
     - Privacy Policy must state SMS consent data will not be shared.
@@ -165,18 +166,13 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=1000
+        max_tokens=800  # Reduce token usage
     )
 
     try:
         chatgpt_response = response.choices[0].message.content.strip()
         chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
-        parsed_response = json.loads(chatgpt_response)
-
-        return parsed_response
-
+        return json.loads(chatgpt_response)
     except json.JSONDecodeError:
-        return {
-            "error": "Failed to parse AI response. Check OpenAI output format.",
-            "raw_response": chatgpt_response  
-        }
+        return {"error": "Failed to parse AI response."}
+
