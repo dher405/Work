@@ -2,19 +2,18 @@
 
 echo "Installing Chrome..."
 
-# Create a directory for Chrome
-mkdir -p $HOME/chrome
-cd $HOME/chrome
+# Set the Chrome version (latest stable)
+CHROME_VERSION="stable"
 
-# Download the latest Chrome binary
-wget -qO- https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb > chrome.deb
+# Define the installation directory
+CHROME_DIR="$HOME/chrome"
+mkdir -p $CHROME_DIR
 
-# Extract Chrome without sudo
-ar x chrome.deb
-tar -xvf data.tar.xz
+# Download the Chrome binary from a stable source
+wget -O $CHROME_DIR/chrome-linux.zip "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-$CHROME_VERSION/google-chrome-$CHROME_VERSION_current_amd64.deb"
 
-# Move Chrome binary to a usable directory
-mv opt/google/chrome $HOME/chrome-bin
-export CHROME_BIN="$HOME/chrome-bin/google-chrome"
+# Extract Chrome without requiring sudo
+unzip $CHROME_DIR/chrome-linux.zip -d $CHROME_DIR
+export CHROME_BIN="$CHROME_DIR/chrome-linux/google-chrome"
 
 echo "Chrome installed successfully at $CHROME_BIN"
