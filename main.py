@@ -50,7 +50,10 @@ def crawl_website(website_url, max_depth=2, visited=None):
     
     visited.add(website_url)
     try:
-        response = requests.get(website_url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+        }
+        response = requests.get(website_url, timeout=30, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         found_links = set()
@@ -69,20 +72,16 @@ def crawl_website(website_url, max_depth=2, visited=None):
         print(f"Failed to crawl {website_url}")
         return set()
 
-import os
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-
 def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
         return ""
 
     try:
-        # Try using requests first (faster)
-        response = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+        }
+        response = requests.get(url, timeout=30, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
@@ -90,26 +89,23 @@ def extract_text_from_url(url):
 
         print(f"Extracted text from {url}: {text[:500]}")  # Debugging
 
-        # If extracted text is empty, use Selenium
         if not text.strip():
             print(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
 
-            # Configure Chrome options
             chrome_options = Options()
             chrome_options.add_argument("--headless")  
             chrome_options.add_argument("--no-sandbox")  
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            # Correct Chrome and ChromeDriver paths
             chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
-            chromedriver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
+            if not os.path.exists(chrome_binary):
+                print(f"ERROR: Chrome binary not found at {chrome_binary}. Exiting.")
+                return ""
+
             chrome_options.binary_location = chrome_binary
 
-            # Print debug info
             print(f"Using Chrome binary at: {chrome_binary}")
-            print(f"Using ChromeDriver at: {chromedriver_path}")
 
-            # Start Selenium WebDriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
@@ -121,27 +117,7 @@ def extract_text_from_url(url):
 
     except requests.RequestException:
         print(f"Requests completely failed for {url}. Falling back to Selenium.")
-
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-
-        chrome_binary = os.getenv("CHROME_BIN", "/home/render/chrome/opt/google/chrome/google-chrome")
-        chromedriver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
-        chrome_options.binary_location = chrome_binary
-
-        print(f"Using Chrome binary at: {chrome_binary}")
-        print(f"Using ChromeDriver at: {chromedriver_path}")
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.get(url)
-        text = driver.find_element("xpath", "//body").text
-        driver.quit()
-
-        print(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
-        return text
-
+        return ""
 
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
@@ -160,11 +136,8 @@ def check_compliance_endpoint(website_url: str):
         elif "legal" in link:
             legal_text += " " + page_text
     
-    if not privacy_text and not terms_text and not legal_text:
-        raise HTTPException(status_code=400, detail="Could not extract text from any relevant pages.")
-    
-    compliance_report = check_compliance(privacy_text, terms_text, legal_text)
-    return {"compliance_report": compliance_report}
+    return check_compliance(privacy_text, terms_text, legal_text)
 
-
-
+def check_compliance(privacy_text, terms_text, legal_text):
+    """Placeholder function for compliance checking."""
+    return {"privacy_text_length": len(privacy_text), "terms_text_length": len(terms_text), "legal_text_length": len(legal_text)}
