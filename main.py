@@ -28,7 +28,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
+    allow_origins=["*"],  # Allow frontend to call backend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -121,8 +121,7 @@ def check_compliance_endpoint(website_url: str):
 
     privacy_text, terms_text, legal_text = "", "", ""
 
-    # **Speed Improvement: Use Multithreading to Extract Text Faster**
-    num_threads = max(2, os.cpu_count() or 4)  # Dynamically allocate thread count
+    num_threads = max(2, os.cpu_count() or 4)
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         results = list(executor.map(extract_text_from_url, crawled_links))
 
@@ -138,39 +137,54 @@ def check_compliance_endpoint(website_url: str):
     return compliance_results
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
-    """Use ChatGPT to check if the extracted policies meet TCR SMS compliance."""
-    
+    """Use ChatGPT to check if the extracted policies meet TCR SMS compliance with enhanced accuracy."""
+
     compliance_prompt = f"""
-    You are an expert in SMS compliance regulations. Given the following website policies, check if they comply with TCR SMS standards.
+    You are an expert in SMS compliance regulations. Your task is to analyze the given Privacy Policy and Terms & Conditions 
+    from a website and determine if they comply with TCR SMS compliance requirements.
 
     **Privacy Policy:**
-    {privacy_text[:3000]}
+    {privacy_text[:4000]}
 
     **Terms and Conditions:**
-    {terms_text[:3000]}
+    {terms_text[:4000]}
 
-    **TCR SMS Compliance Requirements:**
-    1. The Privacy Policy must include:
-        - A clear statement indicating that information obtained via SMS consent will not be shared with third parties.
-        - How consumer information is used, collected, and shared.
-    
-    2. The Terms of Service must include:
-        - A description of the types of messages users will receive (e.g., order updates, job notifications).
-        - Standard messaging disclosures:
-          - "Messaging frequency may vary."
-          - "Message and data rates may apply."
-          - "You can opt out at any time by texting STOP."
-          - "For assistance, text HELP or visit [Privacy Policy URL] and [Terms of Service URL]."
-    
-    Provide a structured report including:
-    - Whether each requirement is met (Yes/No).
-    - If a requirement is missing, specify what is missing.
+    **TCR SMS Compliance Standards:**
+    The following requirements must be met for full compliance:
+
+    ### Privacy Policy Requirements:
+    1. **Clear Statement on SMS Consent and Third-Party Sharing**:
+        - The Privacy Policy must explicitly state that information obtained via SMS consent will not be shared with third parties.
+        - **Examples of Compliant Wording**:
+            - "We do not sell or share customer information."
+            - "Personal data is not disclosed to external parties."
+            - "We will not share user data unless legally required."
+
+    2. **Explanation of Consumer Information Usage, Collection, and Sharing**:
+        - The Privacy Policy must explain how consumer information is collected, used, and shared.
+
+    ### Terms & Conditions Requirements:
+    1. **Types of Messages Users Will Receive**:
+        - The Terms must describe the **types of messages users will receive** (e.g., order updates, job notifications).
+
+    2. **Standard Messaging Disclosures**:
+        - The Terms must include the following:
+            - "Messaging frequency may vary."
+            - "Message and data rates may apply."
+            - "You can opt out at any time by texting STOP."
+            - "For assistance, text HELP or visit [Privacy Policy URL] and [Terms of Service URL]."
+
+    **Assessment Instructions**:
+    - **Check for exact and similar wording** in the provided text.
+    - If a requirement is met, **provide the exact sentence found**.
+    - If missing, **explain what is missing and how it can be fixed**.
     """
 
+    # Call OpenAI API for response
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=800
+        max_tokens=1000
     )
 
     return {
@@ -185,3 +199,4 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
             "compliance_report": response.choices[0].message.content
         }
     }
+
