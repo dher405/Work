@@ -31,7 +31,7 @@ FRONTEND_URL = "https://frontend-kbjv.onrender.com"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL],  # ✅ Only allow frontend domain
+    allow_origins=[FRONTEND_URL],  
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -44,7 +44,7 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=3, visited=None):
+def crawl_website(website_url, max_depth=4, visited=None):
     """Recursively crawl a website up to a set depth, prioritizing policy-related pages."""
     if visited is None:
         visited = set()
@@ -64,7 +64,7 @@ def crawl_website(website_url, max_depth=3, visited=None):
             href = a_tag['href']
             full_url = urljoin(website_url, href)
             parsed_url = urlparse(full_url)
-            
+
             # Prioritize legal pages (e.g., privacy, terms, policies, legal)
             if any(keyword in full_url.lower() for keyword in ["privacy", "terms", "policy", "legal", "conditions"]):
                 found_links.add(full_url)
@@ -107,13 +107,13 @@ def selenium_extract_text(url):
         service = Service(executable_path=chromedriver_binary)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
-        time.sleep(2)  # Allow JavaScript to load content
+        time.sleep(4)  # Increased sleep time to ensure JavaScript content loads
         text = driver.find_element("xpath", "//body").text
     except Exception:
         text = "Selenium extraction failed."
     finally:
         driver.quit()
-        kill_chrome_processes()  # Kill Chrome processes to free memory
+        kill_chrome_processes()  
 
     return text
 
@@ -130,7 +130,7 @@ def kill_chrome_processes():
 def check_compliance_endpoint(website_url: str):
     """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=3)
+    crawled_links = crawl_website(website_url, max_depth=4)
 
     privacy_text, terms_text = "", ""
 
@@ -153,8 +153,8 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     compliance_prompt = f"""
     You are an expert in TCR SMS compliance. Analyze the Privacy Policy and Terms & Conditions for compliance.
 
-    - Privacy Policy: {privacy_text[:2000]}
-    - Terms & Conditions: {terms_text[:2000]}
+    - Privacy Policy: {privacy_text[:3000]}
+    - Terms & Conditions: {terms_text[:3000]}
 
     **Return JSON ONLY in the following format:**
     {{
@@ -182,7 +182,7 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=800
+        max_tokens=1000
     )
 
     try:
@@ -191,3 +191,4 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         return json.loads(chatgpt_response)
     except json.JSONDecodeError:
         return {"error": "Failed to parse AI response. Response format invalid."}
+
