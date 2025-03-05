@@ -31,7 +31,7 @@ FRONTEND_URL = "https://frontend-kbjv.onrender.com"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL],  # ✅ Only allow the frontend domain
+    allow_origins=[FRONTEND_URL],  # ✅ Only allow frontend domain
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -190,4 +190,17 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
         return json.loads(chatgpt_response)
     except json.JSONDecodeError:
-        return {"error": "Failed to parse AI response."}
+        return {
+            "compliance_analysis": {
+                "privacy_policy": {
+                    "sms_consent_data": "Error processing privacy policy.",
+                    "data_collection_usage": "Error extracting data collection details."
+                },
+                "terms_conditions": {
+                    "message_types": "Error processing terms & conditions.",
+                    "mandatory_disclosures": "Error extracting mandatory disclosures."
+                },
+                "compliance_status": "Failed to evaluate compliance due to response parsing error."
+            }
+        }
+
