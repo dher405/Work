@@ -61,7 +61,7 @@ def check_compliance(text):
             {"role": "system", "content": "You are an AI that checks website compliance for SMS regulations."},
             {"role": "user", "content": f"Analyze the following text for SMS compliance:\n{text}"}
         ],
-        response_format={"type": "json_object"}  # ✅ Correct format
+         "response_format": {"type": "json_object"}  # ✅ Correct format
     }
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
