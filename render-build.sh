@@ -10,13 +10,13 @@ CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
 CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 
 # Function to fetch the latest stable Chrome for Testing version
-get_chromium_url() {
-    curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json" | \
-    jq -r '.milestones["122"].downloads.chromium[] | select(.platform=="linux64") | .url'
+get_latest_chromium_url() {
+    curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions.json" | \
+    jq -r '.channels.Stable.downloads.chromium[] | select(.platform=="linux64") | .url'
 }
 
 # Fetch the latest Chrome download URL
-CHROMIUM_ZIP_URL=$(get_chromium_url)
+CHROMIUM_ZIP_URL=$(get_latest_chromium_url)
 
 if [[ -z "$CHROMIUM_ZIP_URL" ]]; then
     echo "❌ Failed to retrieve Chromium download URL!"
@@ -41,8 +41,12 @@ echo "✅ Chrome installed at: $CHROME_BIN"
 "$CHROME_BIN" --version
 
 # Fetch the latest ChromeDriver version that matches Chromium
-LATEST_CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json" | \
-jq -r '.milestones["122"].downloads.chromedriver[] | select(.platform=="linux64") | .url')
+get_latest_chromedriver_url() {
+    curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions.json" | \
+    jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url'
+}
+
+LATEST_CHROMEDRIVER_URL=$(get_latest_chromedriver_url)
 
 if [[ -z "$LATEST_CHROMEDRIVER_URL" ]]; then
     echo "❌ Failed to retrieve ChromeDriver download URL!"
@@ -73,4 +77,5 @@ export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
 # Start the application
 echo "🚀 Starting FastAPI server..."
 uvicorn main:app --host 0.0.0.0 --port 10000
+
 
