@@ -1,53 +1,82 @@
-#!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status.
+#!/usr/bin/env bash
 
-echo "🚀 Fetching the latest stable Chromium version..."
-LATEST_CHROMIUM_BUILD=$(curl -s https://download-chromium.appspot.com/rev/Linux_x64?type=snapshots | jq -r '.content')
+echo "Installing Chromium and matching ChromeDriver..."
 
-if [[ -z "$LATEST_CHROMIUM_BUILD" ]]; then
-    echo "❌ Failed to fetch the latest Chromium version!"
+# Define installation directories
+CHROMIUM_DIR="$HOME/chromium"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
+
+mkdir -p $CHROMIUM_DIR
+mkdir -p $CHROMEDRIVER_DIR
+cd $CHROMIUM_DIR
+
+# Fetch the latest stable Chrome version
+LATEST_STABLE=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
+
+# If API request failed, retry with fallback URL
+if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
+    echo "WARNING: Failed to retrieve latest Chrome version from primary source. Trying fallback..."
+    LATEST_STABLE=$(curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version')
+fi
+
+# Final validation
+if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
+    echo "ERROR: Failed to retrieve the latest Chromium version!"
     exit 1
 fi
 
-CHROMIUM_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_BUILD/chrome-linux.zip"
-CHROMEDRIVER_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_BUILD/chromedriver_linux64.zip"
+echo "Latest stable Chrome version: $LATEST_STABLE"
 
-echo "📥 Downloading Chromium build $LATEST_CHROMIUM_BUILD..."
-wget -q --show-progress "$CHROMIUM_DOWNLOAD_URL" -O chrome-linux.zip || { echo "❌ Failed to download Chromium."; exit 1; }
+# Fetch Chromium download URL
+CHROMIUM_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chrome[] | select(.platform == \"linux64\") | .url")
 
-echo "📥 Downloading ChromeDriver for build $LATEST_CHROMIUM_BUILD..."
-wget -q --show-progress "$CHROMEDRIVER_DOWNLOAD_URL" -O chromedriver-linux64.zip || { echo "❌ Failed to download ChromeDriver."; exit 1; }
-
-echo "📦 Extracting Chromium and ChromeDriver..."
-mkdir -p /opt/render/chromium /opt/render/chromedriver
-unzip -q chrome-linux.zip -d /opt/render/chromium || { echo "❌ Failed to extract Chromium."; exit 1; }
-unzip -q chromedriver-linux64.zip -d /opt/render/chromedriver || { echo "❌ Failed to extract ChromeDriver."; exit 1; }
-
-echo "🔍 Verifying installation..."
-ls -lh /opt/render/chromium/
-ls -lh /opt/render/chromedriver/
-
-# **Fix: Locate Chrome and ChromeDriver binaries**
-CHROME_BIN=$(find /opt/render/chromium/ -type f -name "chrome" | head -n 1)
-CHROMEDRIVER_BIN=$(find /opt/render/chromedriver/ -type f -name "chromedriver" | head -n 1)
-
-if [[ ! -f "$CHROME_BIN" ]]; then
-    echo "❌ Chrome binary not found!"
-    ls -lh /opt/render/chromium/
+# Ensure URL is valid
+if [[ -z "$CHROMIUM_URL" || "$CHROMIUM_URL" == "null" ]]; then
+    echo "ERROR: Failed to retrieve Chromium download URL!"
     exit 1
 fi
 
-if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
-    echo "❌ ChromeDriver binary not found!"
-    ls -lh /opt/render/chromedriver/
+echo "Downloading Chromium from: $CHROMIUM_URL"
+curl -# -o chromium.zip "$CHROMIUM_URL"
+unzip chromium.zip
+export CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
+
+# Validate Chromium installation
+if [ -f "$CHROME_BIN" ]; then
+    echo "Chromium installed successfully at $CHROME_BIN"
+else
+    echo "ERROR: Chromium installation failed!"
     exit 1
 fi
 
-echo "✅ Chromium and ChromeDriver installed successfully."
-echo "🌍 Chrome binary set to: $CHROME_BIN"
-echo "🌍 ChromeDriver binary set to: $CHROMEDRIVER_BIN"
+# --- Install the Correct ChromeDriver ---
+cd $CHROMEDRIVER_DIR
 
-# **Set environment variables for system**
-export CHROME_BIN="$CHROME_BIN"
-export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
+# Fetch ChromeDriver download URL
+CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chromedriver[] | select(.platform == \"linux64\") | .url")
 
+# Ensure URL is valid
+if [[ -z "$CHROMEDRIVER_URL" || "$CHROMEDRIVER_URL" == "null" ]]; then
+    echo "ERROR: Failed to retrieve ChromeDriver download URL!"
+    exit 1
+fi
+
+echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+curl -# -o chromedriver.zip "$CHROMEDRIVER_URL"
+
+# Verify the download was successful
+if [ ! -s "chromedriver.zip" ]; then
+    echo "ERROR: ChromeDriver download failed or is empty!"
+    exit 1
+fi
+
+unzip chromedriver.zip -d $CHROMEDRIVER_DIR
+export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
+
+# Validate ChromeDriver installation
+if [ -f "$CHROMEDRIVER_BIN" ]; then
+    echo "ChromeDriver installed successfully at $CHROMEDRIVER_BIN"
+else
+    echo "ERROR: ChromeDriver installation failed!"
+    exit 1
+fi
