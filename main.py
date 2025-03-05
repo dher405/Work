@@ -54,21 +54,32 @@ def extract_text_from_url(url):
 # Function to check compliance using OpenAI API
 def check_compliance(text):
     openai_api_key = os.getenv("OPENAI_API_KEY")
-    headers = {"Authorization": f"Bearer {openai_api_key}", "Content-Type": "application/json"}
+    if not openai_api_key:
+        logger.error("Missing OpenAI API key.")
+        return {"error": "Missing API key."}
+
+    headers = {
+        "Authorization": f"Bearer {openai_api_key}",
+        "Content-Type": "application/json"
+    }
+
     payload = {
         "model": "gpt-4-turbo",
         "messages": [
             {"role": "system", "content": "You are an AI that checks website compliance for SMS regulations."},
             {"role": "user", "content": f"Analyze the following text for SMS compliance:\n{text}"}
         ],
-         "response_format": {"type": "json_object"}  # ✅ Correct format
+        "response_format": {"type": "json_object"}  # ✅ Correct format
     }
 
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    if response.status_code != 200:
-        logger.error(f"OpenAI API Error: {response.text}")
+    try:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        response.raise_for_status()  # Raise an error for HTTP codes 4xx/5xx
+        logger.info(f"OpenAI API Response: {response.json()}")  # Debugging log
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"OpenAI API Error: {e}")
         return {"error": "AI processing failed."}
-    return response.json()
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
