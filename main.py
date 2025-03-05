@@ -63,9 +63,7 @@ def crawl_website(website_url, max_depth=4, visited=None):
         for a_tag in soup.find_all('a', href=True):
             href = a_tag['href']
             full_url = urljoin(website_url, href)
-            parsed_url = urlparse(full_url)
 
-            # Prioritize legal pages (e.g., privacy, terms, policies, legal)
             if any(keyword in full_url.lower() for keyword in ["privacy", "terms", "policy", "legal", "conditions"]):
                 found_links.add(full_url)
                 if max_depth > 1:
@@ -83,9 +81,8 @@ def extract_text_from_url(url):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Extract key content from multiple elements
         text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'meta'])[:300])
-        return text[:10000]  # Limit text size
+        return text[:10000]  
     except requests.RequestException:
         return selenium_extract_text(url)
 
@@ -107,7 +104,7 @@ def selenium_extract_text(url):
         service = Service(executable_path=chromedriver_binary)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
-        time.sleep(4)  # Increased sleep time to ensure JavaScript content loads
+        time.sleep(4)  
         text = driver.find_element("xpath", "//body").text
     except Exception:
         text = "Selenium extraction failed."
@@ -153,8 +150,8 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     compliance_prompt = f"""
     You are an expert in TCR SMS compliance. Analyze the Privacy Policy and Terms & Conditions for compliance.
 
-    - Privacy Policy: {privacy_text[:3000]}
-    - Terms & Conditions: {terms_text[:3000]}
+    - Privacy Policy: {privacy_text[:4000]}
+    - Terms & Conditions: {terms_text[:4000]}
 
     **Return JSON ONLY in the following format:**
     {{
@@ -182,7 +179,7 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=1000
+        max_tokens=1200  
     )
 
     try:
@@ -191,4 +188,3 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         return json.loads(chatgpt_response)
     except json.JSONDecodeError:
         return {"error": "Failed to parse AI response. Response format invalid."}
-
