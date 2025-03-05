@@ -50,3 +50,4 @@ echo "🌍 ChromeDriver binary set to: $CHROMEDRIVER_BIN"
 # **Set environment variables for system**
 export CHROME_BIN="$CHROME_BIN"
 export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
+
