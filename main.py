@@ -1,17 +1,14 @@
 import os
-import json
 import requests
 from bs4 import BeautifulSoup
 import openai
 import re
-import warnings
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -25,7 +22,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,10 +39,10 @@ def crawl_website(website_url, max_depth=2, visited=None):
     """Recursively crawl a website up to a maximum depth."""
     if visited is None:
         visited = set()
-
+    
     if max_depth == 0 or website_url in visited:
         return set()
-
+    
     visited.add(website_url)
     try:
         response = requests.get(website_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
@@ -60,8 +57,8 @@ def crawl_website(website_url, max_depth=2, visited=None):
             if parsed_url.netloc == urlparse(website_url).netloc:  # Only follow internal links
                 found_links.add(full_url)
                 found_links.update(crawl_website(full_url, max_depth - 1, visited))
-
-        print(f"🔍 Crawled {website_url}, Found Links: {found_links}")  # Debugging
+        
+        print(f"✅ Crawled {website_url}, Found Links: {found_links}")  # Debugging
         return found_links
     except requests.RequestException:
         print(f"❌ Failed to crawl {website_url}")
@@ -71,7 +68,6 @@ def extract_text_from_url(url):
     """Extract text content from a given webpage. Uses Selenium if needed."""
     if not url:
         return ""
-
     try:
         response = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
@@ -89,8 +85,9 @@ def extract_text_from_url(url):
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.binary_location = "/home/render/chromium/opt/google/chrome/google-chrome"  # ✅ FIXED: Correct Chrome Path
 
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            driver = webdriver.Chrome(service=Service("/home/render/chromedriver/chromedriver-linux64/chromedriver"), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
             driver.quit()
@@ -106,8 +103,9 @@ def extract_text_from_url(url):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.binary_location = "/home/render/chromium/opt/google/chrome/google-chrome"  # ✅ FIXED: Correct Chrome Path
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver = webdriver.Chrome(service=Service("/home/render/chromedriver/chromedriver-linux64/chromedriver"), options=chrome_options)
         driver.get(url)
         text = driver.find_element("xpath", "//body").text
         driver.quit()
@@ -115,80 +113,47 @@ def extract_text_from_url(url):
         print(f"✅ Extracted via Selenium for {url}: {text[:500]}...")  # Debugging
         return text
 
-def analyze_compliance(privacy_text, terms_text):
-    """Analyzes the extracted text for TCR SMS compliance using ChatGPT."""
-    client = openai.OpenAI(api_key=OPENAI_API_KEY)
-
-    prompt = f"""
-    Review the following Privacy Policy and Terms & Conditions for compliance with TCR SMS guidelines.
-
-    **Privacy Policy:**
-    {privacy_text[:5000]}
-
-    **Terms & Conditions:**
-    {terms_text[:5000]}
-
-    Ensure the following:
-    - **Privacy Policy** must state SMS consent data is not shared with third parties.
-    - **Privacy Policy** must explain how consumer data is collected, used, and shared.
-    - **Terms & Conditions** must specify the types of messages sent (e.g., transactional, marketing).
-    - **Terms & Conditions** must include mandatory SMS disclosures: opt-out instructions, frequency, and costs.
-
-    Provide a **valid JSON** response with these exact keys:
-    ```json
-    {{
-        "compliance_analysis": {{
-            "privacy_policy": {{
-                "sms_consent": "found" or "not_found",
-                "data_usage": "explicit" or "not_explicit"
-            }},
-            "terms_conditions": {{
-                "message_types": "found" or "not_found",
-                "mandatory_disclosures": "found" or "not_found"
-            }},
-            "overall_compliance": "Compliant" or "Non-compliant"
-        }}
-    }}
-    ```
-    """
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "Analyze the following for SMS compliance."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format="json_object"  # ✅ FIXED: Correct format
-        )
-
-        ai_response = response.choices[0].message.content
-        print(f"🔍 Raw AI Response: {ai_response}")  # Debugging
-
-        return json.loads(ai_response)
-    except Exception as e:
-        print(f"❌ AI Processing Error: {str(e)}")
-        return {"error": "Failed to process compliance analysis."}
-
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
     website_url = ensure_https(website_url)
     crawled_links = crawl_website(website_url, max_depth=2)
-
+    
     privacy_text, terms_text = "", ""
 
     for link in crawled_links:
         page_text = extract_text_from_url(link)
-        print(f"📌 Extracted text from {link}: {page_text[:500]}")  # Debugging
-
+        print(f"✅ Extracted text from {link}: {page_text[:500]}")
         if "privacy" in link:
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
             terms_text += " " + page_text
-
+    
     if not privacy_text and not terms_text:
         raise HTTPException(status_code=400, detail="Could not extract text from any relevant pages.")
+    
+    prompt = f"""
+    Analyze the following website texts for compliance with TCR SMS standards:
+    **Privacy Policy:** {privacy_text[:2000]}
+    **Terms & Conditions:** {terms_text[:2000]}
 
-    compliance_report = analyze_compliance(privacy_text, terms_text)
-    return compliance_report
+    The compliance report should indicate whether:
+    - The privacy policy explicitly states that SMS consent data is not shared with third parties.
+    - The privacy policy clearly explains how consumer information is used, collected, and shared.
+    - The terms & conditions outline what types of messages the recipient can expect.
+    - The terms & conditions include mandatory SMS disclosures.
+    - Recommendations for improvement if any of the above are missing.
 
+    Return the analysis in a structured JSON format.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        response_format="json"
+    )
+
+    try:
+        compliance_report = response["choices"][0]["message"]["content"]
+        return {"compliance_report": compliance_report}
+    except (KeyError, IndexError):
+        raise HTTPException(status_code=500, detail="Error parsing AI response.")
