@@ -10,15 +10,16 @@ CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
 CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 
 # Fetch the latest stable Chrome version with fallback
+
 get_latest_stable_version() {
     local version=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
     if [[ -z "$version" || "$version" == "null" ]]; then
         echo "WARNING: Failed to retrieve latest Chrome version from primary source. Trying fallback..."
-        curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version'
+        # Extract version using awk
+        curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version' | awk 'END{print}'
     else
         echo "$version"
     fi
-}
 
 LATEST_STABLE=$(get_latest_stable_version)
 
