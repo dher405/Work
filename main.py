@@ -75,21 +75,30 @@ def crawl_website(website_url, max_depth=4, visited=None):
         return set()
 
 def extract_text_from_url(url):
-    """Extract text from a webpage using requests first, then Selenium if needed."""
+    """Extracts text content, prioritizing main sections while filtering navigation and footers."""
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'meta'])[:300])
-        print(f"Extracted from {url}: {text[:500]}")  # 🔍 Debugging: Show extracted text sample
-        return text[:10000]  
+        # ✅ Extract from structured content areas first
+        main_content = soup.find(['main', 'article', 'section', 'div'], recursive=True)
+        if main_content:
+            text = " ".join(p.get_text() for p in main_content.find_all(['p', 'li', 'span', 'div']) if len(p.get_text()) > 20)
+        else:
+            text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div']) if len(p.get_text()) > 20)
+
+        # ✅ Remove navigation, sidebar, and footer elements
+        filtered_text = "\n".join([line for line in text.split("\n") if "Home Care Services" not in line and "888-722-2072" not in line])
+
+        print(f"Extracted from {url} (cleaned): {filtered_text[:500]}")  # 🔍 Debugging: Show cleaned text sample
+        return filtered_text[:10000] if filtered_text else selenium_extract_text(url)  
     except requests.RequestException:
         return selenium_extract_text(url)
 
 def selenium_extract_text(url):
-    """Extracts webpage text using Selenium as a fallback method."""
+    """Extracts full webpage text using Selenium if needed."""
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -107,14 +116,15 @@ def selenium_extract_text(url):
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
         time.sleep(4)  
+
         text = driver.find_element("xpath", "//body").text
-    except Exception:
-        text = "Selenium extraction failed."
-    finally:
         driver.quit()
         kill_chrome_processes()  
 
-    return text
+        print(f"Extracted from Selenium {url}: {text[:500]}")  # 🔍 Debugging: Show Selenium text sample
+        return text  
+    except Exception:
+        return "Selenium extraction failed."
 
 def kill_chrome_processes():
     """Kill ChromeDriver processes to reduce memory usage."""
@@ -153,29 +163,18 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     """Ensure AI properly verifies all extracted data before marking compliance items as missing."""
 
     compliance_prompt = f"""
-    You are a compliance auditor. Analyze the extracted Privacy Policy and Terms & Conditions.
+    You are an expert in TCR SMS compliance. Analyze the Privacy Policy and Terms & Conditions.
 
-    **If wording is different but means the same thing, mark it as 'found'.**
-    **If unsure, provide the closest matching text and label it 'partially_found'.**
-    
     - Privacy Policy: {privacy_text[:4000]}
     - Terms & Conditions: {terms_text[:4000]}
 
-    **Return JSON ONLY in this format:**
+    **STRICT REQUIREMENT: ONLY mark an item as 'not_found' if you are CERTAIN it does not exist.**
+    
+    **Return JSON ONLY:**
     {{
         "compliance_analysis": {{
-            "privacy_policy": {{
-                "consent": "found/not_found/partially_found",
-                "data_collection": "explicit/not_explicit/partially_explicit",
-                "opt_out": "found/not_found/partially_found",
-                "contact_information": "present/not_present",
-                "third_party_sharing": "explicit/not_explicit/partially_explicit"
-            }},
-            "terms_conditions": {{
-                "SMS_usage": "found/not_found/partially_found",
-                "clear_terms": "found/not_found/partially_found",
-                "consent": "explicit/not_explicit/partially_explicit"
-            }},
+            "privacy_policy": {{ "sms_consent": "found/not_found", "data_usage": "explicit/not_explicit" }},
+            "terms_conditions": {{ "message_types": "found/not_found", "mandatory_disclosures": "found/not_found" }},
             "overall_compliance": "Compliant/Non-compliant"
         }}
     }}
@@ -187,6 +186,6 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         max_tokens=1200  
     )
 
-    print(f"Raw AI Response: {response}")  # 🔍 Debugging: Show AI's raw response
-
+    print(f"Raw AI Response: {response}")  # 🔍 Debugging
     return response
+
