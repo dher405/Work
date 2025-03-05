@@ -9,12 +9,20 @@ CHROMEDRIVER_DIR="$HOME/chromedriver"
 CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
 CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 
-echo "🚀 Fetching the latest stable Chromium version..."
-LATEST_CHROMIUM_VERSION=$(curl -s "https://download-chromium.appspot.com/LAST_CHANGE")
-CHROMIUM_ZIP_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F${LATEST_CHROMIUM_VERSION}%2Fchrome-linux.zip?alt=media"
+# Function to fetch the latest Chromium version
+get_chromium_version() {
+    curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json" | jq -r '.milestones["122"].downloads.chromium[] | select(.platform=="linux64") | .url'
+}
 
-echo "✅ Latest Chromium Version: $LATEST_CHROMIUM_VERSION"
-echo "🔽 Downloading Chromium from: $CHROMIUM_ZIP_URL"
+# Fetch the latest Chromium build
+CHROMIUM_ZIP_URL=$(get_chromium_version)
+
+if [[ -z "$CHROMIUM_ZIP_URL" ]]; then
+    echo "❌ Failed to retrieve Chromium download URL!"
+    exit 1
+fi
+
+echo "✅ Downloading Chromium from: $CHROMIUM_ZIP_URL"
 mkdir -p "$CHROMIUM_DIR"
 wget -O "$CHROMIUM_DIR/chrome-linux.zip" "$CHROMIUM_ZIP_URL"
 
@@ -31,13 +39,17 @@ fi
 echo "✅ Chromium installed at: $CHROME_BIN"
 "$CHROME_BIN" --version
 
-# Fetch ChromeDriver version matching Chromium
-echo "🚀 Fetching compatible ChromeDriver version..."
-LATEST_DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json" | jq -r '.milestones["'${LATEST_CHROMIUM_VERSION:0:3}'"].downloads.chromedriver[] | select(.platform=="linux64") | .url')
+# Fetch the latest ChromeDriver version
+CHROMEDRIVER_ZIP_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json" | jq -r '.milestones["122"].downloads.chromedriver[] | select(.platform=="linux64") | .url')
 
-echo "✅ ChromeDriver URL: $LATEST_DRIVER_VERSION"
+if [[ -z "$CHROMEDRIVER_ZIP_URL" ]]; then
+    echo "❌ Failed to retrieve ChromeDriver download URL!"
+    exit 1
+fi
+
+echo "✅ Downloading ChromeDriver from: $CHROMEDRIVER_ZIP_URL"
 mkdir -p "$CHROMEDRIVER_DIR"
-wget -O "$CHROMEDRIVER_DIR/chromedriver-linux64.zip" "$LATEST_DRIVER_VERSION"
+wget -O "$CHROMEDRIVER_DIR/chromedriver-linux64.zip" "$CHROMEDRIVER_ZIP_URL"
 
 echo "📂 Extracting ChromeDriver..."
 unzip -o "$CHROMEDRIVER_DIR/chromedriver-linux64.zip" -d "$CHROMEDRIVER_DIR"
@@ -59,3 +71,4 @@ export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
 # Start the application
 echo "🚀 Starting FastAPI server..."
 uvicorn main:app --host 0.0.0.0 --port 10000
+
