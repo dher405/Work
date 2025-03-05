@@ -148,30 +148,35 @@ def check_compliance_endpoint(website_url: str):
     return compliance_results
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
-    """Optimized ChatGPT request with improved error handling and logging."""
-
-    if not privacy_text.strip() and not terms_text.strip():
-        return {
-            "compliance_analysis": {
-                "privacy_policy": {
-                    "sms_consent_data": "No privacy policy text available.",
-                    "data_collection_usage": "No data collection details found."
-                },
-                "terms_conditions": {
-                    "message_types": "No terms and conditions text available.",
-                    "mandatory_disclosures": "No disclosures found."
-                },
-                "compliance_status": "No compliance data extracted due to missing content."
-            }
-        }
+    """Optimized ChatGPT request enforcing structured JSON format."""
 
     compliance_prompt = f"""
-    You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
+    You are an expert in TCR SMS compliance. Analyze the Privacy Policy and Terms & Conditions for compliance.
 
     - Privacy Policy: {privacy_text[:2000]}
     - Terms & Conditions: {terms_text[:2000]}
 
-    **Return a JSON response ONLY. No explanations, no additional text.**
+    **Return JSON ONLY in the following format:**
+    {{
+        "compliance_analysis": {{
+            "privacy_policy": {{
+                "consent": "found/not_found",
+                "data_collection": "explicit/not_explicit",
+                "opt_out": "found/not_found",
+                "contact_information": "present/not_present",
+                "third_party_sharing": "explicit/not_explicit"
+            }},
+            "terms_conditions": {{
+                "SMS_usage": "found/not_found",
+                "clear_terms": "found/not_found",
+                "consent": "explicit/not_explicit",
+                "user_rights": "explicit/not_explicit",
+                "contact_information": "present/not_present"
+            }},
+            "overall_compliance": "Compliant/Non-compliant",
+            "recommendations": ["List specific recommendations."]
+        }}
+    }}
     """
 
     response = client.chat.completions.create(
@@ -182,18 +187,7 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
 
     try:
         chatgpt_response = response.choices[0].message.content.strip()
-
-        # **Log AI raw response for debugging**
-        print("RAW AI RESPONSE:", chatgpt_response)
-
-        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip("```")
+        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
         return json.loads(chatgpt_response)
-
     except json.JSONDecodeError:
-        return {
-            "compliance_analysis": {
-                "privacy_policy": {"sms_consent_data": "Error processing privacy policy."},
-                "terms_conditions": {"message_types": "Error processing terms & conditions."},
-                "compliance_status": "Failed to evaluate compliance due to response parsing error."
-            }
-        }
+        return {"error": "Failed to parse AI response. Response format invalid."}
