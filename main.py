@@ -14,7 +14,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,12 +23,11 @@ app = FastAPI()
 # ✅ Enable CORS to allow requests from your front-end domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://frontend-kbjv.onrender.com"],  
+    allow_origins=["https://frontend-kbjv.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Function to get Chrome binary
 def get_chrome_binary():
@@ -38,14 +36,12 @@ def get_chrome_binary():
         raise FileNotFoundError("Chrome binary not found! Check installation.")
     return chrome_binary
 
-
 # Function to get ChromeDriver binary
 def get_chromedriver_binary():
     chromedriver_binary = os.environ.get("CHROMEDRIVER_BIN", "/opt/render/chromedriver/chromedriver-linux64/chromedriver")
     if not os.path.exists(chromedriver_binary):
         raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
     return chromedriver_binary
-
 
 # Function to extract text from multiple pages
 def extract_text_from_website(base_url):
@@ -67,6 +63,7 @@ def extract_text_from_website(base_url):
 
     try:
         for page in pages_to_check:
+            logger.info(f"Scraping page: {page}")
             driver.get(page)
             time.sleep(3)  # Allow time for page to load
             soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -81,7 +78,6 @@ def extract_text_from_website(base_url):
         return ""
     finally:
         driver.quit()
-
 
 # Function to check compliance using OpenAI API
 def check_compliance(text):
@@ -100,7 +96,7 @@ def check_compliance(text):
         "messages": [
             {
                 "role": "system",
-                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format."
+                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
             },
             {
                 "role": "user",
@@ -116,22 +112,25 @@ def check_compliance(text):
                         - Message and data rates may apply.
                         - Opt-out instructions ('Reply STOP').
                         - Assistance instructions ('Reply HELP' or contact support URL').
-                Ensure your response strictly follows this JSON format:
+
+                Ensure your response follows this JSON format:
 
                 {{
-                    "privacy_policy": {{
-                        "sms_consent_statement": "found/not_found",
-                        "data_usage_explanation": "found/not_found"
-                    }},
-                    "terms_conditions": {{
-                        "message_types_specified": "found/not_found",
-                        "mandatory_disclosures": "found/not_found"
-                    }},
-                    "compliance_status": "compliant/partially_compliant/non_compliant",
-                    "recommendations": [
-                        "Recommendation 1",
-                        "Recommendation 2"
-                    ]
+                    "compliance_analysis": {{
+                        "privacy_policy": {{
+                            "sms_consent_statement": "found/not_found",
+                            "data_usage_explanation": "found/not_found"
+                        }},
+                        "terms_conditions": {{
+                            "message_types_specified": "found/not_found",
+                            "mandatory_disclosures": "found/not_found"
+                        }},
+                        "overall_compliance": "compliant/partially_compliant/non_compliant",
+                        "recommendations": [
+                            "Recommendation 1",
+                            "Recommendation 2"
+                        ]
+                    }}
                 }}
 
                 Here is the extracted website text:
@@ -162,7 +161,6 @@ def check_compliance(text):
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
 
-
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
@@ -174,7 +172,6 @@ def check_website_compliance(website_url: str = Query(..., title="Website URL", 
     compliance_result = check_compliance(extracted_text)
     return compliance_result
 
-
 @app.get("/debug_chrome")
 def debug_chrome():
     try:
@@ -183,4 +180,3 @@ def debug_chrome():
         return {"chrome_version": chrome_version, "driver_version": driver_version}
     except FileNotFoundError as e:
         return {"error": str(e)}
-
