@@ -12,7 +12,7 @@ CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 # Function to fetch the latest stable Chrome for Testing version
 get_latest_chromium_url() {
     curl -s "https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions" | \
-    jq -r '.versions[0].downloads.chromium| select(.platform | contains("linux64")) | .url'
+    jq -r '.versions[0].downloads.chromium| select(.platform != null and (.platform | contains("linux64"))) | .url'
 }
 
 # Fetch the latest Chrome download URL
@@ -43,7 +43,7 @@ echo "✅ Chrome installed at: $CHROME_BIN"
 # Fetch the latest ChromeDriver version that matches Chromium
 get_latest_chromedriver_url() {
     curl -s "https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions" | \
-    jq -r '.versions[0].downloads.chromedriver| select(.platform | contains("linux64")) | .url'
+    jq -r '.versions[0].downloads.chromedriver| select(.platform != null and (.platform | contains("linux64"))) | .url'
 }
 
 LATEST_CHROMEDRIVER_URL=$(get_latest_chromedriver_url)
