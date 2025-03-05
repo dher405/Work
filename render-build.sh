@@ -2,20 +2,20 @@
 set -e
 
 echo "Fetching the latest stable Chromium version..."
-LATEST_CHROMIUM_URL=$(curl -s https://download-chromium.appspot.com/rev/Linux_x64?type=snapshots)
+LATEST_CHROMIUM_VERSION=$(curl -s https://download-chromium.appspot.com/rev/Linux_x64?type=snapshots | jq -r '.content')
 
-if [[ -z "$LATEST_CHROMIUM_URL" ]]; then
+if [[ -z "$LATEST_CHROMIUM_VERSION" ]]; then
     echo "❌ Failed to fetch the latest Chromium version!"
     exit 1
 fi
 
-CHROMIUM_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_URL/chrome-linux.zip"
-CHROMEDRIVER_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_URL/chromedriver_linux64.zip"
+CHROMIUM_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_VERSION/chrome-linux.zip"
+CHROMEDRIVER_DOWNLOAD_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/$LATEST_CHROMIUM_VERSION/chromedriver_linux64.zip"
 
-echo "Downloading Chromium build $LATEST_CHROMIUM_URL..."
+echo "Downloading Chromium build $LATEST_CHROMIUM_VERSION..."
 wget -q --show-progress "$CHROMIUM_DOWNLOAD_URL" -O chrome-linux.zip || { echo "❌ Failed to download Chromium."; exit 1; }
 
-echo "Downloading ChromeDriver for build $LATEST_CHROMIUM_URL..."
+echo "Downloading ChromeDriver for build $LATEST_CHROMIUM_VERSION..."
 wget -q --show-progress "$CHROMEDRIVER_DOWNLOAD_URL" -O chromedriver-linux64.zip || { echo "❌ Failed to download ChromeDriver."; exit 1; }
 
 echo "Extracting Chromium and ChromeDriver..."
@@ -31,3 +31,4 @@ export CHROMEDRIVER_BIN="/opt/render/chromedriver/chromedriver"
 
 echo "Chromium binary set to: $CHROME_BIN"
 echo "ChromeDriver binary set to: $CHROMEDRIVER_BIN"
+
