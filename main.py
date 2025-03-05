@@ -69,6 +69,7 @@ def crawl_website(website_url, max_depth=4, visited=None):
                 if max_depth > 1:
                     found_links.update(crawl_website(full_url, max_depth - 1, visited))
 
+        print(f"Crawled pages: {found_links}")  # 🔍 Debugging: Show all crawled URLs
         return found_links
     except requests.RequestException:
         return set()
@@ -82,6 +83,7 @@ def extract_text_from_url(url):
         soup = BeautifulSoup(response.text, "html.parser")
 
         text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'meta'])[:300])
+        print(f"Extracted from {url}: {text[:500]}")  # 🔍 Debugging: Show extracted text sample
         return text[:10000]  
     except requests.RequestException:
         return selenium_extract_text(url)
@@ -141,23 +143,25 @@ def check_compliance_endpoint(website_url: str):
         elif any(keyword in link for keyword in ["terms", "conditions", "policy", "legal"]):
             terms_text += " " + page_text
 
+    print(f"Final Privacy Policy Text: {privacy_text[:1000]}")  # 🔍 Debugging: Show extracted privacy text
+    print(f"Final Terms & Conditions Text: {terms_text[:1000]}")  # 🔍 Debugging: Show extracted terms text
+
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
     return compliance_results
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
-    """Optimized ChatGPT request enforcing structured JSON format."""
+    """Ensure AI properly verifies all extracted data before marking compliance items as missing."""
 
     compliance_prompt = f"""
-    You are an expert in TCR SMS compliance. Analyze the Privacy Policy and Terms & Conditions for compliance.
+    You are a compliance auditor. Analyze the extracted Privacy Policy and Terms & Conditions.
 
+    **If wording is different but means the same thing, mark it as 'found'.**
+    **If unsure, provide the closest matching text and label it 'partially_found'.**
+    
     - Privacy Policy: {privacy_text[:4000]}
     - Terms & Conditions: {terms_text[:4000]}
 
-    **STRICT REQUIREMENT: ONLY mark an item as 'not_found' if you are CERTAIN it does not exist.**
-    - If wording is different but means the same thing, mark it as 'found'.
-    - If unsure, provide the closest matching text and label it 'partially_found'.
-
-    **Return JSON ONLY in the following format:**
+    **Return JSON ONLY in this format:**
     {{
         "compliance_analysis": {{
             "privacy_policy": {{
@@ -170,12 +174,9 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
             "terms_conditions": {{
                 "SMS_usage": "found/not_found/partially_found",
                 "clear_terms": "found/not_found/partially_found",
-                "consent": "explicit/not_explicit/partially_explicit",
-                "user_rights": "explicit/not_explicit/partially_explicit",
-                "contact_information": "present/not_present"
+                "consent": "explicit/not_explicit/partially_explicit"
             }},
-            "overall_compliance": "Compliant/Non-compliant",
-            "recommendations": ["List specific recommendations."]
+            "overall_compliance": "Compliant/Non-compliant"
         }}
     }}
     """
@@ -186,9 +187,6 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         max_tokens=1200  
     )
 
-    try:
-        chatgpt_response = response.choices[0].message.content.strip()
-        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
-        return json.loads(chatgpt_response)
-    except json.JSONDecodeError:
-        return {"error": "Failed to parse AI response. Response format invalid."}
+    print(f"Raw AI Response: {response}")  # 🔍 Debugging: Show AI's raw response
+
+    return response
