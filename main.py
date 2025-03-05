@@ -66,8 +66,8 @@ def check_compliance(text):
     payload = {
         "model": "gpt-4-turbo",
         "messages": [
-            {"role": "system", "content": "You are an AI that checks website compliance for SMS regulations."},
-            {"role": "user", "content": f"Analyze the following text for SMS compliance:\n{text}"}
+            {"role": "system", "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format."},
+            {"role": "user", "content": f"Analyze the following text for SMS compliance and return the results in **valid JSON**:\n{text}"}
         ],
         "response_format": {"type": "json_object"}  # ✅ Correct format
     }
@@ -76,12 +76,12 @@ def check_compliance(text):
 
     try:
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()  # Raise an error for HTTP 4xx/5xx
+        response.raise_for_status()
         response_data = response.json()
         logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
         return response_data
     except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred: {http_err.response.text}")  # Print exact API response
+        logger.error(f"HTTP error occurred: {http_err.response.text}")
         return {"error": f"OpenAI API Error: {http_err.response.text}"}
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
