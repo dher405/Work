@@ -10,8 +10,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 # Initialize logging
@@ -65,7 +63,7 @@ def extract_text_from_website(base_url):
         for page in pages_to_check:
             logger.info(f"Scraping page: {page}")
             driver.get(page)
-            time.sleep(3)  # Allow time for page to load
+            time.sleep(5)  # Allow full page load
             soup = BeautifulSoup(driver.page_source, "html.parser")
             extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
 
@@ -102,28 +100,42 @@ def check_compliance(text):
                 "role": "user",
                 "content": f"""
                 Analyze the following website text for TCR SMS compliance. The compliance check should include:
-                1. Privacy Policy:
-                    - Explicit statement that SMS consent data will not be shared with third parties.
-                    - Clear explanation of how consumer data is collected, used, and shared.
-                2. Terms and Conditions:
-                    - Explanation of what type of SMS messages users will receive.
-                    - Mandatory disclosures including:
-                        - Messaging frequency may vary.
-                        - Message and data rates may apply.
-                        - Opt-out instructions ('Reply STOP').
-                        - Assistance instructions ('Reply HELP' or contact support URL').
+                
+                **Privacy Policy must contain:**
+                - Explicit statement that SMS consent data will not be shared with third parties.
+                - Clear explanation of how consumer data is collected, used, and shared.
 
-                Ensure your response follows this JSON format:
+                **Terms & Conditions must contain:**
+                - Explanation of what type of SMS messages users will receive.
+                - Mandatory disclosures including:
+                    - Messaging frequency may vary.
+                    - Message and data rates may apply.
+                    - Opt-out instructions ('Reply STOP').
+                    - Assistance instructions ('Reply HELP' or contact support URL').
+
+                **Response Format (include actual found statements if detected):**
 
                 {{
                     "compliance_analysis": {{
                         "privacy_policy": {{
-                            "sms_consent_statement": "found/not_found",
-                            "data_usage_explanation": "found/not_found"
+                            "sms_consent_statement": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty"
+                            }},
+                            "data_usage_explanation": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty"
+                            }}
                         }},
                         "terms_conditions": {{
-                            "message_types_specified": "found/not_found",
-                            "mandatory_disclosures": "found/not_found"
+                            "message_types_specified": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty"
+                            }},
+                            "mandatory_disclosures": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty"
+                            }}
                         }},
                         "overall_compliance": "compliant/partially_compliant/non_compliant",
                         "recommendations": [
