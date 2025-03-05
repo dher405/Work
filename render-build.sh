@@ -23,12 +23,13 @@ mkdir -p /opt/render/chromium /opt/render/chromedriver
 unzip -q chrome-linux.zip -d /opt/render/chromium || { echo "❌ Failed to extract Chromium."; exit 1; }
 unzip -q chromedriver-linux64.zip -d /opt/render/chromedriver || { echo "❌ Failed to extract ChromeDriver."; exit 1; }
 
-echo "🔍 Verifying Chromium installation..."
-ls -l /opt/render/chromium/chrome-linux/
+echo "🔍 Verifying installation..."
+ls -lh /opt/render/chromium/
+ls -lh /opt/render/chromedriver/
 
-# Ensure binaries are correctly set
+# Ensure correct binary paths
 export CHROME_BIN="/opt/render/chromium/chrome-linux/chrome"
-export CHROMEDRIVER_BIN="/opt/render/chromedriver/chromedriver"
+export CHROMEDRIVER_BIN="/opt/render/chromedriver/chromedriver-linux64/chromedriver"
 
 if [[ ! -f "$CHROME_BIN" ]]; then
     echo "❌ Chrome binary not found at $CHROME_BIN!"
@@ -36,7 +37,8 @@ if [[ ! -f "$CHROME_BIN" ]]; then
 fi
 
 if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
-    echo "❌ ChromeDriver binary not found at $CHROMEDRIVER_BIN!"
+    echo "❌ ChromeDriver binary not found at $CHROMEDRIVER_BIN! Checking available files..."
+    ls -lh /opt/render/chromedriver/
     exit 1
 fi
 
