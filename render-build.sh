@@ -27,18 +27,19 @@ echo "🔍 Verifying installation..."
 ls -lh /opt/render/chromium/
 ls -lh /opt/render/chromedriver/
 
-# **Fix: Locate ChromeDriver binary**
-CHROMEDRIVER_BIN=$(find /opt/render/chromedriver/chromedriver_linux64 -type f -name "chromedriver" | head -n 1)
-CHROME_BIN="/opt/render/chromium/chrome-linux/chrome"
+# **Fix: Locate Chrome and ChromeDriver binaries**
+CHROME_BIN=$(find /opt/render/chromium/ -type f -name "chrome" | head -n 1)
+CHROMEDRIVER_BIN=$(find /opt/render/chromedriver/ -type f -name "chromedriver" | head -n 1)
 
 if [[ ! -f "$CHROME_BIN" ]]; then
-    echo "❌ Chrome binary not found at $CHROME_BIN!"
+    echo "❌ Chrome binary not found!"
+    ls -lh /opt/render/chromium/
     exit 1
 fi
 
-if [[ -z "$CHROMEDRIVER_BIN" ]]; then
-    echo "❌ ChromeDriver binary not found! Checking available files..."
-    ls -lh /opt/render/chromedriver/chromedriver_linux64/
+if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
+    echo "❌ ChromeDriver binary not found!"
+    ls -lh /opt/render/chromedriver/
     exit 1
 fi
 
@@ -49,3 +50,4 @@ echo "🌍 ChromeDriver binary set to: $CHROMEDRIVER_BIN"
 # **Set environment variables for system**
 export CHROME_BIN="$CHROME_BIN"
 export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
+
