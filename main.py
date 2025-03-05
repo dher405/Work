@@ -20,7 +20,7 @@ app = FastAPI()
 # ✅ Enable CORS to allow requests from your front-end domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://frontend-kbjv.onrender.com"],  # Allow all origins for testing, update this in production
+    allow_origins=["https://frontend-kbjv.onrender.com"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,8 +43,15 @@ def get_chromedriver_binary():
     return chromedriver_binary
 
 
-# Function to extract text from a URL using BeautifulSoup for improved parsing
-def extract_text_from_url(url):
+# Function to extract text from multiple pages
+def extract_text_from_website(base_url):
+    pages_to_check = [
+        base_url,
+        f"{base_url}/privacy-policy",
+        f"{base_url}/terms-of-service"
+    ]
+    extracted_text = ""
+
     options = Options()
     options.binary_location = get_chrome_binary()
     options.add_argument("--headless")
@@ -55,17 +62,18 @@ def extract_text_from_url(url):
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        driver.get(url)
-        time.sleep(3)  # Allow time for page to load
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-        extracted_text = soup.get_text(separator="\n", strip=True)
-        
+        for page in pages_to_check:
+            driver.get(page)
+            time.sleep(3)  # Allow time for page to load
+            soup = BeautifulSoup(driver.page_source, "html.parser")
+            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+
         if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {url} appears too short, might have missed content.")
+            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
         
-        return extracted_text
+        return extracted_text.strip()
     except Exception as e:
-        logger.error(f"Failed to extract text from {url}: {e}")
+        logger.error(f"Failed to extract text from {base_url}: {e}")
         return ""
     finally:
         driver.quit()
@@ -103,7 +111,7 @@ def check_compliance(text):
                         - Messaging frequency may vary.
                         - Message and data rates may apply.
                         - Opt-out instructions ('Reply STOP').
-                        - Assistance instructions ('Reply HELP' or contact support URL).
+                        - Assistance instructions ('Reply HELP' or contact support URL').
                 Ensure your response strictly follows this JSON format:
 
                 {{
@@ -155,7 +163,7 @@ def check_compliance(text):
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
 
-    extracted_text = extract_text_from_url(website_url)
+    extracted_text = extract_text_from_website(website_url)
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
