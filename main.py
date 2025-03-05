@@ -88,7 +88,7 @@ def selenium_extract_text(url):
         return f"Selenium extraction failed: {str(e)}"
 
 def analyze_compliance(privacy_text, terms_text):
-    """Analyzes the extracted text for TCR SMS compliance using ChatGPT (correct API version)."""
+    """Analyzes the extracted text for TCR SMS compliance using ChatGPT."""
     client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
     prompt = f"""
@@ -106,7 +106,7 @@ def analyze_compliance(privacy_text, terms_text):
     - **Terms & Conditions** must specify the types of messages sent (e.g., transactional, marketing).
     - **Terms & Conditions** must include mandatory SMS disclosures: opt-out instructions, frequency, and costs.
 
-    Provide a JSON response with these keys:
+    Provide a **valid JSON** response with these exact keys:
     ```json
     {{
         "compliance_analysis": {{
@@ -131,7 +131,7 @@ def analyze_compliance(privacy_text, terms_text):
                 {"role": "system", "content": "Analyze the following for SMS compliance."},
                 {"role": "user", "content": prompt}
             ],
-            response_format="json"
+            response_format={"type": "json"}  # ✅ FIXED: Corrected response_format
         )
 
         ai_response = response.choices[0].message.content
