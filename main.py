@@ -20,7 +20,7 @@ app = FastAPI()
 # ✅ Enable CORS to allow requests from your front-end domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for testing, update this in production
+    allow_origins=["https://frontend-kbjv.onrender.com"],  # Allow all origins for testing, update this in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
