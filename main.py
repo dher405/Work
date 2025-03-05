@@ -15,6 +15,14 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# ✅ Enable CORS to allow requests from your front-end domain
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://frontend-kbjv.onrender.com"],  # Change to "*" to allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+
 # Function to get Chrome binary
 def get_chrome_binary():
     chrome_binary = os.environ.get("CHROME_BIN", "/opt/render/chromium/chrome-linux64/chrome")
