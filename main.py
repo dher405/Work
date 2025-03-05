@@ -72,14 +72,20 @@ def check_compliance(text):
         "response_format": {"type": "json_object"}  # ✅ Correct format
     }
 
+    logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
+
     try:
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()  # Raise an error for HTTP codes 4xx/5xx
-        logger.info(f"OpenAI API Response: {response.json()}")  # Debugging log
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"OpenAI API Error: {e}")
-        return {"error": "AI processing failed."}
+        response.raise_for_status()  # Raise an error for HTTP 4xx/5xx
+        response_data = response.json()
+        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
+        return response_data
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err.response.text}")  # Print exact API response
+        return {"error": f"OpenAI API Error: {http_err.response.text}"}
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Request error occurred: {req_err}")
+        return {"error": "AI processing failed due to request issue."}
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
