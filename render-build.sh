@@ -64,7 +64,8 @@ get_latest_chromedriver_version() {
     fi
 }
 
-LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version)
+# Extract only the version number using awk
+LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version | awk 'END {print}')
 
 if [[ -z "$LATEST_CHROMEDRIVER_VERSION" || "$LATEST_CHROMEDRIVER_VERSION" == "null" ]]; then
     echo "ERROR: Failed to retrieve the latest ChromeDriver version!"
