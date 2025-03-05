@@ -12,7 +12,7 @@ CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 # Function to fetch the latest stable Chrome for Testing version
 get_latest_chromium_url() {
     curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions.json" | \
-    jq -r '.channels.Stable.downloads.chromium[] | select(.platform=="linux64") | .url'
+    jq -r '.channels.Stable.downloads.chromium| select(.platform=="linux64") | .url'
 }
 
 # Fetch the latest Chrome download URL
@@ -43,7 +43,7 @@ echo "✅ Chrome installed at: $CHROME_BIN"
 # Fetch the latest ChromeDriver version that matches Chromium
 get_latest_chromedriver_url() {
     curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions.json" | \
-    jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform=="linux64") | .url'
+    jq -r '.channels.Stable.downloads.chromedriver| select(.platform=="linux64") | .url'
 }
 
 LATEST_CHROMEDRIVER_URL=$(get_latest_chromedriver_url)
@@ -77,5 +77,3 @@ export CHROMEDRIVER_BIN="$CHROMEDRIVER_BIN"
 # Start the application
 echo "🚀 Starting FastAPI server..."
 uvicorn main:app --host 0.0.0.0 --port 10000
-
-
