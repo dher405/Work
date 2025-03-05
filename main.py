@@ -1,93 +1,92 @@
-#!/bin/bash
+import os
+import time
+import json
+import requests
+import logging
+from fastapi import FastAPI, Query, HTTPException
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
-set -e  # Exit on error
-set -x  # Enable debug logging
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Define paths
-CHROMIUM_DIR="$HOME/chromium"
-CHROMEDRIVER_DIR="$HOME/chromedriver"
-CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
-CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
+app = FastAPI()
 
-# Function to fetch the latest stable Chrome version with fallback
-get_latest_stable_version() {
-    local version=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
-    if [[ -z "$version" || "$version" == "null" ]]; then
-        echo "WARNING: Failed to retrieve latest Chrome version from primary source. Trying fallback..."
-        curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version'
-    else
-        echo "$version"
-    fi
-}
+# Function to get Chrome binary
+def get_chrome_binary():
+    chrome_binary = os.environ.get("CHROME_BIN", "/opt/render/chromium/chrome-linux64/chrome")
+    if not os.path.exists(chrome_binary):
+        raise FileNotFoundError("Chrome binary not found! Check installation.")
+    return chrome_binary
 
-# Extract only the version number using awk
-LATEST_STABLE=$(get_latest_stable_version | awk 'END {print}')
+# Function to get ChromeDriver binary
+def get_chromedriver_binary():
+    chromedriver_binary = os.environ.get("CHROMEDRIVER_BIN", "/opt/render/chromedriver/chromedriver-linux64/chromedriver")
+    if not os.path.exists(chromedriver_binary):
+        raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
+    return chromedriver_binary
 
-if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
-    echo "ERROR: Failed to retrieve the latest Chromium version!"
-    exit 1
-fi
+# Function to extract text from a URL
+def extract_text_from_url(url):
+    options = Options()
+    options.binary_location = get_chrome_binary()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
-echo "Latest stable Chrome version: $LATEST_STABLE"
+    service = Service(get_chromedriver_binary())
+    driver = webdriver.Chrome(service=service, options=options)
 
-# Temporarily use the secondary source to construct the Chromium download URL
-CHROMIUM_URL="https://storage.googleapis.com/chrome-for-testing-public/${LATEST_STABLE}/linux64/chrome-linux64.zip"
+    try:
+        driver.get(url)
+        time.sleep(3)  # Allow time for page to load
+        extracted_text = driver.find_element("tag name", "body").text
+        return extracted_text
+    except Exception as e:
+        logger.error(f"Failed to extract text from {url}: {e}")
+        return ""
+    finally:
+        driver.quit()
 
-echo "Downloading Chromium from: $CHROMIUM_URL"
-mkdir -p "$CHROMIUM_DIR"
-wget -O "$CHROMIUM_DIR/chrome-linux.zip" "$CHROMIUM_URL" || { echo "❌ Chrome download failed!"; exit 1; }
+# Function to check compliance using OpenAI API
+def check_compliance(text):
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    headers = {"Authorization": f"Bearer {openai_api_key}", "Content-Type": "application/json"}
+    payload = {
+        "model": "gpt-4-turbo",
+        "messages": [
+            {"role": "system", "content": "You are an AI that checks website compliance for SMS regulations."},
+            {"role": "user", "content": f"Analyze the following text for SMS compliance:\n{text}"}
+        ],
+        "response_format": "json_object"
+    }
 
-echo "📂 Extracting Chrome..."
-unzip -o "$CHROMIUM_DIR/chrome-linux.zip" -d "$CHROMIUM_DIR"
-chmod +x "$CHROME_BIN"
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    if response.status_code != 200:
+        logger.error(f"OpenAI API Error: {response.text}")
+        return {"error": "AI processing failed."}
+    return response.json()
 
-# Verify Chrome installation
-if [[ ! -f "$CHROME_BIN" ]]; then
-    echo "❌ Chrome installation failed!"
-    exit 1
-fi
+@app.get("/check_compliance")
+def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
+    logger.info(f"Checking compliance for: {website_url}")
 
-echo "✅ Chrome installed at: $CHROME_BIN"
-"$CHROME_BIN" --version
+    extracted_text = extract_text_from_url(website_url)
+    if not extracted_text:
+        raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-# --- Install the Correct ChromeDriver ---
+    compliance_result = check_compliance(extracted_text)
+    return compliance_result
 
-# Fetch ChromeDriver download URL (using the same fallback logic as for Chrome version)
-get_latest_chromedriver_version() {
-    local version=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chromedriver| select(.platform == \"linux64\") | .url" | cut -d'/' -f6)
-    if [[ -z "$version" || "$version" == "null" ]]; then
-        echo "WARNING: Failed to retrieve latest ChromeDriver version from primary source. Trying fallback..."
-        # For ChromeDriver, we'll just use the Chrome version as a fallback for now
-        echo "$LATEST_STABLE"
-    else
-        echo "$version"
-    fi
-}
+@app.get("/debug_chrome")
+def debug_chrome():
+    try:
+        chrome_version = os.popen(f"{get_chrome_binary()} --version").read().strip()
+        driver_version = os.popen(f"{get_chromedriver_binary()} --version").read().strip()
+        return {"chrome_version": chrome_version, "driver_version": driver_version}
+    except FileNotFoundError as e:
+        return {"error": str(e)}
 
-# Extract only the version number using awk
-LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version | awk 'END {print}')
-
-if [[ -z "$LATEST_CHROMEDRIVER_VERSION" || "$LATEST_CHROMEDRIVER_VERSION" == "null" ]]; then
-    echo "ERROR: Failed to retrieve the latest ChromeDriver version!"
-    exit 1
-fi
-
-# Construct ChromeDriver download URL using the retrieved version
-CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${LATEST_CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
-
-echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
-mkdir -p "$CHROMEDRIVER_DIR"
-wget -O "$CHROMEDRIVER_DIR/chromedriver-linux.zip" "$CHROMEDRIVER_URL" || { echo "❌ ChromeDriver download failed!"; exit 1; }
-
-echo "📂 Extracting ChromeDriver..."
-unzip -o "$CHROMEDRIVER_DIR/chromedriver-linux.zip" -d "$CHROMEDRIVER_DIR"
-chmod +x "$CHROMEDRIVER_BIN"
-
-# Verify ChromeDriver installation
-if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
-    echo "❌ ChromeDriver installation failed!"
-    exit 1
-fi
-
-echo "✅ ChromeDriver installed at: $CHROMEDRIVER_BIN"
-"$CHROMEDRIVER_BIN" --version
