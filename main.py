@@ -124,6 +124,51 @@ def kill_chrome_processes():
             except psutil.NoSuchProcess:
                 pass
 
+def standardize_response(api_data):
+    """
+    Ensures the API response follows a single, consistent format.
+    """
+    standardized_data = {
+        "compliance_analysis": {
+            "privacy_policy": {
+                "sms_consent_data": None,
+                "data_collection_usage": None
+            },
+            "terms_conditions": {
+                "message_types": None,
+                "mandatory_disclosures": None
+            },
+            "compliance_status": None
+        }
+    }
+
+    # Normalize Privacy Policy fields
+    if "PrivacyPolicy" in api_data or "privacy_policy" in api_data:
+        policy_data = api_data.get("PrivacyPolicy", api_data.get("privacy_policy", {}))
+        standardized_data["compliance_analysis"]["privacy_policy"]["sms_consent_data"] = policy_data.get(
+            "SMSConsentData", policy_data.get("sms_consent_data", "Not available.")
+        )
+        standardized_data["compliance_analysis"]["privacy_policy"]["data_collection_usage"] = policy_data.get(
+            "DataCollectionUsage", policy_data.get("data_collection_usage", "Not available.")
+        )
+
+    # Normalize Terms & Conditions fields
+    if "TermsConditions" in api_data or "terms_conditions" in api_data:
+        terms_data = api_data.get("TermsConditions", api_data.get("terms_conditions", {}))
+        standardized_data["compliance_analysis"]["terms_conditions"]["message_types"] = terms_data.get(
+            "MessageTypes", terms_data.get("message_types", "Not available.")
+        )
+        standardized_data["compliance_analysis"]["terms_conditions"]["mandatory_disclosures"] = terms_data.get(
+            "MandatoryDisclosures", terms_data.get("mandatory_disclosures", "Not available.")
+        )
+
+    # Normalize Compliance Status
+    standardized_data["compliance_analysis"]["compliance_status"] = api_data.get(
+        "ComplianceStatus", api_data.get("compliance_status", "Not available.")
+    )
+
+    return standardized_data
+
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
     """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
@@ -142,33 +187,27 @@ def check_compliance_endpoint(website_url: str):
         elif "terms" in link or "conditions" in link or "terms-of-service" in link or "legal" in link:
             terms_text += " " + page_text
 
-    compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
-    return compliance_results
+    ai_response = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
+
+    # Ensure AI response is properly formatted
+    standardized_response = standardize_response(ai_response)
+
+    return standardized_response
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     """Optimize ChatGPT request to reduce token usage."""
     
     compliance_prompt = f"""
     You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
-
-    **Privacy Policy:**
-    {privacy_text[:2000]}  # Limit token size
-
-    **Terms and Conditions:**
-    {terms_text[:2000]}  # Limit token size
-
-    **TCR SMS Compliance Standards:**
-    - Privacy Policy must state SMS consent data will not be shared.
-    - Privacy Policy must explain data collection and usage.
-    - Terms must specify message types and include mandatory disclosures.
-
+    {privacy_text[:2000]}
+    {terms_text[:2000]}
     Return a **pure JSON response** without Markdown formatting.
     """
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=800  # Reduce token usage
+        max_tokens=800
     )
 
     try:
@@ -177,4 +216,3 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
         return json.loads(chatgpt_response)
     except json.JSONDecodeError:
         return {"error": "Failed to parse AI response."}
-
