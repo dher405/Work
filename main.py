@@ -1,195 +1,93 @@
-import os
-import requests
-from bs4 import BeautifulSoup
-import openai
-import re
-import logging
-from fastapi import FastAPI, HTTPException
-from urllib.parse import urljoin, urlparse, unquote
-from fastapi.middleware.cors import CORSMiddleware
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+#!/bin/bash
 
-# ✅ Enable logging for debugging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+set -e  # Exit on error
+set -x  # Enable debug logging
 
-# ✅ Load OpenAI API Key securely
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
+# Define paths
+CHROMIUM_DIR="$HOME/chromium"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
+CHROME_BIN="$CHROMIUM_DIR/chrome-linux64/chrome"
+CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
 
-client = openai.OpenAI(api_key=OPENAI_API_KEY)
+# Function to fetch the latest stable Chrome version with fallback
+get_latest_stable_version() {
+    local version=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r '.milestones | to_entries | max_by(.key | tonumber) | .value.chromeVersion')
+    if [[ -z "$version" || "$version" == "null" ]]; then
+        echo "WARNING: Failed to retrieve latest Chrome version from primary source. Trying fallback..."
+        curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions | jq -r '.versions[0].version'
+    else
+        echo "$version"
+    fi
+}
 
-app = FastAPI()
+# Extract only the version number using awk
+LATEST_STABLE=$(get_latest_stable_version | awk 'END {print}')
 
-# ✅ Allow cross-origin requests for frontend integration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Modify if needed for security
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if [[ -z "$LATEST_STABLE" || "$LATEST_STABLE" == "null" ]]; then
+    echo "ERROR: Failed to retrieve the latest Chromium version!"
+    exit 1
+fi
 
-def get_chrome_binary():
-    """Detects the Chrome binary location dynamically."""
-    possible_paths = [
-        "/opt/render/chromium/latest/chrome",
-        "/opt/render/chromium/chrome-linux64/chrome",
-        "/usr/bin/google-chrome",
-        "/usr/bin/chromium-browser"
-    ]
-    for path in possible_paths:
-        if os.path.exists(path):
-            return path
-    raise FileNotFoundError("Chrome binary not found! Check installation.")
+echo "Latest stable Chrome version: $LATEST_STABLE"
 
-CHROME_BIN = get_chrome_binary()
+# Temporarily use the secondary source to construct the Chromium download URL
+CHROMIUM_URL="https://storage.googleapis.com/chrome-for-testing-public/${LATEST_STABLE}/linux64/chrome-linux64.zip"
 
-def ensure_https(url: str) -> str:
-    """Ensure the URL starts with https://, adding it if necessary."""
-    url = unquote(url)  # Decode URL
-    if not url.startswith("http"):
-        return "https://" + url
-    return url
+echo "Downloading Chromium from: $CHROMIUM_URL"
+mkdir -p "$CHROMIUM_DIR"
+wget -O "$CHROMIUM_DIR/chrome-linux.zip" "$CHROMIUM_URL" || { echo "❌ Chrome download failed!"; exit 1; }
 
-def crawl_website(website_url, max_depth=2, visited=None):
-    """Recursively crawl a website up to a maximum depth."""
-    if visited is None:
-        visited = set()
-    
-    if max_depth == 0 or website_url in visited:
-        return set()
-    
-    visited.add(website_url)
-    try:
-        response = requests.get(website_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        found_links = set()
+echo "📂 Extracting Chrome..."
+unzip -o "$CHROMIUM_DIR/chrome-linux.zip" -d "$CHROMIUM_DIR"
+chmod +x "$CHROME_BIN"
 
-        for a_tag in soup.find_all('a', href=True):
-            href = a_tag['href']
-            full_url = urljoin(website_url, href)
-            parsed_url = urlparse(full_url)
-            if parsed_url.netloc == urlparse(website_url).netloc:  # Only follow internal links
-                found_links.add(full_url)
-                found_links.update(crawl_website(full_url, max_depth - 1, visited))
-        
-        logging.info(f"Crawled {website_url}, Found Links: {found_links}")  # Debugging
-        return found_links
-    except requests.RequestException:
-        logging.warning(f"Failed to crawl {website_url}")
-        return set()
+# Verify Chrome installation
+if [[ ! -f "$CHROME_BIN" ]]; then
+    echo "❌ Chrome installation failed!"
+    exit 1
+fi
 
-def extract_text_from_url(url):
-    """Extract text content from a given webpage. Uses Selenium if needed."""
-    if not url:
-        return ""
-    try:
-        response = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
-        text = re.sub(r'\s+', ' ', text.strip())
+echo "✅ Chrome installed at: $CHROME_BIN"
+"$CHROME_BIN" --version
 
-        logging.info(f"Extracted text from {url}: {text[:500]}")  # Debugging
+# --- Install the Correct ChromeDriver ---
 
-        # If extracted text is empty, use Selenium
-        if not text.strip():
-            logging.warning(f"Requests failed to extract meaningful text from {url}. Trying Selenium...")
-            
-            chrome_options = Options()
-            chrome_options.binary_location = CHROME_BIN
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            driver.get(url)
-            text = driver.find_element("xpath", "//body").text
-            driver.quit()
-            
-            logging.info(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
-        
-        return text
+# Fetch ChromeDriver download URL (using the same fallback logic as for Chrome version)
+get_latest_chromedriver_version() {
+    local version=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq -r ".milestones | to_entries | max_by(.key | tonumber) | .value.downloads.chromedriver| select(.platform == \"linux64\") | .url" | cut -d'/' -f6)
+    if [[ -z "$version" || "$version" == "null" ]]; then
+        echo "WARNING: Failed to retrieve latest ChromeDriver version from primary source. Trying fallback..."
+        # For ChromeDriver, we'll just use the Chrome version as a fallback for now
+        echo "$LATEST_STABLE"
+    else
+        echo "$version"
+    fi
+}
 
-    except requests.RequestException:
-        logging.error(f"Requests completely failed for {url}. Falling back to Selenium.")
-        
-        chrome_options = Options()
-        chrome_options.binary_location = CHROME_BIN
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.get(url)
-        text = driver.find_element("xpath", "//body").text
-        driver.quit()
-        
-        logging.info(f"Extracted text from Selenium for {url}: {text[:500]}")  # Debugging
-        return text
+# Extract only the version number using awk
+LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version | awk 'END {print}')
 
-@app.get("/check_compliance")
-def check_compliance_endpoint(website_url: str):
-    website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=2)
-    
-    privacy_text, terms_text, legal_text = "", "", ""
-    
-    for link in crawled_links:
-        page_text = extract_text_from_url(link)
-        logging.info(f"Extracted text from {link}: {page_text[:500]}")
-        if "privacy" in link:
-            privacy_text += " " + page_text
-        elif "terms" in link or "conditions" in link or "terms-of-service" in link:
-            terms_text += " " + page_text
-        elif "legal" in link:
-            legal_text += " " + page_text
-    
-    if not privacy_text and not terms_text and not legal_text:
-        raise HTTPException(status_code=400, detail="Could not extract text from any relevant pages.")
-    
-    # ✅ AI compliance check with OpenAI
-    try:
-        response = client.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Analyze the following text for TCR SMS compliance."},
-                {"role": "user", "content": f"Privacy Policy: {privacy_text} \n\nTerms & Conditions: {terms_text}"}
-            ],
-            response_format="json_object"
-        )
-        compliance_report = response.choices[0].message["content"]
-    except Exception as e:
-        logging.error(f"AI Processing Error: {e}")
-        raise HTTPException(status_code=500, detail="AI processing failed.")
+if [[ -z "$LATEST_CHROMEDRIVER_VERSION" || "$LATEST_CHROMEDRIVER_VERSION" == "null" ]]; then
+    echo "ERROR: Failed to retrieve the latest ChromeDriver version!"
+    exit 1
+fi
 
-    return {"compliance_report": compliance_report}
+# Construct ChromeDriver download URL using the retrieved version
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${LATEST_CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
 
-@app.get("/debug_chrome")
-def debug_chrome():
-    """Check if Chrome and ChromeDriver are properly installed."""
-    try:
-        chrome_path = get_chrome_binary()
-        chromedriver_path = os.getenv("CHROMEDRIVER_BIN", "/home/render/chromedriver/chromedriver-linux64/chromedriver")
+echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+mkdir -p "$CHROMEDRIVER_DIR"
+wget -O "$CHROMEDRIVER_DIR/chromedriver-linux.zip" "$CHROMEDRIVER_URL" || { echo "❌ ChromeDriver download failed!"; exit 1; }
 
-        if not os.path.exists(chromedriver_path):
-            return {"error": f"ChromeDriver not found at {chromedriver_path}"}
+echo "📂 Extracting ChromeDriver..."
+unzip -o "$CHROMEDRIVER_DIR/chromedriver-linux.zip" -d "$CHROMEDRIVER_DIR"
+chmod +x "$CHROMEDRIVER_BIN"
 
-        chrome_options = Options()
-        chrome_options.binary_location = chrome_path
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
+# Verify ChromeDriver installation
+if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
+    echo "❌ ChromeDriver installation failed!"
+    exit 1
+fi
 
-        driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options)
-        driver.get("https://www.google.com")
-        title = driver.title
-        driver.quit()
-        return {"status": "success", "title": title}
-    except Exception as e:
-        return {"error": str(e)}
+echo "✅ ChromeDriver installed at: $CHROMEDRIVER_BIN"
+"$CHROMEDRIVER_BIN" --version
