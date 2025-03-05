@@ -1,38 +1,29 @@
 #!/bin/bash
 
-echo "🔹 Starting Chrome & ChromeDriver installation..."
+# Install dependencies
+apt-get update && apt-get install -y wget unzip
 
-# Ensure dependencies are installed
-apt-get update && apt-get install -y wget unzip jq curl
+# Define directories
+CHROME_DIR="$HOME/chromium"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
+LATEST_CHROME_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json | jq -r '.channels.Stable.version')
 
-# Install Chromium
-echo "🔹 Installing Chromium..."
-mkdir -p $HOME/chromium
-cd $HOME/chromium
-wget -qO- https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb > google-chrome.deb
-dpkg -x google-chrome.deb $HOME/chromium/
-export CHROME_BIN="$HOME/chromium/opt/google/chrome/google-chrome"
-echo "✅ Chromium installed at $CHROME_BIN"
+# Download and install Chrome
+mkdir -p $CHROME_DIR
+wget -O chrome-linux.zip "https://storage.googleapis.com/chrome-for-testing-public/$LATEST_CHROME_VERSION/linux64/chrome-linux.zip"
+unzip chrome-linux.zip -d $CHROME_DIR
+rm chrome-linux.zip
 
-# Fetch latest ChromeDriver version dynamically
-echo "🔹 Fetching latest ChromeDriver version..."
-LATEST_CHROMEDRIVER_URL=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64") | .url' | head -1)
+# Download and install ChromeDriver
+mkdir -p $CHROMEDRIVER_DIR
+wget -O chromedriver-linux64.zip "https://storage.googleapis.com/chrome-for-testing-public/$LATEST_CHROME_VERSION/linux64/chromedriver-linux64.zip"
+unzip chromedriver-linux64.zip -d $CHROMEDRIVER_DIR
+rm chromedriver-linux64.zip
 
-if [ -z "$LATEST_CHROMEDRIVER_URL" ]; then
-    echo "❌ Failed to fetch latest ChromeDriver version!"
-    exit 1
-fi
+# Set permissions
+chmod +x $CHROME_DIR/chrome-linux/chrome
+chmod +x $CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver
 
-# Install ChromeDriver
-echo "🔹 Installing ChromeDriver..."
-mkdir -p $HOME/chromedriver
-cd $HOME/chromedriver
-wget "$LATEST_CHROMEDRIVER_URL" -O chromedriver-linux64.zip
-unzip chromedriver-linux64.zip
-export CHROMEDRIVER_BIN="$HOME/chromedriver/chromedriver-linux64/chromedriver"
-chmod +x $CHROMEDRIVER_BIN
-echo "✅ ChromeDriver installed at $CHROMEDRIVER_BIN"
-
-# Export Paths
-export PATH=$CHROME_BIN:$CHROMEDRIVER_BIN:$PATH
-echo "✅ Chrome & ChromeDriver setup complete."
+# Export paths for Chrome and ChromeDriver
+export CHROME_BIN="$CHROME_DIR/chrome-linux/chrome"
+export CHROMEDRIVER_BIN="$CHROMEDRIVER_DIR/chromedriver-linux64/chromedriver"
