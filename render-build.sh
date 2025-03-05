@@ -64,8 +64,30 @@ get_latest_chromedriver_version() {
     fi
 }
 
-LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version)
+# Extract only the version number using awk
+LATEST_CHROMEDRIVER_VERSION=$(get_latest_chromedriver_version | awk 'END {print}')
 
 if [[ -z "$LATEST_CHROMEDRIVER_VERSION" || "$LATEST_CHROMEDRIVER_VERSION" == "null" ]]; then
     echo "ERROR: Failed to retrieve the latest ChromeDriver version!"
     exit 1
+fi
+
+# Construct ChromeDriver download URL using the retrieved version
+CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${LATEST_CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
+
+echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+mkdir -p "$CHROMEDRIVER_DIR"
+wget -O "$CHROMEDRIVER_DIR/chromedriver-linux.zip" "$CHROMEDRIVER_URL" || { echo "❌ ChromeDriver download failed!"; exit 1; }
+
+echo "📂 Extracting ChromeDriver..."
+unzip -o "$CHROMEDRIVER_DIR/chromedriver-linux.zip" -d "$CHROMEDRIVER_DIR"
+chmod +x "$CHROMEDRIVER_BIN"
+
+# Verify ChromeDriver installation
+if [[ ! -f "$CHROMEDRIVER_BIN" ]]; then
+    echo "❌ ChromeDriver installation failed!"
+    exit 1
+fi
+
+echo "✅ ChromeDriver installed at: $CHROMEDRIVER_BIN"
+"$CHROMEDRIVER_BIN" --version
