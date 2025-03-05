@@ -88,7 +88,9 @@ def selenium_extract_text(url):
         return f"Selenium extraction failed: {str(e)}"
 
 def analyze_compliance(privacy_text, terms_text):
-    """Analyzes the extracted text for TCR SMS compliance using ChatGPT."""
+    """Analyzes the extracted text for TCR SMS compliance using ChatGPT (correct API version)."""
+    client = openai.OpenAI(api_key=OPENAI_API_KEY)
+
     prompt = f"""
     Review the following Privacy Policy and Terms & Conditions for compliance with TCR SMS guidelines.
 
@@ -123,12 +125,16 @@ def analyze_compliance(privacy_text, terms_text):
     """
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "system", "content": "Analyze the following for SMS compliance."},
-                      {"role": "user", "content": prompt}]
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Analyze the following for SMS compliance."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format="json"
         )
-        ai_response = response["choices"][0]["message"]["content"]
+
+        ai_response = response.choices[0].message.content
         print(f"🔍 Raw AI Response: {ai_response}")  # Debugging
 
         return json.loads(ai_response)
