@@ -2,10 +2,9 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import openai
-import re
-import warnings
 import json
 import psutil
+import time
 from fastapi import FastAPI, HTTPException
 from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +14,7 @@ from selenium.webdriver.chrome.options import Options
 from concurrent.futures import ThreadPoolExecutor
 
 # Suppress warnings for cleaner logs
+import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # Load OpenAI API Key
@@ -44,8 +44,8 @@ def ensure_https(url: str) -> str:
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=2, visited=None):
-    """Recursively crawl a website up to a limited depth to find relevant pages."""
+def crawl_website(website_url, max_depth=3, visited=None):
+    """Recursively crawl a website up to a set depth, prioritizing policy-related pages."""
     if visited is None:
         visited = set()
 
@@ -64,7 +64,9 @@ def crawl_website(website_url, max_depth=2, visited=None):
             href = a_tag['href']
             full_url = urljoin(website_url, href)
             parsed_url = urlparse(full_url)
-            if parsed_url.netloc == urlparse(website_url).netloc and full_url not in visited:
+            
+            # Prioritize legal pages (e.g., privacy, terms, policies, legal)
+            if any(keyword in full_url.lower() for keyword in ["privacy", "terms", "policy", "legal", "conditions"]):
                 found_links.add(full_url)
                 if max_depth > 1:
                     found_links.update(crawl_website(full_url, max_depth - 1, visited))
@@ -81,8 +83,8 @@ def extract_text_from_url(url):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Extract only first 10,000 characters
-        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span'])[:200])
+        # Extract key content from multiple elements
+        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'meta'])[:300])
         return text[:10000]  # Limit text size
     except requests.RequestException:
         return selenium_extract_text(url)
@@ -105,6 +107,7 @@ def selenium_extract_text(url):
         service = Service(executable_path=chromedriver_binary)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
+        time.sleep(2)  # Allow JavaScript to load content
         text = driver.find_element("xpath", "//body").text
     except Exception:
         text = "Selenium extraction failed."
@@ -127,7 +130,7 @@ def kill_chrome_processes():
 def check_compliance_endpoint(website_url: str):
     """Check if a website's Privacy Policy and Terms & Conditions comply with TCR SMS requirements."""
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=2)
+    crawled_links = crawl_website(website_url, max_depth=3)
 
     privacy_text, terms_text = "", ""
 
@@ -138,7 +141,7 @@ def check_compliance_endpoint(website_url: str):
     for link, page_text in zip(crawled_links, results):
         if "privacy" in link:
             privacy_text += " " + page_text
-        elif "terms" in link or "conditions" in link or "terms-of-service" in link or "legal" in link:
+        elif any(keyword in link for keyword in ["terms", "conditions", "policy", "legal"]):
             terms_text += " " + page_text
 
     compliance_results = check_tcr_compliance_with_chatgpt(privacy_text, terms_text)
@@ -164,19 +167,16 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
 
     compliance_prompt = f"""
     You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
-    
-    **Privacy Policy:**
-    {privacy_text[:2000]}  
 
-    **Terms and Conditions:**
-    {terms_text[:2000]}  
+    Privacy Policy:
+    {privacy_text[:2000]}
 
-    **TCR SMS Compliance Standards:**
-    - Privacy Policy must state SMS consent data will not be shared.
-    - Privacy Policy must explain data collection and usage.
-    - Terms must specify message types and include mandatory disclosures.
+    Terms and Conditions:
+    {terms_text[:2000]}
 
-    Return a **pure JSON response** without Markdown formatting.
+    Provide a **structured JSON response** evaluating:
+    - Privacy Policy: SMS consent and data usage details.
+    - Terms: Message types and mandatory disclosures.
     """
 
     response = client.chat.completions.create(
@@ -188,34 +188,6 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     try:
         chatgpt_response = response.choices[0].message.content.strip()
         chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
-        parsed_response = json.loads(chatgpt_response)
-
-        return {
-            "compliance_analysis": {
-                "privacy_policy": {
-                    "sms_consent_data": parsed_response.get("privacy_policy", {}).get("sms_consent_data", "Not explicitly stated."),
-                    "data_collection_usage": parsed_response.get("privacy_policy", {}).get("data_collection_usage", "Not detailed.")
-                },
-                "terms_conditions": {
-                    "message_types": parsed_response.get("terms_conditions", {}).get("message_types", "Not specified."),
-                    "mandatory_disclosures": parsed_response.get("terms_conditions", {}).get("mandatory_disclosures", "No required disclosures found.")
-                },
-                "compliance_status": parsed_response.get("compliance_status", "Partial compliance detected.")
-            }
-        }
-
+        return json.loads(chatgpt_response)
     except json.JSONDecodeError:
-        return {
-            "compliance_analysis": {
-                "privacy_policy": {
-                    "sms_consent_data": "Error processing privacy policy.",
-                    "data_collection_usage": "Error extracting data collection details."
-                },
-                "terms_conditions": {
-                    "message_types": "Error processing terms & conditions.",
-                    "mandatory_disclosures": "Error extracting mandatory disclosures."
-                },
-                "compliance_status": "Failed to evaluate compliance due to response parsing error."
-            }
-        }
-
+        return {"error": "Failed to parse AI response."}
