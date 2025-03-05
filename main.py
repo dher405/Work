@@ -148,9 +148,9 @@ def check_compliance_endpoint(website_url: str):
     return compliance_results
 
 def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
-    """Optimized ChatGPT request to improve reliability and prevent empty responses."""
-    
-    if not privacy_text and not terms_text:
+    """Optimized ChatGPT request with improved error handling and logging."""
+
+    if not privacy_text.strip() and not terms_text.strip():
         return {
             "compliance_analysis": {
                 "privacy_policy": {
@@ -161,46 +161,39 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
                     "message_types": "No terms and conditions text available.",
                     "mandatory_disclosures": "No disclosures found."
                 },
-                "compliance_status": "No compliance data extracted."
+                "compliance_status": "No compliance data extracted due to missing content."
             }
         }
 
     compliance_prompt = f"""
     You are an expert in SMS compliance regulations. Analyze the Privacy Policy and Terms & Conditions for TCR SMS compliance.
 
-    Privacy Policy:
-    {privacy_text[:2000]}
+    - Privacy Policy: {privacy_text[:2000]}
+    - Terms & Conditions: {terms_text[:2000]}
 
-    Terms and Conditions:
-    {terms_text[:2000]}
-
-    Provide a **structured JSON response** evaluating:
-    - Privacy Policy: SMS consent and data usage details.
-    - Terms: Message types and mandatory disclosures.
+    **Return a JSON response ONLY. No explanations, no additional text.**
     """
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": compliance_prompt}],
-        max_tokens=800  
+        max_tokens=800
     )
 
     try:
         chatgpt_response = response.choices[0].message.content.strip()
-        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip()
+
+        # **Log AI raw response for debugging**
+        print("RAW AI RESPONSE:", chatgpt_response)
+
+        chatgpt_response = chatgpt_response.replace("```json", "").replace("```", "").strip("```")
         return json.loads(chatgpt_response)
+
     except json.JSONDecodeError:
         return {
             "compliance_analysis": {
-                "privacy_policy": {
-                    "sms_consent_data": "Error processing privacy policy.",
-                    "data_collection_usage": "Error extracting data collection details."
-                },
-                "terms_conditions": {
-                    "message_types": "Error processing terms & conditions.",
-                    "mandatory_disclosures": "Error extracting mandatory disclosures."
-                },
+                "privacy_policy": {"sms_consent_data": "Error processing privacy policy."},
+                "terms_conditions": {"message_types": "Error processing terms & conditions."},
                 "compliance_status": "Failed to evaluate compliance due to response parsing error."
             }
         }
-
