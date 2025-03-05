@@ -1,159 +1,154 @@
 import os
 import requests
-from bs4 import BeautifulSoup
-import openai
+import subprocess
 import re
+import openai
 from fastapi import FastAPI, HTTPException
-from urllib.parse import urljoin, urlparse, unquote
 from fastapi.middleware.cors import CORSMiddleware
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
-# Load API Key from environment variable
+# ✅ Load API Key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
 if not OPENAI_API_KEY:
     raise ValueError("Missing OpenAI API key! Set OPENAI_API_KEY as an environment variable.")
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
+# ✅ Initialize FastAPI app
 app = FastAPI()
 
+# ✅ Allow CORS for frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ✅ Debugging Endpoint for Chrome & ChromeDriver
+@app.get("/debug_chrome")
+def debug_chrome():
+    try:
+        chrome_version = subprocess.check_output(["/home/render/chromium/latest/chrome", "--version"], stderr=subprocess.STDOUT, text=True)
+        chromedriver_version = subprocess.check_output(["/home/render/chromedriver/chromedriver-linux64/chromedriver", "--version"], stderr=subprocess.STDOUT, text=True)
+
+        return {
+            "chrome_version": chrome_version.strip(),
+            "chromedriver_version": chromedriver_version.strip(),
+            "chrome_path": os.getenv("CHROME_BIN"),
+            "chromedriver_path": os.getenv("CHROMEDRIVER_BIN")
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+# ✅ Ensure HTTPS for input URLs
 def ensure_https(url: str) -> str:
-    """Ensure the URL starts with https://, adding it if necessary."""
-    url = unquote(url)  # Decode URL
     if not url.startswith("http"):
         return "https://" + url
     return url
 
-def crawl_website(website_url, max_depth=2, visited=None):
-    """Recursively crawl a website up to a maximum depth."""
+# ✅ Crawl and extract text from multiple pages
+def crawl_website(base_url, max_depth=2, visited=None):
     if visited is None:
         visited = set()
-    
-    if max_depth == 0 or website_url in visited:
-        return set()
-    
-    visited.add(website_url)
+
+    if max_depth == 0 or base_url in visited:
+        return visited
+
+    visited.add(base_url)
     try:
-        response = requests.get(website_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        response = requests.get(base_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
-        found_links = set()
 
         for a_tag in soup.find_all('a', href=True):
-            href = a_tag['href']
-            full_url = urljoin(website_url, href)
-            parsed_url = urlparse(full_url)
-            if parsed_url.netloc == urlparse(website_url).netloc:  # Only follow internal links
-                found_links.add(full_url)
-                found_links.update(crawl_website(full_url, max_depth - 1, visited))
+            link = a_tag['href']
+            full_url = requests.compat.urljoin(base_url, link)
+            if full_url.startswith(base_url) and full_url not in visited:
+                visited.update(crawl_website(full_url, max_depth - 1, visited))
         
-        print(f"✅ Crawled {website_url}, Found Links: {found_links}")  # Debugging
-        return found_links
+        return visited
     except requests.RequestException:
-        print(f"❌ Failed to crawl {website_url}")
-        return set()
+        return visited
 
+# ✅ Extract text from a webpage using BeautifulSoup or Selenium
 def extract_text_from_url(url):
-    """Extract text content from a given webpage. Uses Selenium if needed."""
-    if not url:
-        return ""
     try:
         response = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
-        text = "\n".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body']))
-        text = re.sub(r'\s+', ' ', text.strip())
-
-        print(f"✅ Extracted from {url} (cleaned): {text[:500]}...")  # Debugging
-
-        # If extracted text is empty, use Selenium
-        if not text.strip():
-            print(f"⚠️ Requests failed to extract meaningful text from {url}. Trying Selenium...")
-
+        text = " ".join(p.get_text() for p in soup.find_all(['p', 'li', 'span', 'div', 'body'])).strip()
+        
+        if len(text) < 100:  # If too short, try Selenium
             chrome_options = Options()
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.binary_location = "/home/render/chromium/opt/google/chrome/google-chrome"  # ✅ FIXED: Correct Chrome Path
+            chrome_options.binary_location = os.getenv("CHROME_BIN")
 
-            driver = webdriver.Chrome(service=Service("/home/render/chromedriver/chromedriver-linux64/chromedriver"), options=chrome_options)
+            driver = webdriver.Chrome(service=Service(os.getenv("CHROMEDRIVER_BIN")), options=chrome_options)
             driver.get(url)
             text = driver.find_element("xpath", "//body").text
             driver.quit()
+        
+        return re.sub(r'\s+', ' ', text)
+    
+    except Exception as e:
+        return f"Error extracting text from {url}: {str(e)}"
 
-            print(f"✅ Extracted via Selenium from {url}: {text[:500]}...")  # Debugging
+# ✅ Process compliance using OpenAI
+def check_compliance(privacy_text, terms_text):
+    prompt = f"""
+    Analyze the following privacy policy and terms & conditions for compliance with SMS communication standards.
 
-        return text
+    **Privacy Policy:**
+    {privacy_text}
 
-    except requests.RequestException:
-        print(f"❌ Requests completely failed for {url}. Falling back to Selenium.")
+    **Terms & Conditions:**
+    {terms_text}
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.binary_location = "/home/render/chromium/opt/google/chrome/google-chrome"  # ✅ FIXED: Correct Chrome Path
+    **Checklist:**
+    - Does the privacy policy state that SMS consent data will not be shared with third parties?
+    - Does it clearly explain data collection and usage?
+    - Do the terms specify the types of messages users will receive?
+    - Are mandatory disclosures like opt-out instructions included?
 
-        driver = webdriver.Chrome(service=Service("/home/render/chromedriver/chromedriver-linux64/chromedriver"), options=chrome_options)
-        driver.get(url)
-        text = driver.find_element("xpath", "//body").text
-        driver.quit()
+    Return JSON format.
+    """
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "system", "content": "You are a compliance auditor."},
+                      {"role": "user", "content": prompt}],
+            response_format="json_object"
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return {"error": f"AI processing failed: {str(e)}"}
 
-        print(f"✅ Extracted via Selenium for {url}: {text[:500]}...")  # Debugging
-        return text
-
+# ✅ FastAPI route to check compliance
 @app.get("/check_compliance")
 def check_compliance_endpoint(website_url: str):
     website_url = ensure_https(website_url)
-    crawled_links = crawl_website(website_url, max_depth=2)
-    
+    crawled_pages = crawl_website(website_url, max_depth=2)
+
     privacy_text, terms_text = "", ""
 
-    for link in crawled_links:
+    for link in crawled_pages:
         page_text = extract_text_from_url(link)
-        print(f"✅ Extracted text from {link}: {page_text[:500]}")
         if "privacy" in link:
             privacy_text += " " + page_text
         elif "terms" in link or "conditions" in link or "terms-of-service" in link:
             terms_text += " " + page_text
-    
+
     if not privacy_text and not terms_text:
-        raise HTTPException(status_code=400, detail="Could not extract text from any relevant pages.")
-    
-    prompt = f"""
-    Analyze the following website texts for compliance with TCR SMS standards:
-    **Privacy Policy:** {privacy_text[:2000]}
-    **Terms & Conditions:** {terms_text[:2000]}
+        raise HTTPException(status_code=400, detail="Could not extract relevant text from the website.")
 
-    The compliance report should indicate whether:
-    - The privacy policy explicitly states that SMS consent data is not shared with third parties.
-    - The privacy policy clearly explains how consumer information is used, collected, and shared.
-    - The terms & conditions outline what types of messages the recipient can expect.
-    - The terms & conditions include mandatory SMS disclosures.
-    - Recommendations for improvement if any of the above are missing.
-
-    Return the analysis in a structured JSON format.
-    """
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        response_format="json"
-    )
-
-    try:
-        compliance_report = response["choices"][0]["message"]["content"]
-        return {"compliance_report": compliance_report}
-    except (KeyError, IndexError):
-        raise HTTPException(status_code=500, detail="Error parsing AI response.")
+    compliance_report = check_compliance(privacy_text, terms_text)
+    return {"compliance_analysis": compliance_report}
