@@ -153,21 +153,25 @@ def check_tcr_compliance_with_chatgpt(privacy_text, terms_text):
     - Privacy Policy: {privacy_text[:4000]}
     - Terms & Conditions: {terms_text[:4000]}
 
+    **STRICT REQUIREMENT: ONLY mark an item as 'not_found' if you are CERTAIN it does not exist.**
+    - If wording is different but means the same thing, mark it as 'found'.
+    - If unsure, provide the closest matching text and label it 'partially_found'.
+
     **Return JSON ONLY in the following format:**
     {{
         "compliance_analysis": {{
             "privacy_policy": {{
-                "consent": "found/not_found",
-                "data_collection": "explicit/not_explicit",
-                "opt_out": "found/not_found",
+                "consent": "found/not_found/partially_found",
+                "data_collection": "explicit/not_explicit/partially_explicit",
+                "opt_out": "found/not_found/partially_found",
                 "contact_information": "present/not_present",
-                "third_party_sharing": "explicit/not_explicit"
+                "third_party_sharing": "explicit/not_explicit/partially_explicit"
             }},
             "terms_conditions": {{
-                "SMS_usage": "found/not_found",
-                "clear_terms": "found/not_found",
-                "consent": "explicit/not_explicit",
-                "user_rights": "explicit/not_explicit",
+                "SMS_usage": "found/not_found/partially_found",
+                "clear_terms": "found/not_found/partially_found",
+                "consent": "explicit/not_explicit/partially_explicit",
+                "user_rights": "explicit/not_explicit/partially_explicit",
                 "contact_information": "present/not_present"
             }},
             "overall_compliance": "Compliant/Non-compliant",
