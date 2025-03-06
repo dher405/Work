@@ -50,10 +50,7 @@ def extract_text_from_website(base_url):
     pages_to_check = [
         base_url,
         f"{base_url}/privacy-policy",
-        f"{base_url}/terms-of-service",
-        f"{base_url}/terms",
-        f"{base_url}/policies",
-        f"{base_url}/legal"
+        f"{base_url}/terms-of-service"
     ]
     extracted_text = ""
 
@@ -70,7 +67,7 @@ def extract_text_from_website(base_url):
         for page in pages_to_check:
             logger.info(f"Scraping page: {page}")
             driver.get(page)
-            time.sleep(7)  # Allow full page load
+            time.sleep(5)  # Allow full page load
             soup = BeautifulSoup(driver.page_source, "html.parser")
             extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
 
@@ -97,7 +94,7 @@ def check_compliance(text):
     }
 
     payload = {
-        "model": "gpt-4o-mini",
+        "model": "gpt-4-turbo",
         "messages": [
             {
                 "role": "system",
@@ -120,6 +117,40 @@ def check_compliance(text):
                     - Opt-out instructions ('Reply STOP').
                     - Assistance instructions ('Reply HELP' or contact support URL').
 
+                **Response Format (include actual found statements if detected):**
+
+                {{
+                    "json": {{
+                        "compliance_analysis": {{
+                            "privacy_policy": {{
+                                "sms_consent_statement": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "data_usage_explanation": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "terms_conditions": {{
+                                "message_types_specified": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "mandatory_disclosures": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "overall_compliance": "compliant/partially_compliant/non_compliant",
+                            "recommendations": [
+                                "Recommendation 1",
+                                "Recommendation 2"
+                            ]
+                        }}
+                    }}
+                }}
+
                 Here is the extracted website text:
                 {text}
                 """
@@ -135,22 +166,50 @@ def check_compliance(text):
         response.raise_for_status()
         response_data = response.json()
         logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
-        
+
         if "choices" in response_data and response_data["choices"]:
             return json.loads(response_data["choices"][0]["message"]["content"])
         else:
             return {"error": "Invalid AI response format."}
+
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err.response.text}")
+        return {"error": f"OpenAI API Error: {http_err.response.text}"}
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
 
 @app.get("/check_compliance")
-def check_website_compliance(website_url: str = Query(..., title="Website URL")):
+def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
+
     extracted_text = extract_text_from_website(website_url)
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
+
     compliance_result = check_compliance(extracted_text)
+
     response = Response(content=json.dumps(compliance_result), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+
     return response
+
+@app.options("/check_compliance")
+def options_check_compliance():
+    """Handle CORS preflight requests explicitly"""
+    response = Response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+@app.get("/debug_chrome")
+def debug_chrome():
+    try:
+        chrome_version = os.popen(f"{get_chrome_binary()} --version").read().strip()
+        driver_version = os.popen(f"{get_chromedriver_binary()} --version").read().strip()
+        return {"chrome_version": chrome_version, "driver_version": driver_version}
+    except FileNotFoundError as e:
+        return {"error": str(e)}
