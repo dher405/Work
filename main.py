@@ -3,6 +3,7 @@ import time
 import json
 import requests
 import logging
+from urllib.parse import urljoin
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
@@ -17,18 +18,18 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# ✅ CORS Configuration
+# CORS Configuration
 origins = [
-    "https://frontend-kbjv.onrender.com",  # ✅ Allow frontend to call API
-    "https://testfrontend-z8t3.onrender.com",  # ✅ Allow frontend to call API
-    "http://localhost:3000"  # ✅ Allow local development
+    "https://frontend-kbjv.onrender.com",
+    "https://testfrontend-z8t3.onrender.com",
+    "http://localhost:3000"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],  # ✅ Explicitly allow these methods
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -48,11 +49,7 @@ def get_chromedriver_binary():
 
 # Function to extract text from website pages
 def extract_text_from_website(base_url):
-    pages_to_check = [
-        base_url,
-        f"{base_url}/privacy-policy",
-        f"{base_url}/terms-of-service"
-    ]
+    pages_to_check = [base_url]
     extracted_text = ""
 
     options = Options()
@@ -65,16 +62,37 @@ def extract_text_from_website(base_url):
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        for page in pages_to_check:
+        driver.get(base_url)
+        time.sleep(5)  # Allow full page load
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+
+        # Find links to relevant pages (up to 2 levels deep)
+        for link in soup.find_all("a", href=True):
+            href = link["href"]
+            if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
+                absolute_url = urljoin(base_url, href)
+                pages_to_check.append(absolute_url)
+
+                # Check one level deeper for these pages
+                driver.get(absolute_url)
+                time.sleep(3)
+                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                for sub_link in sub_soup.find_all("a", href=True):
+                    sub_href = sub_link["href"]
+                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                        pages_to_check.append(urljoin(absolute_url, sub_href))
+
+        # Extract text from all collected pages
+        for page in set(pages_to_check):  # Use set to remove duplicates
             logger.info(f"Scraping page: {page}")
             driver.get(page)
-            time.sleep(5)  # Allow full page load
+            time.sleep(5)
             soup = BeautifulSoup(driver.page_source, "html.parser")
             extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
-        
+
         return extracted_text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
