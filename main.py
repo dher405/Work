@@ -20,7 +20,7 @@ app = FastAPI()
 # ✅ CORS Configuration
 origins = [
     "https://frontend-kbjv.onrender.com",  # ✅ Allow frontend to call API
-    "https://https://testfrontend-z8t3.onrender.com/",  # ✅ Allow frontend to call API
+    "https://testfrontend-z8t3.onrender.com/",  # ✅ Allow frontend to call API
     "http://localhost:3000"  # ✅ Allow local development
 ]
 
