@@ -20,16 +20,16 @@ app = FastAPI()
 
 # ✅ Add allowed origins (Replace with actual front-end domain)
 origins = [
-    "https://frontend-kbjv.onrender.com",  # ✅ Your actual front-end domain
+    "https://frontend-kbjv.onrender.com",  # ✅ Front-end domain
     "http://localhost:3000"  # ✅ Allows local development testing
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,  # ✅ Allows sending cookies/auth headers if needed
-    allow_methods=["*"],  # ✅ Allows all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # ✅ Allows all headers
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Function to get Chrome binary
@@ -121,32 +121,34 @@ def check_compliance(text):
                 **Response Format (include actual found statements if detected):**
 
                 {{
-                    "compliance_analysis": {{
-                        "privacy_policy": {{
-                            "sms_consent_statement": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty"
+                    "json": {{
+                        "compliance_analysis": {{
+                            "privacy_policy": {{
+                                "sms_consent_statement": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "data_usage_explanation": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
                             }},
-                            "data_usage_explanation": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty"
-                            }}
-                        }},
-                        "terms_conditions": {{
-                            "message_types_specified": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty"
+                            "terms_conditions": {{
+                                "message_types_specified": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "mandatory_disclosures": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
                             }},
-                            "mandatory_disclosures": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty"
-                            }}
-                        }},
-                        "overall_compliance": "compliant/partially_compliant/non_compliant",
-                        "recommendations": [
-                            "Recommendation 1",
-                            "Recommendation 2"
-                        ]
+                            "overall_compliance": "compliant/partially_compliant/non_compliant",
+                            "recommendations": [
+                                "Recommendation 1",
+                                "Recommendation 2"
+                            ]
+                        }}
                     }}
                 }}
 
@@ -197,3 +199,4 @@ def debug_chrome():
         return {"chrome_version": chrome_version, "driver_version": driver_version}
     except FileNotFoundError as e:
         return {"error": str(e)}
+
