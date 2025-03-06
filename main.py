@@ -97,7 +97,7 @@ def check_compliance(text):
     }
 
     payload = {
-        "model": "gpt-4-turbo",
+        "model": "gpt-4o-mini",
         "messages": [
             {
                 "role": "system",
