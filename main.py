@@ -64,6 +64,7 @@ def extract_text_from_website(base_url):
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
+        driver.set_page_load_timeout(240)
         driver.get(base_url)
         time.sleep(10)  # Allow full page load
         soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -76,6 +77,7 @@ def extract_text_from_website(base_url):
                 pages_to_check.append(absolute_url)
 
                 # Check one level deeper for these pages
+                driver.set_page_load_timeout(240)
                 driver.get(absolute_url)
                 time.sleep(6)
                 sub_soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -87,6 +89,7 @@ def extract_text_from_website(base_url):
         # Extract text from all collected pages
         for page in set(pages_to_check):  # Use set to remove duplicates
             logger.info(f"Scraping page: {page}")
+            driver.set_page_load_timeout(240)
             driver.get(page)
             time.sleep(10)
             soup = BeautifulSoup(driver.page_source, "html.parser")
