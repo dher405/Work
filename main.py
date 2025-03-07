@@ -66,42 +66,53 @@ def extract_text_from_website(base_url):
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        driver.set_page_load_timeout(180)  # Increased timeout
-        driver.get(base_url)
+        driver.set_page_load_timeout(240)  # 🔹 Increased timeout
 
-        # Wait for the page to fully load
-        WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        for attempt in range(2):  # 🔹 Retry up to 2 times
+            try:
+                driver.get(base_url)
+                WebDriverWait(driver, 40).until(
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+                )
+                break  # Success, exit loop
+            except Exception as e:
+                logger.warning(f"Retry {attempt + 1}: Failed to load {base_url}, error: {e}")
+                if attempt == 1:  # Last attempt failed
+                    raise
 
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
-        # Find links to privacy/terms pages (up to 2 levels deep)
         for link in soup.find_all("a", href=True):
             href = link["href"]
             if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-                # Check one level deeper for these pages
-                driver.get(absolute_url)
-                time.sleep(3)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"]
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
+                # Try loading subpages
+                try:
+                    driver.get(absolute_url)
+                    time.sleep(3)
+                    sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                    for sub_link in sub_soup.find_all("a", href=True):
+                        sub_href = sub_link["href"]
+                        if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                            pages_to_check.append(urljoin(absolute_url, sub_href))
+                except Exception as e:
+                    logger.warning(f"Skipping {absolute_url} due to error: {e}")
 
-        # Extract text from all collected pages
-        for page in set(pages_to_check):  # Use set to remove duplicates
+        # Extract text from all pages
+        for page in set(pages_to_check):  
             logger.info(f"Scraping page: {page}")
-            driver.get(page)
-
-            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+            try:
+                driver.get(page)
+                WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                soup = BeautifulSoup(driver.page_source, "html.parser")
+                extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+            except Exception as e:
+                logger.warning(f"Skipping {page} due to error: {e}")
 
         if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
+            logger.warning(f"Extracted text from {base_url} appears too short.")
 
         return extracted_text.strip()
     except Exception as e:
