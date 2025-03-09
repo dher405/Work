@@ -3,7 +3,7 @@ import time
 import json
 import requests
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
@@ -59,7 +59,6 @@ def initialize_driver():
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-infobars")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-
     
     service = Service(get_chromedriver_binary())
     try:
@@ -82,6 +81,7 @@ def extract_text_from_website(base_url):
     driver = initialize_driver()
     extracted_text = ""
     pages_to_check = [base_url]
+    base_domain = urlparse(base_url).netloc
 
     try:
         driver.set_page_load_timeout(300)
@@ -91,7 +91,12 @@ def extract_text_from_website(base_url):
 
         # Find links to relevant pages (up to 2 levels deep)
         for link in soup.find_all("a", href=True):
-            href = link["href"]
+            href = link["href"].strip()
+            if href.startswith("mailto:"):
+                continue  # Ignore mailto links
+            parsed_href = urlparse(urljoin(base_url, href))
+            if parsed_href.netloc and parsed_href.netloc != base_domain:
+                continue  # Ignore external domains
             if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
@@ -102,7 +107,12 @@ def extract_text_from_website(base_url):
                 time.sleep(6)
                 sub_soup = BeautifulSoup(driver.page_source, "html.parser")
                 for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"]
+                    sub_href = sub_link["href"].strip()
+                    if sub_href.startswith("mailto:"):
+                        continue  # Ignore mailto links
+                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
+                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
+                        continue  # Ignore external domains
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
