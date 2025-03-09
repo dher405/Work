@@ -57,8 +57,15 @@ def retry_with_www(website_url):
     except HTTPException as e:
         if e.status_code == 400 and "www." not in website_url:
             logger.warning("Retrying with www. prepended to the domain...")
-            new_url = website_url.replace("https://", "https://www.") if website_url.startswith("https://") else f"https://www.{website_url}"
-            return extract_text_from_website(new_url)
+            new_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
+            try:
+                extracted_text = extract_text_from_website(new_url)
+                if not extracted_text:
+                    raise HTTPException(status_code=400, detail="Failed to extract text from website after retry.")
+                return extracted_text
+            except Exception as retry_exception:
+                logger.error(f"Retry with www. failed: {retry_exception}")
+                raise HTTPException(status_code=400, detail="Retry with www. failed.")
         else:
             raise e
 
@@ -159,41 +166,6 @@ def check_compliance(text):
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
-        
-def extract_text_from_website(base_url):
-    pages_to_check = [base_url]
-    extracted_text = ""
-
-    options = Options()
-    options.binary_location = get_chrome_binary()
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=9222")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    service = Service(get_chromedriver_binary())
-    driver = webdriver.Chrome(service=service, options=options)
-
-    try:
-        driver.set_page_load_timeout(240)
-        driver.get(base_url)
-        time.sleep(10)  # Allow full page load
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-
-        # Extract text
-        extracted_text = soup.get_text(separator="\n", strip=True)
-
-        if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
-
-        return extracted_text.strip()
-    except Exception as e:
-        logger.error(f"Failed to extract text from {base_url}: {e}")
-        return ""
-    finally:
-        driver.quit()
-
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
