@@ -67,8 +67,15 @@ def initialize_driver():
         logger.error(f"Failed to start ChromeDriver: {e}")
         raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
 
+# Function to enforce www. on website URL
+def enforce_www(website_url):
+    if "www." not in website_url:
+        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
+    return website_url
+
 # Function to extract text from website
 def extract_text_from_website(base_url):
+    base_url = enforce_www(base_url)  # Ensure www. is present on the URL
     driver = initialize_driver()
     extracted_text = ""
 
@@ -87,35 +94,9 @@ def extract_text_from_website(base_url):
         return extracted_text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
-        if "www." not in base_url:
-            logger.warning("Retrying with www. prepended to the domain after timeout...")
-            new_url = base_url.replace("https://", "https://www.", 1) if base_url.startswith("https://") else f"https://www.{base_url}"
-            try:
-                driver.get(new_url)
-                time.sleep(15)
-                soup = BeautifulSoup(driver.page_source, "html.parser")
-                extracted_text = soup.get_text(separator="\n", strip=True)
-                if extracted_text:
-                    return extracted_text.strip()
-            except Exception as retry_exception:
-                logger.error(f"Retry with www. failed: {retry_exception}")
         return None
     finally:
         driver.quit()
-
-# Function to retry with www. if initial request fails with 400
-def retry_with_www(website_url):
-    extracted_text = extract_text_from_website(website_url)
-    if extracted_text:
-        return extracted_text
-    if "www." not in website_url:
-        logger.warning("Retrying with www. prepended to the domain...")
-        new_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
-        extracted_text = extract_text_from_website(new_url)
-        if extracted_text:
-            return extracted_text
-        logger.error("Retry with www. failed.")
-    raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
 # Function to check compliance using OpenAI API
 def check_compliance(text):
@@ -196,6 +177,7 @@ def check_compliance(text):
     }
     
     return {}
+
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
