@@ -144,10 +144,61 @@ def check_compliance(text):
             },
             {
                 "role": "user",
-                "content": f"Analyze the following website text for TCR SMS compliance: {text}"
+                "content": f"""
+                Analyze the following website text for TCR SMS compliance. The compliance check should include:
+                
+                **Privacy Policy must contain:**
+                - Explicit statement that SMS consent data will not be shared with third parties.
+                - Clear explanation of how consumer data is collected, used, and shared.
+
+                **Terms & Conditions must contain:**
+                - Explanation of what type of SMS messages users will receive.
+                - Mandatory disclosures including:
+                    - Messaging frequency may vary.
+                    - Message and data rates may apply.
+                    - Opt-out instructions ('Reply STOP').
+                    - Assistance instructions ('Reply HELP' or contact support URL').
+
+                **Response Format (include actual found statements if detected):**
+
+                {{
+                    "json": {{
+                        "compliance_analysis": {{
+                            "privacy_policy": {{
+                                "sms_consent_statement": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "data_usage_explanation": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "terms_conditions": {{
+                                "message_types_specified": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "mandatory_disclosures": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "overall_compliance": "compliant/partially_compliant/non_compliant",
+                            "recommendations": [
+                                "Recommendation 1",
+                                "Recommendation 2"
+                            ]
+                        }}
+                    }}
+                }}
+
+                Here is the extracted website text:
+                {text}
+                """
             }
         ],
-        "response_format": {"type": "json_object"}
+        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
     }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
@@ -162,13 +213,13 @@ def check_compliance(text):
             return json.loads(response_data["choices"][0]["message"]["content"])
         else:
             return {"error": "Invalid AI response format."}
+
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred: {http_err.response.text}")
         return {"error": f"OpenAI API Error: {http_err.response.text}"}
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
-
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
