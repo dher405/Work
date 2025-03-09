@@ -87,6 +87,18 @@ def extract_text_from_website(base_url):
         return extracted_text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
+        if "www." not in base_url:
+            logger.warning("Retrying with www. prepended to the domain after timeout...")
+            new_url = base_url.replace("https://", "https://www.", 1) if base_url.startswith("https://") else f"https://www.{base_url}"
+            try:
+                driver.get(new_url)
+                time.sleep(15)
+                soup = BeautifulSoup(driver.page_source, "html.parser")
+                extracted_text = soup.get_text(separator="\n", strip=True)
+                if extracted_text:
+                    return extracted_text.strip()
+            except Exception as retry_exception:
+                logger.error(f"Retry with www. failed: {retry_exception}")
         return None
     finally:
         driver.quit()
