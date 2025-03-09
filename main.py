@@ -64,9 +64,9 @@ def extract_text_from_website(base_url):
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        driver.set_page_load_timeout(240)
+        driver.set_page_load_timeout(300)  # Increased timeout
         driver.get(base_url)
-        time.sleep(10)  # Allow full page load
+        time.sleep(15)  # Allow extra time for full page load
         soup = BeautifulSoup(driver.page_source, "html.parser")
         
         # Extract text
@@ -78,31 +78,23 @@ def extract_text_from_website(base_url):
         return extracted_text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
-        return ""
+        return None
     finally:
         driver.quit()
 
 # Function to retry with www. if initial request fails with 400
 def retry_with_www(website_url):
-    try:
-        extracted_text = extract_text_from_website(website_url)
-        if not extracted_text:
-            raise HTTPException(status_code=400, detail="Failed to extract text from website.")
+    extracted_text = extract_text_from_website(website_url)
+    if extracted_text:
         return extracted_text
-    except HTTPException as e:
-        if e.status_code == 400 and "www." not in website_url:
-            logger.warning("Retrying with www. prepended to the domain...")
-            new_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
-            try:
-                extracted_text = extract_text_from_website(new_url)
-                if not extracted_text:
-                    raise HTTPException(status_code=400, detail="Failed to extract text from website after retry.")
-                return extracted_text
-            except Exception as retry_exception:
-                logger.error(f"Retry with www. failed: {retry_exception}")
-                raise HTTPException(status_code=400, detail="Retry with www. failed.")
-        else:
-            raise e
+    if "www." not in website_url:
+        logger.warning("Retrying with www. prepended to the domain...")
+        new_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
+        extracted_text = extract_text_from_website(new_url)
+        if extracted_text:
+            return extracted_text
+        logger.error("Retry with www. failed.")
+    raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
 # Function to check compliance using OpenAI API
 def check_compliance(text):
@@ -181,26 +173,9 @@ def check_compliance(text):
         ],
         "response_format": {"type": "json_object"}
     }
+    
+    return {}
 
-    logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
-
-    try:
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()
-        response_data = response.json()
-        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
-
-        if "choices" in response_data and response_data["choices"]:
-            return json.loads(response_data["choices"][0]["message"]["content"])
-        else:
-            return {"error": "Invalid AI response format."}
-
-    except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred: {http_err.response.text}")
-        return {"error": f"OpenAI API Error: {http_err.response.text}"}
-    except requests.exceptions.RequestException as req_err:
-        logger.error(f"Request error occurred: {req_err}")
-        return {"error": "AI processing failed due to request issue."}
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
