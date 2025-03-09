@@ -123,6 +123,53 @@ def extract_text_from_website(base_url):
     finally:
         driver.quit()
 
+# Function to check compliance using OpenAI API
+def check_compliance(text):
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        logger.error("Missing OpenAI API key.")
+        return {"error": "Missing API key."}
+
+    headers = {
+        "Authorization": f"Bearer {openai_api_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
+            },
+            {
+                "role": "user",
+                "content": f"Analyze the following website text for TCR SMS compliance: {text}"
+            }
+        ],
+        "response_format": {"type": "json_object"}
+    }
+
+    logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
+
+    try:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        response.raise_for_status()
+        response_data = response.json()
+        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
+
+        if "choices" in response_data and response_data["choices"]:
+            return json.loads(response_data["choices"][0]["message"]["content"])
+        else:
+            return {"error": "Invalid AI response format."}
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err.response.text}")
+        return {"error": f"OpenAI API Error: {http_err.response.text}"}
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Request error occurred: {req_err}")
+        return {"error": "AI processing failed due to request issue."}
+
+
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
