@@ -74,69 +74,8 @@ def enforce_www(website_url):
         website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
     return website_url
 
-# Function to extract text from website
-def extract_text_from_website(base_url):
-    base_url = enforce_www(base_url)  # Ensure www. is present on the URL
-    logger.info(f"Checking compliance for: {base_url}")  # Log the enforced URL
-    driver = initialize_driver()
-    extracted_text = ""
-    pages_to_check = [base_url]
-    base_domain = urlparse(base_url).netloc
-
-    try:
-        driver.set_page_load_timeout(300)
-        driver.get(base_url)
-        time.sleep(15)
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-
-        # Find links to relevant pages (up to 2 levels deep)
-        for link in soup.find_all("a", href=True):
-            href = link["href"].strip()
-            if href.startswith("mailto:"):
-                continue  # Ignore mailto links
-            parsed_href = urlparse(urljoin(base_url, href))
-            if parsed_href.netloc and parsed_href.netloc != base_domain:
-                continue  # Ignore external domains
-            if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
-                absolute_url = urljoin(base_url, href)
-                pages_to_check.append(absolute_url)
-
-                # Check one level deeper for these pages
-                driver.set_page_load_timeout(240)
-                driver.get(absolute_url)
-                time.sleep(6)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"].strip()
-                    if sub_href.startswith("mailto:"):
-                        continue  # Ignore mailto links
-                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
-                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
-                        continue  # Ignore external domains
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
-
-        # Extract text from all collected pages
-        for page in set(pages_to_check):  # Use set to remove duplicates
-            logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
-
-        if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
-
-        return extracted_text.strip()
-    except Exception as e:
-        logger.error(f"Failed to extract text from {base_url}: {e}")
-        return ""
-    finally:
-        driver.quit()
-
 # Function to check compliance using OpenAI API
-def check_compliance(text):
+def check_compliance(text, page_url):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         logger.error("Missing OpenAI API key.")
@@ -171,7 +110,7 @@ def check_compliance(text):
                     - Opt-out instructions ('Reply STOP').
                     - Assistance instructions ('Reply HELP' or contact support URL').
 
-                **Response Format (include actual found statements if detected):**
+                **Response Format (include actual found statements and the page URL if detected):**
 
                 {{
                     "json": {{
@@ -179,21 +118,25 @@ def check_compliance(text):
                             "privacy_policy": {{
                                 "sms_consent_statement": {{
                                     "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
+                                    "statement": "actual statement found or empty",
+                                    "page_url": "{page_url}"
                                 }},
                                 "data_usage_explanation": {{
                                     "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
+                                    "statement": "actual statement found or empty",
+                                    "page_url": "{page_url}"
                                 }}
                             }},
                             "terms_conditions": {{
                                 "message_types_specified": {{
                                     "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
+                                    "statement": "actual statement found or empty",
+                                    "page_url": "{page_url}"
                                 }},
                                 "mandatory_disclosures": {{
                                     "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
+                                    "statement": "actual statement found or empty",
+                                    "page_url": "{page_url}"
                                 }}
                             }},
                             "overall_compliance": "compliant/partially_compliant/non_compliant",
@@ -205,12 +148,12 @@ def check_compliance(text):
                     }}
                 }}
 
-                Here is the extracted website text:
+                Here is the extracted website text from {page_url}:
                 {text}
                 """
             }
         ],
-        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
+        "response_format": {"type": "json_object"}
     }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
@@ -225,13 +168,13 @@ def check_compliance(text):
             return json.loads(response_data["choices"][0]["message"]["content"])
         else:
             return {"error": "Invalid AI response format."}
-
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred: {http_err.response.text}")
         return {"error": f"OpenAI API Error: {http_err.response.text}"}
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
+
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
