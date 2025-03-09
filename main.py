@@ -47,63 +47,20 @@ def get_chromedriver_binary():
         raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
     return chromedriver_binary
 
-# Function to extract text from website pages
-def extract_text_from_website(base_url):
-    pages_to_check = [base_url]
-    extracted_text = ""
-
-    options = Options()
-    options.binary_location = get_chrome_binary()
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=9222")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    service = Service(get_chromedriver_binary())
-    driver = webdriver.Chrome(service=service, options=options)
-
+# Function to retry with www. if initial request fails with 400
+def retry_with_www(website_url):
     try:
-        driver.set_page_load_timeout(240)
-        driver.get(base_url)
-        time.sleep(10)  # Allow full page load
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-
-        # Find links to relevant pages (up to 2 levels deep)
-        for link in soup.find_all("a", href=True):
-            href = link["href"]
-            if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
-                absolute_url = urljoin(base_url, href)
-                pages_to_check.append(absolute_url)
-
-                # Check one level deeper for these pages
-                driver.set_page_load_timeout(240)
-                driver.get(absolute_url)
-                time.sleep(6)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"]
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
-
-        # Extract text from all collected pages
-        for page in set(pages_to_check):  # Use set to remove duplicates
-            logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
-
-        if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
-
-        return extracted_text.strip()
-    except Exception as e:
-        logger.error(f"Failed to extract text from {base_url}: {e}")
-        return ""
-    finally:
-        driver.quit()
+        extracted_text = extract_text_from_website(website_url)
+        if not extracted_text:
+            raise HTTPException(status_code=400, detail="Failed to extract text from website.")
+        return extracted_text
+    except HTTPException as e:
+        if e.status_code == 400 and "www." not in website_url:
+            logger.warning("Retrying with www. prepended to the domain...")
+            new_url = website_url.replace("https://", "https://www.") if website_url.startswith("https://") else f"https://www.{website_url}"
+            return extract_text_from_website(new_url)
+        else:
+            raise e
 
 # Function to check compliance using OpenAI API
 def check_compliance(text):
@@ -180,7 +137,7 @@ def check_compliance(text):
                 """
             }
         ],
-        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
+        "response_format": {"type": "json_object"}
     }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
@@ -202,6 +159,7 @@ def check_compliance(text):
     except requests.exceptions.RequestException as req_err:
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
+
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
