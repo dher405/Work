@@ -76,6 +76,7 @@ def enforce_www(website_url):
 # Function to extract text from website
 def extract_text_from_website(base_url):
     base_url = enforce_www(base_url)  # Ensure www. is present on the URL
+    logger.info(f"Checking compliance for: {base_url}")  # Log the enforced URL
     driver = initialize_driver()
     extracted_text = ""
 
@@ -177,6 +178,7 @@ def check_compliance(text):
     }
     
     return {}
+
 
 
 @app.get("/check_compliance")
