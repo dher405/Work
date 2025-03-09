@@ -227,4 +227,17 @@ def options_check_compliance():
     """Handle CORS preflight requests explicitly"""
     response = Response()
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Contro
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+@app.get("/debug_chrome")
+def debug_chrome():
+    try:
+        chrome_version = os.popen(f"{get_chrome_binary()} --version").read().strip()
+        driver_version = os.popen(f"{get_chromedriver_binary()} --version").read().strip()
+        return {"chrome_version": chrome_version, "driver_version": driver_version}
+    except FileNotFoundError as e:
+        return {"error": str(e)}
