@@ -47,6 +47,41 @@ def get_chromedriver_binary():
         raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
     return chromedriver_binary
 
+# Function to extract text from website
+def extract_text_from_website(base_url):
+    pages_to_check = [base_url]
+    extracted_text = ""
+
+    options = Options()
+    options.binary_location = get_chrome_binary()
+    options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    service = Service(get_chromedriver_binary())
+    driver = webdriver.Chrome(service=service, options=options)
+
+    try:
+        driver.set_page_load_timeout(240)
+        driver.get(base_url)
+        time.sleep(10)  # Allow full page load
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        
+        # Extract text
+        extracted_text = soup.get_text(separator="\n", strip=True)
+
+        if len(extracted_text) < 100:
+            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
+
+        return extracted_text.strip()
+    except Exception as e:
+        logger.error(f"Failed to extract text from {base_url}: {e}")
+        return ""
+    finally:
+        driver.quit()
+
 # Function to retry with www. if initial request fails with 400
 def retry_with_www(website_url):
     try:
