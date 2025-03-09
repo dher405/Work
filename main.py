@@ -47,11 +47,8 @@ def get_chromedriver_binary():
         raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
     return chromedriver_binary
 
-# Function to extract text from website
-def extract_text_from_website(base_url):
-    pages_to_check = [base_url]
-    extracted_text = ""
-
+# Function to initialize Selenium WebDriver
+def initialize_driver():
     options = Options()
     options.binary_location = get_chrome_binary()
     options.add_argument("--headless=new")
@@ -59,14 +56,26 @@ def extract_text_from_website(base_url):
     options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-infobars")
+    
     service = Service(get_chromedriver_binary())
-    driver = webdriver.Chrome(service=service, options=options)
+    try:
+        driver = webdriver.Chrome(service=service, options=options)
+        return driver
+    except Exception as e:
+        logger.error(f"Failed to start ChromeDriver: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
+
+# Function to extract text from website
+def extract_text_from_website(base_url):
+    driver = initialize_driver()
+    extracted_text = ""
 
     try:
-        driver.set_page_load_timeout(300)  # Increased timeout
+        driver.set_page_load_timeout(300)
         driver.get(base_url)
-        time.sleep(15)  # Allow extra time for full page load
+        time.sleep(15)
         soup = BeautifulSoup(driver.page_source, "html.parser")
         
         # Extract text
@@ -175,7 +184,6 @@ def check_compliance(text):
     }
     
     return {}
-
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
