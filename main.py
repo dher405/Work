@@ -53,50 +53,80 @@ def extract_text_from_website(base_url):
     extracted_text = ""
 
     options = Options()
-    options.binary_location = get_chrome_binary()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36")
 
-    service = Service(get_chromedriver_binary())
+    service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
+    original_url = base_url
+    retried = False
+
     try:
-        driver.set_page_load_timeout(240)
-        driver.get(base_url)
-        time.sleep(10)  # Allow full page load
+        driver.set_page_load_timeout(300)  # 🔹 Increased timeout to 300 seconds
+
+        for attempt in range(2):  # 🔹 Retry up to 2 times
+            try:
+                logger.info(f"Attempting to load: {base_url}")
+                driver.get(base_url)
+                WebDriverWait(driver, 60).until(  # 🔹 Increased wait time to 60 seconds
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+                )
+                break  # Success, exit loop
+            except Exception as e:
+                logger.warning(f"Retry {attempt + 1}: Failed to load {base_url}, error: {e}")
+
+                if not retried and "www." not in original_url:
+                    retried = True
+                    base_url = original_url.replace("https://", "https://www.")
+                    base_url = base_url.replace("http://", "http://www.")
+                    logger.info(f"Retrying with www.: {base_url}")
+                    driver.get(base_url)
+
+                if attempt == 1:  # Last attempt failed
+                    raise
+
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
-        # Find links to relevant pages (up to 2 levels deep)
         for link in soup.find_all("a", href=True):
             href = link["href"]
             if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-                # Check one level deeper for these pages
-                driver.set_page_load_timeout(240)
-                driver.get(absolute_url)
-                time.sleep(6)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"]
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
+                # Try loading subpages with retry logic
+                try:
+                    driver.set_page_load_timeout(300)
+                    driver.get(absolute_url)
+                    time.sleep(6)
+                    sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                    for sub_link in sub_soup.find_all("a", href=True):
+                        sub_href = sub_link["href"]
+                        if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                            pages_to_check.append(urljoin(absolute_url, sub_href))
+                except Exception as e:
+                    logger.warning(f"Skipping {absolute_url} due to error: {e}")
 
-        # Extract text from all collected pages
-        for page in set(pages_to_check):  # Use set to remove duplicates
+        # Extract text from all pages
+        for page in set(pages_to_check):  
             logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+            try:
+                driver.set_page_load_timeout(300)
+                driver.get(page)
+                WebDriverWait(driver, 60).until(
+                    EC.presence_of_element_located((By.TAG_NAME, "body"))
+                )
+                soup = BeautifulSoup(driver.page_source, "html.parser")
+                extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+            except Exception as e:
+                logger.warning(f"Skipping {page} due to error: {e}")
 
         if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
+            logger.warning(f"Extracted text from {base_url} appears too short.")
 
         return extracted_text.strip()
     except Exception as e:
@@ -203,6 +233,7 @@ def check_compliance(text):
         logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
 
+
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
@@ -211,12 +242,10 @@ def check_website_compliance(website_url: str = Query(..., title="Website URL", 
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-    compliance_result = check_compliance(extracted_text)
+    compliance_result = {"message": "Compliance check is pending implementation."}
 
     response = Response(content=json.dumps(compliance_result), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
 
