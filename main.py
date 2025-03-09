@@ -136,7 +136,7 @@ def extract_text_from_website(base_url):
         driver.quit()
 
 # Function to check compliance using OpenAI API
-def check_compliance(text, page_url):
+def check_compliance(text):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         logger.error("Missing OpenAI API key.")
@@ -171,7 +171,7 @@ def check_compliance(text, page_url):
                     - Opt-out instructions ('Reply STOP').
                     - Assistance instructions ('Reply HELP' or contact support URL').
 
-                **Response Format (include actual found statements and the page URL if detected):**
+               **Response Format (include actual found statements and the page URL if detected):**
 
                 {{
                     "json": {{
@@ -229,6 +229,25 @@ def check_compliance(text, page_url):
             return json.loads(response_data["choices"][0]["message"]["content"])
         else:
             return {"error": "Invalid AI response format."}
+
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err.response.text}")
+        return {"error": f"OpenAI API Error: {http_err.response.text}"}
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Request error occurred: {req_err}")
+        return {"error": "AI processing failed due to request issue."}
+
+    try:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        response.raise_for_status()
+        response_data = response.json()
+        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
+
+        if "choices" in response_data and response_data["choices"]:
+            return json.loads(response_data["choices"][0]["message"]["content"])
+        else:
+            return {"error": "Invalid AI response format."}
+
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred: {http_err.response.text}")
         return {"error": f"OpenAI API Error: {http_err.response.text}"}
