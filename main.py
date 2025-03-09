@@ -79,15 +79,39 @@ def extract_text_from_website(base_url):
     logger.info(f"Checking compliance for: {base_url}")  # Log the enforced URL
     driver = initialize_driver()
     extracted_text = ""
+    pages_to_check = [base_url]
 
     try:
         driver.set_page_load_timeout(300)
         driver.get(base_url)
         time.sleep(15)
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        
-        # Extract text
-        extracted_text = soup.get_text(separator="\n", strip=True)
+
+        # Find links to relevant pages (up to 2 levels deep)
+        for link in soup.find_all("a", href=True):
+            href = link["href"]
+            if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
+                absolute_url = urljoin(base_url, href)
+                pages_to_check.append(absolute_url)
+
+                # Check one level deeper for these pages
+                driver.set_page_load_timeout(240)
+                driver.get(absolute_url)
+                time.sleep(6)
+                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                for sub_link in sub_soup.find_all("a", href=True):
+                    sub_href = sub_link["href"]
+                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                        pages_to_check.append(urljoin(absolute_url, sub_href))
+
+        # Extract text from all collected pages
+        for page in set(pages_to_check):  # Use set to remove duplicates
+            logger.info(f"Scraping page: {page}")
+            driver.set_page_load_timeout(240)
+            driver.get(page)
+            time.sleep(10)
+            soup = BeautifulSoup(driver.page_source, "html.parser")
+            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
@@ -95,91 +119,9 @@ def extract_text_from_website(base_url):
         return extracted_text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
-        return None
+        return ""
     finally:
         driver.quit()
-
-# Function to check compliance using OpenAI API
-def check_compliance(text):
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if not openai_api_key:
-        logger.error("Missing OpenAI API key.")
-        return {"error": "Missing API key."}
-
-    headers = {
-        "Authorization": f"Bearer {openai_api_key}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
-            },
-            {
-                "role": "user",
-                "content": f"""
-                Analyze the following website text for TCR SMS compliance. The compliance check should include:
-                
-                **Privacy Policy must contain:**
-                - Explicit statement that SMS consent data will not be shared with third parties.
-                - Clear explanation of how consumer data is collected, used, and shared.
-
-                **Terms & Conditions must contain:**
-                - Explanation of what type of SMS messages users will receive.
-                - Mandatory disclosures including:
-                    - Messaging frequency may vary.
-                    - Message and data rates may apply.
-                    - Opt-out instructions ('Reply STOP').
-                    - Assistance instructions ('Reply HELP' or contact support URL').
-
-                **Response Format (include actual found statements if detected):**
-
-                {{
-                    "json": {{
-                        "compliance_analysis": {{
-                            "privacy_policy": {{
-                                "sms_consent_statement": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                }},
-                                "data_usage_explanation": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                }}
-                            }},
-                            "terms_conditions": {{
-                                "message_types_specified": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                }},
-                                "mandatory_disclosures": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                }}
-                            }},
-                            "overall_compliance": "compliant/partially_compliant/non_compliant",
-                            "recommendations": [
-                                "Recommendation 1",
-                                "Recommendation 2"
-                            ]
-                        }}
-                    }}
-                }}
-
-                Here is the extracted website text:
-                {text}
-                """
-            }
-        ],
-        "response_format": {"type": "json_object"}
-    }
-    
-    return {}
-
-
 
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
