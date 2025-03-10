@@ -96,19 +96,24 @@ def enforce_www(website_url):
 def extract_text_from_website(base_url):
     base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
-    driver = get_driver_from_pool() #get driver from pool.
+    driver = get_driver_from_pool()
     extracted_text = ""
     pages_to_check = [base_url]
     base_domain = urlparse(base_url).netloc
-    source_urls = {}  # Track source URLs for extracted text
+    source_urls = {}
 
     try:
         driver.set_page_load_timeout(300)
         driver.get(base_url)
         time.sleep(15)
+
+        # Scroll to the bottom of the page
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(5)  # Give time for dynamic content to load
+
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
-       # Find links to relevant pages (improved logic)
+        # Enhanced link searching
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
@@ -117,7 +122,6 @@ def extract_text_from_website(base_url):
             if parsed_href.netloc and parsed_href.netloc != base_domain:
                 continue
 
-            # Check for keywords in the link text and href (case-insensitive)
             link_text = link.get_text(strip=True).lower()
             if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal", "policy"]):
                 absolute_url = urljoin(base_url, href)
@@ -137,6 +141,12 @@ def extract_text_from_website(base_url):
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
+        # Explicit URL checking
+        if f"{base_url}/privacy-policy/" not in pages_to_check:
+            pages_to_check.append(f"{base_url}/privacy-policy/")
+        if f"{base_url}/tcs-digital-solutions-terms-of-service/" not in pages_to_check:
+            pages_to_check.append(f"{base_url}/tcs-digital-solutions-terms-of-service/")
+
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
             driver.set_page_load_timeout(240)
@@ -145,17 +155,19 @@ def extract_text_from_website(base_url):
             soup = BeautifulSoup(driver.page_source, "html.parser")
             page_text = soup.get_text(separator="\n", strip=True)
             extracted_text += page_text + "\n\n"
-            source_urls[page] = page_text  # Store the source URL and text
+            source_urls[page] = page_text
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
 
         return extracted_text.strip(), source_urls
+
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
         return "", {}
+
     finally:
-        return_driver_to_pool(driver) #return driver to pool.
+        return_driver_to_pool(driver)
 
 # Function to check compliance using OpenAI API
 def check_compliance(text, source_urls):
