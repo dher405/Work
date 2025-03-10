@@ -76,8 +76,8 @@ def enforce_www(website_url):
 
 # Function to extract text from website
 def extract_text_from_website(base_url):
-    base_url = enforce_www(base_url)
-    logger.info(f"Checking compliance for: {base_url}")
+    base_url = enforce_www(base_url)  # Ensure www. is present on the URL
+    logger.info(f"Checking compliance for: {base_url}")  # Log the enforced URL
     driver = initialize_driver()
     extracted_text = ""
     pages_to_check = [base_url]
@@ -89,18 +89,35 @@ def extract_text_from_website(base_url):
         time.sleep(15)
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
+        # Find links to relevant pages (up to 2 levels deep)
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
-                continue
+                continue  # Ignore mailto links
             parsed_href = urlparse(urljoin(base_url, href))
             if parsed_href.netloc and parsed_href.netloc != base_domain:
-                continue
+                continue  # Ignore external domains
             if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-        for page in set(pages_to_check):
+                # Check one level deeper for these pages
+                driver.set_page_load_timeout(240)
+                driver.get(absolute_url)
+                time.sleep(6)
+                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                for sub_link in sub_soup.find_all("a", href=True):
+                    sub_href = sub_link["href"].strip()
+                    if sub_href.startswith("mailto:"):
+                        continue  # Ignore mailto links
+                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
+                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
+                        continue  # Ignore external domains
+                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                        pages_to_check.append(urljoin(absolute_url, sub_href))
+
+        # Extract text from all collected pages
+        for page in set(pages_to_check):  # Use set to remove duplicates
             logger.info(f"Scraping page: {page}")
             driver.set_page_load_timeout(240)
             driver.get(page)
@@ -119,7 +136,7 @@ def extract_text_from_website(base_url):
         driver.quit()
 
 # Function to check compliance using OpenAI API
-def check_compliance(text, page_url):
+def check_compliance(text):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         logger.error("Missing OpenAI API key.")
@@ -140,13 +157,60 @@ def check_compliance(text, page_url):
             {
                 "role": "user",
                 "content": f"""
-                Analyze the following website text for TCR SMS compliance:
-                Here is the extracted website text from {page_url}:
+                Analyze the following website text for TCR SMS compliance. The compliance check should include:
+                
+                **Privacy Policy must contain:**
+                - Explicit statement that SMS consent data will not be shared with third parties.
+                - Clear explanation of how consumer data is collected, used, and shared.
+
+                **Terms & Conditions must contain:**
+                - Explanation of what type of SMS messages users will receive.
+                - Mandatory disclosures including:
+                    - Messaging frequency may vary.
+                    - Message and data rates may apply.
+                    - Opt-out instructions ('Reply STOP').
+                    - Assistance instructions ('Reply HELP' or contact support URL').
+
+                **Response Format (include actual found statements if detected):**
+
+                {{
+                    "json": {{
+                        "compliance_analysis": {{
+                            "privacy_policy": {{
+                                "sms_consent_statement": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "data_usage_explanation": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "terms_conditions": {{
+                                "message_types_specified": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }},
+                                "mandatory_disclosures": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty"
+                                }}
+                            }},
+                            "overall_compliance": "compliant/partially_compliant/non_compliant",
+                            "recommendations": [
+                                "Recommendation 1",
+                                "Recommendation 2"
+                            ]
+                        }}
+                    }}
+                }}
+
+                Here is the extracted website text:
                 {text}
                 """
             }
         ],
-        "response_format": {"type": "json_object"}
+        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
     }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
@@ -155,9 +219,18 @@ def check_compliance(text, page_url):
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
         response.raise_for_status()
         response_data = response.json()
-        return json.loads(response_data["choices"][0]["message"]["content"])
-    except requests.exceptions.RequestException as err:
-        logger.error(f"OpenAI API Error: {err}")
+        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
+
+        if "choices" in response_data and response_data["choices"]:
+            return json.loads(response_data["choices"][0]["message"]["content"])
+        else:
+            return {"error": "Invalid AI response format."}
+
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err.response.text}")
+        return {"error": f"OpenAI API Error: {http_err.response.text}"}
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Request error occurred: {req_err}")
         return {"error": "AI processing failed due to request issue."}
 
 @app.get("/check_compliance")
