@@ -180,20 +180,24 @@ def check_compliance(text):
                                 "sms_consent_statement": {{
                                     "status": "found/not_found",
                                     "statement": "actual statement found or empty"
+                                    "url": "url where found or empty"
                                 }},
                                 "data_usage_explanation": {{
                                     "status": "found/not_found",
                                     "statement": "actual statement found or empty"
+                                    "url": "url where found or empty"
                                 }}
                             }},
                             "terms_conditions": {{
                                 "message_types_specified": {{
                                     "status": "found/not_found",
                                     "statement": "actual statement found or empty"
+                                    "url": "url where found or empty"
                                 }},
                                 "mandatory_disclosures": {{
                                     "status": "found/not_found",
                                     "statement": "actual statement found or empty"
+                                    "url": "url where found or empty"
                                 }}
                             }},
                             "overall_compliance": "compliant/partially_compliant/non_compliant",
