@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+from threading import Lock
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -47,7 +48,11 @@ def get_chromedriver_binary():
         raise FileNotFoundError("ChromeDriver binary not found! Check installation.")
     return chromedriver_binary
 
-# Function to initialize Selenium WebDriver
+# Driver Pool
+driver_pool = []
+pool_lock = Lock()
+pool_size = 5 #adjust as needed.
+
 def initialize_driver():
     options = Options()
     options.binary_location = get_chrome_binary()
@@ -59,7 +64,7 @@ def initialize_driver():
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-infobars")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-    
+
     service = Service(get_chromedriver_binary())
     try:
         driver = webdriver.Chrome(service=service, options=options)
@@ -68,20 +73,34 @@ def initialize_driver():
         logger.error(f"Failed to start ChromeDriver: {e}")
         raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
 
+def get_driver_from_pool():
+    with pool_lock:
+        if driver_pool:
+            return driver_pool.pop()
+        if len(driver_pool) < pool_size:
+            return initialize_driver()
+        else:
+            return initialize_driver()
+
+def return_driver_to_pool(driver):
+    with pool_lock:
+        driver_pool.append(driver)
+
 # Function to enforce www. on website URL
 def enforce_www(website_url):
     if "www." not in website_url:
         website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
     return website_url
 
-# Function to extract text from website
+# Function to extract text from website and track source URLs
 def extract_text_from_website(base_url):
-    base_url = enforce_www(base_url)  # Ensure www. is present on the URL
-    logger.info(f"Checking compliance for: {base_url}")  # Log the enforced URL
-    driver = initialize_driver()
+    base_url = enforce_www(base_url)
+    logger.info(f"Checking compliance for: {base_url}")
+    driver = get_driver_from_pool() #get driver from pool.
     extracted_text = ""
     pages_to_check = [base_url]
     base_domain = urlparse(base_url).netloc
+    source_urls = {}  # Track source URLs for extracted text
 
     try:
         driver.set_page_load_timeout(300)
@@ -89,19 +108,17 @@ def extract_text_from_website(base_url):
         time.sleep(15)
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
-        # Find links to relevant pages (up to 2 levels deep)
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
-                continue  # Ignore mailto links
+                continue
             parsed_href = urlparse(urljoin(base_url, href))
             if parsed_href.netloc and parsed_href.netloc != base_domain:
-                continue  # Ignore external domains
+                continue
             if any(keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-                # Check one level deeper for these pages
                 driver.set_page_load_timeout(240)
                 driver.get(absolute_url)
                 time.sleep(6)
@@ -109,34 +126,35 @@ def extract_text_from_website(base_url):
                 for sub_link in sub_soup.find_all("a", href=True):
                     sub_href = sub_link["href"].strip()
                     if sub_href.startswith("mailto:"):
-                        continue  # Ignore mailto links
+                        continue
                     parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
                     if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
-                        continue  # Ignore external domains
+                        continue
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
-        # Extract text from all collected pages
-        for page in set(pages_to_check):  # Use set to remove duplicates
+        for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
             driver.set_page_load_timeout(240)
             driver.get(page)
             time.sleep(10)
             soup = BeautifulSoup(driver.page_source, "html.parser")
-            extracted_text += soup.get_text(separator="\n", strip=True) + "\n\n"
+            page_text = soup.get_text(separator="\n", strip=True)
+            extracted_text += page_text + "\n\n"
+            source_urls[page] = page_text  # Store the source URL and text
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
 
-        return extracted_text.strip()
+        return extracted_text.strip(), source_urls
     except Exception as e:
         logger.error(f"Failed to extract text from {base_url}: {e}")
-        return ""
+        return "", {}
     finally:
-        driver.quit()
+        return_driver_to_pool(driver) #return driver to pool.
 
 # Function to check compliance using OpenAI API
-def check_compliance(text):
+def check_compliance(text, source_urls):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         logger.error("Missing OpenAI API key.")
