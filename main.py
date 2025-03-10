@@ -119,7 +119,7 @@ def extract_text_from_website(base_url):
         driver.quit()
 
 # Function to check compliance using OpenAI API
-def check_compliance(text):
+def check_compliance(text, page_url):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         logger.error("Missing OpenAI API key.")
@@ -140,58 +140,7 @@ def check_compliance(text):
             {
                 "role": "user",
                 "content": f"""
-                Analyze the following website text for TCR SMS compliance. The compliance check should include:
-                
-                **Privacy Policy must contain:**
-                - Explicit statement that SMS consent data will not be shared with third parties.
-                - Clear explanation of how consumer data is collected, used, and shared.
-
-                **Terms & Conditions must contain:**
-                - Explanation of what type of SMS messages users will receive.
-                - Mandatory disclosures including:
-                    - Messaging frequency may vary.
-                    - Message and data rates may apply.
-                    - Opt-out instructions ('Reply STOP').
-                    - Assistance instructions ('Reply HELP' or contact support URL').
-
-               **Response Format (include actual found statements and the page URL if detected):**
-
-                {{
-                    "json": {{
-                        "compliance_analysis": {{
-                            "privacy_policy": {{
-                                "sms_consent_statement": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty",
-                                    "page_url": "{page_url}"
-                                }},
-                                "data_usage_explanation": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty",
-                                    "page_url": "{page_url}"
-                                }}
-                            }},
-                            "terms_conditions": {{
-                                "message_types_specified": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty",
-                                    "page_url": "{page_url}"
-                                }},
-                                "mandatory_disclosures": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty",
-                                    "page_url": "{page_url}"
-                                }}
-                            }},
-                            "overall_compliance": "compliant/partially_compliant/non_compliant",
-                            "recommendations": [
-                                "Recommendation 1",
-                                "Recommendation 2"
-                            ]
-                        }}
-                    }}
-                }}
-
+                Analyze the following website text for TCR SMS compliance:
                 Here is the extracted website text from {page_url}:
                 {text}
                 """
@@ -206,36 +155,9 @@ def check_compliance(text):
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
         response.raise_for_status()
         response_data = response.json()
-        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
-
-        if "choices" in response_data and response_data["choices"]:
-            return json.loads(response_data["choices"][0]["message"]["content"])
-        else:
-            return {"error": "Invalid AI response format."}
-
-    except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred: {http_err.response.text}")
-        return {"error": f"OpenAI API Error: {http_err.response.text}"}
-    except requests.exceptions.RequestException as req_err:
-        logger.error(f"Request error occurred: {req_err}")
-        return {"error": "AI processing failed due to request issue."}
-
-    try:
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()
-        response_data = response.json()
-        logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
-
-        if "choices" in response_data and response_data["choices"]:
-            return json.loads(response_data["choices"][0]["message"]["content"])
-        else:
-            return {"error": "Invalid AI response format."}
-
-    except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred: {http_err.response.text}")
-        return {"error": f"OpenAI API Error: {http_err.response.text}"}
-    except requests.exceptions.RequestException as req_err:
-        logger.error(f"Request error occurred: {req_err}")
+        return json.loads(response_data["choices"][0]["message"]["content"])
+    except requests.exceptions.RequestException as err:
+        logger.error(f"OpenAI API Error: {err}")
         return {"error": "AI processing failed due to request issue."}
 
 @app.get("/check_compliance")
