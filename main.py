@@ -259,11 +259,11 @@ def check_compliance(text, source_urls):
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
 
-    extracted_text = extract_text_from_website(website_url)
+    extracted_text, source_urls = extract_text_from_website(website_url) #get source_urls
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-    compliance_result = check_compliance(extracted_text)
+    compliance_result = check_compliance(extracted_text, source_urls) #pass source_urls to check_compliance
 
     response = Response(content=json.dumps(compliance_result), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
