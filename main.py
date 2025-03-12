@@ -9,6 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from threading import Lock
@@ -92,7 +95,6 @@ def enforce_www(website_url):
         website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
     return website_url
 
-# Function to extract text from website and track source URLs
 def extract_text_from_website(base_url):
     base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
@@ -105,11 +107,11 @@ def extract_text_from_website(base_url):
     try:
         driver.set_page_load_timeout(300)
         driver.get(base_url)
-        time.sleep(15)
+        WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'body'))) #wait for body to load
 
         # Scroll to the bottom of the page
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)  # Give time for dynamic content to load
+        WebDriverWait(driver, 10).until(lambda driver: driver.execute_script("return document.readyState") == "complete") #wait for scroll to complete
 
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
@@ -127,35 +129,17 @@ def extract_text_from_website(base_url):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-                driver.set_page_load_timeout(240)
-                driver.get(absolute_url)
-                time.sleep(6)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"].strip()
-                    if sub_href.startswith("mailto:"):
-                        continue
-                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
-                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
-                        continue
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
-
-        # Explicit URL checking
-        if f"{base_url}/privacy-policy/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/privacy-policy/")
-        if f"{base_url}/tcs-digital-solutions-terms-of-service/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/tcs-digital-solutions-terms-of-service/")
-
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            page_text = soup.get_text(separator="\n", strip=True)
-            extracted_text += page_text + "\n\n"
-            source_urls[page] = page_text
+            try:
+                driver.get(page)
+                WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                soup = BeautifulSoup(driver.page_source, "html.parser")
+                page_text = soup.get_text(separator="\n", strip=True)
+                extracted_text += page_text + "\n\n"
+                source_urls[page] = page_text
+            except Exception as sub_page_error:
+                logger.error(f"Error scraping subpage {page}: {sub_page_error}")
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
