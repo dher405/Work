@@ -198,11 +198,12 @@ def check_compliance(text, source_urls):
             **Privacy Policy must contain:**
             - **Explicit statement** that SMS consent data **will not be shared** with third parties or used for marketing purposes.
             - **Clear explanation** of how consumer data is collected, used, and stored.
-            - **Example Compliant Wording (AI should match similar phrases, even if not exact):**
+            - **Example Compliant Wording (AI must detect even partial matches):**
                 - "Your phone number and consent will remain confidential."
                 - "We will not sell or share your information with third parties or affiliates for marketing purposes."
                 - "SMS communication is used strictly to facilitate interactions related to our services."
                 - "We do not disclose your phone number to marketing partners."
+                - "We respect your privacy and will not use your data for promotional purposes."
 
             **Terms & Conditions must contain:**
             - **Description of SMS messages** users will receive.
@@ -216,6 +217,7 @@ def check_compliance(text, source_urls):
                 - "To opt out, reply 'STOP' at any time."
                 - "For help, reply 'HELP' or contact us at www.example.com or (123) 456-7890."
                 - "You can unsubscribe by texting STOP."
+                - "Messaging rates apply. Reply STOP to end messages."
 
             **Response Format (Include actual found statements and their respective URLs):**
             
@@ -255,11 +257,13 @@ def check_compliance(text, source_urls):
                 }}
             }}
 
-            **Important:** 
-            - Do not assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted text from all scraped pages.
-            - Ensure the AI **matches compliance wording even if phrased differently** (e.g., "We will not share your data" vs. "Your consent remains confidential").
-            - If any statement is detected, return **both the found statement and its URL**.
-            - If multiple compliant statements exist, return all of them.
+            **🚨 Important:** 
+            - **Do NOT assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted pages.**
+            - **Match compliance wording even if phrased differently (e.g., "We will not share your data" vs. "Your consent remains confidential").**
+            - **If any statement is detected, return BOTH the found statement and its URL.**
+            - **If multiple compliant statements exist, return ALL of them.**
+            - **If AI is unsure, double-check all extracted text before marking a category as "not found."**
+            - **Recheck the following terms before making a final determination:** ["message frequency", "reply STOP", "data sharing", "consent protection", "HELP for support"].
 
             Here is the extracted website text:
             {text}
@@ -268,6 +272,7 @@ def check_compliance(text, source_urls):
     ],
     "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
 }
+
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
