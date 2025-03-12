@@ -181,75 +181,79 @@ def check_compliance(text, source_urls):
         "Content-Type": "application/json"
     }
 
-    payload = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
-            },
-            {
-                "role": "user",
-                "content": f"""
-                Analyze the following website text for TCR SMS compliance. The compliance check should include:
-                
-              **Privacy Policy must contain:**
-                - Explicit statement that SMS consent data will not be shared with third parties.
-                - Clear explanation of how consumer data is collected, used, and shared.
+   payload = {
+    "model": "gpt-4o-mini",
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
+        },
+        {
+            "role": "user",
+            "content": f"""
+            Analyze the following website text for TCR SMS compliance. The compliance check should include **all extracted website pages**, not just the Privacy Policy and Terms & Conditions.
 
-                **Terms & Conditions must contain:**
-                - Explanation of what type of SMS messages users will receive.
-                - Mandatory disclosures including:
-                    - Messaging frequency may vary.
-                    - Message and data rates may apply.
-                    - Opt-out instructions ('Reply STOP').
-                    - Assistance instructions ('Reply HELP' or contact support URL').
+            **Key Compliance Requirements (Check All Pages for These Statements):**
+            
+            **Privacy Policy must contain:**
+            - Explicit statement that SMS consent data will not be shared with third parties.
+            - Clear explanation of how consumer data is collected, used, and shared.
 
-                **Response Format (include actual found statements if detected):**
+            **Terms & Conditions must contain:**
+            - Explanation of what type of SMS messages users will receive.
+            - Mandatory disclosures including:
+                - Messaging frequency may vary.
+                - Message and data rates may apply.
+                - Opt-out instructions (e.g., 'Reply STOP' to unsubscribe).
+                - Assistance instructions (e.g., 'Reply HELP' for help or a support URL).
 
-                {{
-                    "json": {{
-                        "compliance_analysis": {{
-                            "privacy_policy": {{
-                                "sms_consent_statement": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                    "url": "url where found or empty"
-                                }},
-                                "data_usage_explanation": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                    "url": "url where found or empty"
-                                }}
+            **Response Format (include actual found statements and URLs where detected):**
+            
+            {{
+                "json": {{
+                    "compliance_analysis": {{
+                        "privacy_policy": {{
+                            "sms_consent_statement": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty",
+                                "url": "URL where found or empty"
                             }},
-                            "terms_conditions": {{
-                                "message_types_specified": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                    "url": "url where found or empty"
-                                }},
-                                "mandatory_disclosures": {{
-                                    "status": "found/not_found",
-                                    "statement": "actual statement found or empty"
-                                    "url": "url where found or empty"
-                                }}
+                            "data_usage_explanation": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty",
+                                "url": "URL where found or empty"
+                            }}
+                        }},
+                        "terms_conditions": {{
+                            "message_types_specified": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty",
+                                "url": "URL where found or empty"
                             }},
-                            "overall_compliance": "compliant/partially_compliant/non_compliant",
-                            "recommendations": [
-                                "Recommendation 1",
-                                "Recommendation 2"
-                            ]
-                        }}
+                            "mandatory_disclosures": {{
+                                "status": "found/not_found",
+                                "statement": "actual statement found or empty",
+                                "url": "URL where found or empty"
+                            }}
+                        }},
+                        "overall_compliance": "compliant/partially_compliant/non_compliant",
+                        "recommendations": [
+                            "Recommendation 1",
+                            "Recommendation 2"
+                        ]
                     }}
                 }}
+            }}
 
-                Here is the extracted website text:
-                {text}
-                """
-            }
-        ],
-        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
-    }
+            **Important:** Do not assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted text from all scraped pages.
+
+            Here is the extracted website text:
+            {text}
+            """
+        }
+    ],
+    "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
+}
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
