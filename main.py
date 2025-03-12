@@ -219,8 +219,11 @@ def check_compliance(text, source_urls):
                 - "You can unsubscribe by texting STOP."
                 - "Messaging rates apply. Reply STOP to end messages."
 
-            **Response Format (Include actual found statements and their respective URLs):**
-            
+            **🚀 Force AI to List All Possible Matches**
+            - Before marking anything as "not found," AI must **return all similar statements found in the text**.
+            - If a statement is **not counted as compliant**, AI must explain **why** it was rejected.
+
+            **Response Format (Include detected statements, even if rejected):**
             {{
                 "json": {{
                     "compliance_analysis": {{
@@ -228,24 +231,32 @@ def check_compliance(text, source_urls):
                             "sms_consent_statement": {{
                                 "status": "found/not_found",
                                 "statement": "actual statement found or empty",
-                                "url": "URL where found or empty"
+                                "url": "URL where found or empty",
+                                "detected_candidates": ["list of similar statements found, even if rejected"],
+                                "rejection_reason": "If rejected, explain why here"
                             }},
                             "data_usage_explanation": {{
                                 "status": "found/not_found",
                                 "statement": "actual statement found or empty",
-                                "url": "URL where found or empty"
+                                "url": "URL where found or empty",
+                                "detected_candidates": ["list of similar statements found, even if rejected"],
+                                "rejection_reason": "If rejected, explain why here"
                             }}
                         }},
                         "terms_conditions": {{
                             "message_types_specified": {{
                                 "status": "found/not_found",
                                 "statement": "actual statement found or empty",
-                                "url": "URL where found or empty"
+                                "url": "URL where found or empty",
+                                "detected_candidates": ["list of similar statements found, even if rejected"],
+                                "rejection_reason": "If rejected, explain why here"
                             }},
                             "mandatory_disclosures": {{
                                 "status": "found/not_found",
                                 "statement": "actual statement found or empty",
-                                "url": "URL where found or empty"
+                                "url": "URL where found or empty",
+                                "detected_candidates": ["list of similar statements found, even if rejected"],
+                                "rejection_reason": "If rejected, explain why here"
                             }}
                         }},
                         "overall_compliance": "compliant/partially_compliant/non_compliant",
@@ -272,7 +283,6 @@ def check_compliance(text, source_urls):
     ],
     "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
 }
-
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
