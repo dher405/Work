@@ -193,7 +193,7 @@ def check_compliance(text, source_urls):
                 "content": f"""
                 Analyze the following website text for TCR SMS compliance. The compliance check should include:
                 
-                **Privacy Policy or Terms & Conditionsmust contain:**
+                
                 - Whether SMS consent data is shared with third parties. Look for statements indicating that data is "not shared," "not sold," "kept confidential," or similar language.
                 - How consumer data is collected, used, and shared. Identify sections that explain the types of data collected (e.g., contact information, usage data), how it's used (e.g., for communication, marketing), and with whom it might be shared (e.g., service providers, affiliates).
                 - Explanation of what type of SMS messages users will receive.
