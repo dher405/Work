@@ -96,7 +96,20 @@ def enforce_www(website_url):
 def extract_text_from_website(base_url):
     base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
-    driver = get_driver_from_pool()
+
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-infobars")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+
     extracted_text = ""
     pages_to_check = [base_url]
     base_domain = urlparse(base_url).netloc
@@ -114,6 +127,7 @@ def extract_text_from_website(base_url):
         soup = BeautifulSoup(driver.page_source, "html.parser")
 
         # Enhanced link searching
+        valid_links = []
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
@@ -125,37 +139,30 @@ def extract_text_from_website(base_url):
             link_text = link.get_text(strip=True).lower()
             if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal", "policy"]):
                 absolute_url = urljoin(base_url, href)
-                pages_to_check.append(absolute_url)
+                if absolute_url.startswith(base_url) and absolute_url not in valid_links:
+                    valid_links.append(absolute_url)
 
-                driver.set_page_load_timeout(240)
+        # Try loading valid subpages while checking for redirects
+        for absolute_url in valid_links:
+            try:
                 driver.get(absolute_url)
-                time.sleep(6)
+                time.sleep(5)
+
+                if driver.current_url != absolute_url:
+                    logger.warning(f"Redirect detected: {absolute_url} -> {driver.current_url}, skipping.")
+                    continue  # Skip redirected pages
+
+                logger.info(f"Successfully loaded subpage: {absolute_url}")
+                pages_to_check.append(absolute_url)
+                
+                # Extract text from subpage
                 sub_soup = BeautifulSoup(driver.page_source, "html.parser")
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"].strip()
-                    if sub_href.startswith("mailto:"):
-                        continue
-                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
-                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
-                        continue
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
+                page_text = sub_soup.get_text(separator="\n", strip=True)
+                extracted_text += page_text + "\n\n"
+                source_urls[absolute_url] = page_text
 
-        # Explicit URL checking
-        if f"{base_url}/privacy-policy/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/privacy-policy/")
-        if f"{base_url}/tcs-digital-solutions-terms-of-service/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/tcs-digital-solutions-terms-of-service/")
-
-        for page in set(pages_to_check):
-            logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
-            page_text = soup.get_text(separator="\n", strip=True)
-            extracted_text += page_text + "\n\n"
-            source_urls[page] = page_text
+            except Exception as e:
+                logger.warning(f"Failed to load subpage {absolute_url}: {e}")
 
         if len(extracted_text) < 100:
             logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
@@ -167,7 +174,7 @@ def extract_text_from_website(base_url):
         return "", {}
 
     finally:
-        return_driver_to_pool(driver)
+        driver.quit()
 
 # Function to check compliance using OpenAI API
 def check_compliance(text, source_urls):
@@ -308,16 +315,14 @@ def check_compliance(text, source_urls):
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
 
-    extracted_text, source_urls = extract_text_from_website(website_url) #get source_urls
+    extracted_text, source_urls = extract_text_from_website(website_url)
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-    compliance_result = check_compliance(extracted_text, source_urls) #pass source_urls to check_compliance
+    compliance_result = {"message": "Compliance check is pending implementation."}
 
     response = Response(content=json.dumps(compliance_result), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
 
@@ -328,8 +333,6 @@ def options_check_compliance():
     """Handle CORS preflight requests explicitly"""
     response = Response()
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
