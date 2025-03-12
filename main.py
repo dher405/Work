@@ -196,18 +196,26 @@ def check_compliance(text, source_urls):
             **Key Compliance Requirements (Check All Pages for These Statements):**
             
             **Privacy Policy must contain:**
-            - Explicit statement that SMS consent data will not be shared with third parties.
-            - Clear explanation of how consumer data is collected, used, and shared.
+            - **Explicit statement** that SMS consent data **will not be shared** with third parties or used for marketing purposes.
+            - **Clear explanation** of how consumer data is collected, used, and stored.
+            - **Example Compliant Wording:**
+                - "Your phone number and consent will remain confidential."
+                - "We will not sell or share your information with third parties or affiliates for marketing purposes."
+                - "SMS communication is used strictly to facilitate interactions related to our services."
 
             **Terms & Conditions must contain:**
-            - Explanation of what type of SMS messages users will receive.
-            - Mandatory disclosures including:
-                - Messaging frequency may vary.
-                - Message and data rates may apply.
-                - Opt-out instructions (e.g., 'Reply STOP' to unsubscribe).
-                - Assistance instructions (e.g., 'Reply HELP' for help or a support URL).
+            - **Description of SMS messages** users will receive.
+            - **Mandatory disclosures including:**
+                - **Messaging frequency**: "Message frequency varies" or similar wording.
+                - **Data rates**: "Standard message and data rates may apply."
+                - **Opt-out instructions**: "To opt out, reply ‘STOP’ at any time."
+                - **Assistance instructions**: "For help, reply ‘HELP’ or contact support at [support URL or phone number]."
+            - **Example Compliant Wording:**
+                - "Message frequency varies. Standard message and data rates may apply."
+                - "To opt out, reply ‘STOP’ at any time."
+                - "For help, reply ‘HELP’ or contact us at www.example.com or (123) 456-7890."
 
-            **Response Format (include actual found statements and URLs where detected):**
+            **Response Format (Include actual found statements and their respective URLs):**
             
             {{
                 "json": {{
@@ -245,7 +253,10 @@ def check_compliance(text, source_urls):
                 }}
             }}
 
-            **Important:** Do not assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted text from all scraped pages.
+            **Important:** 
+            - Do not assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted text from all scraped pages.
+            - Ensure the AI **matches compliance wording even if phrased differently** (e.g., "We will not share your data" vs. "Your consent remains confidential").
+            - If any statement is detected, return **both the found statement and its URL**.
 
             Here is the extracted website text:
             {text}
@@ -254,7 +265,6 @@ def check_compliance(text, source_urls):
     ],
     "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
 }
-
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
