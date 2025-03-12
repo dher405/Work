@@ -129,6 +129,26 @@ def extract_text_from_website(base_url):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
+         driver.set_page_load_timeout(240)
+                driver.get(absolute_url)
+                time.sleep(6)
+                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                for sub_link in sub_soup.find_all("a", href=True):
+                    sub_href = sub_link["href"].strip()
+                    if sub_href.startswith("mailto:"):
+                        continue
+                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
+                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
+                        continue
+                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                        pages_to_check.append(urljoin(absolute_url, sub_href))
+
+        # Explicit URL checking
+        if f"{base_url}/privacy-policy/" not in pages_to_check:
+            pages_to_check.append(f"{base_url}/privacy-policy/")
+        if f"{base_url}/tcs-digital-solutions-terms-of-service/" not in pages_to_check:
+            pages_to_check.append(f"{base_url}/tcs-digital-solutions-terms-of-service/")
+
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
             try:
