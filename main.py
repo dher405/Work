@@ -181,7 +181,7 @@ def check_compliance(text, source_urls):
         "Content-Type": "application/json"
     }
 
-   payload = {
+    payload = {
     "model": "gpt-4o-mini",
     "messages": [
         {
@@ -254,6 +254,7 @@ def check_compliance(text, source_urls):
     ],
     "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
 }
+
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
