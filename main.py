@@ -36,10 +36,20 @@ app.add_middleware(
 
 # Function to get Chrome binary
 def get_chrome_binary():
-    chrome_binary = os.environ.get("CHROME_BIN", "/opt/render/chromium/chrome-linux64/chrome")
-    if not os.path.exists(chrome_binary):
-        raise FileNotFoundError("Chrome binary not found! Check installation.")
-    return chrome_binary
+    possible_paths = [
+        "/opt/render/chromium/chrome-linux64/chrome",  # Render path
+        "/usr/bin/google-chrome",  # Standard Linux path
+        "/usr/bin/chromium",  # Chromium alternative
+        "/usr/local/bin/chromium",
+        "/usr/bin/chromium-browser"
+    ]
+    
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    logger.error("Chrome binary not found! Ensure Chrome is installed.")
+    raise FileNotFoundError("Chrome binary not found! Check installation.")
 
 # Function to get ChromeDriver binary
 def get_chromedriver_binary():
