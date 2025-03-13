@@ -328,8 +328,8 @@ def check_compliance(text, source_urls):
                 {text}
                 """
             }
-        ],
-        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
+         ],
+        "response_format": {"type": "json_object"}
     }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
@@ -341,9 +341,20 @@ def check_compliance(text, source_urls):
         logger.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
 
         if "choices" in response_data and response_data["choices"]:
-            return json.loads(response_data["choices"][0]["message"]["content"])
+            content = response_data["choices"][0]["message"]["content"]
+            try:
+                result = json.loads(content)
+                if "json" in result:
+                    return result
+                else:
+                    logger.error(f"OpenAI did not return json with a 'json' key. Content: {content}")
+                    return {"error": "Invalid AI response format. 'json' key not found."}
+
+            except json.JSONDecodeError as e:
+                logger.error(f"JSONDecodeError: {e}. Content: {content}")
+                return {"error": f"Invalid AI response format. JSON parsing failed: {e}"}
         else:
-            return {"error": "Invalid AI response format."}
+            return {"error": "Invalid AI response format. 'choices' key not found."}
 
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred: {http_err.response.text}")
