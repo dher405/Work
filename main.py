@@ -127,21 +127,12 @@ def extract_text_from_website(base_url):
             try:
                 response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
-                    pages_to_check = [non_www_privacy_url] # Start ONLY with this page
-                    pages_to_check.append(base_url) # Add the base url back.
+                    pages_to_check = [non_www_privacy_url]  # Start ONLY with this page
+                    logger.info(f"Forced pages_to_check: {pages_to_check}")  # Log forced URLs
             except requests.exceptions.RequestException:
                 pass
 
-        # Explicitly check non-www terms of service first
-        non_www_terms_url = f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"
-        if "www." not in original_base_url:
-            try:
-                response = requests.head(non_www_terms_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    if non_www_terms_url not in pages_to_check:
-                        pages_to_check.append(non_www_terms_url)
-            except requests.exceptions.RequestException:
-                pass
+        logger.info(f"pages_to_check before link parsing: {pages_to_check}")
 
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
@@ -170,9 +161,9 @@ def extract_text_from_website(base_url):
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
-        # Check www version if non-www was not found.
+        logger.info(f"pages_to_check after link parsing: {pages_to_check}")
+
         www_privacy_url = f"{base_url}/privacy-policy/"
-        www_terms_url = f"{base_url}/tcs-digital-solutions-terms-of-service/"
 
         if "www." not in original_base_url:
             if non_www_privacy_url not in pages_to_check:
@@ -180,13 +171,6 @@ def extract_text_from_website(base_url):
                     response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                     if response.status_code == 200:
                         pages_to_check.append(www_privacy_url)
-                except requests.exceptions.RequestException:
-                    pass
-            if non_www_terms_url not in pages_to_check:
-                try:
-                    response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
-                    if response.status_code == 200:
-                        pages_to_check.append(www_terms_url)
                 except requests.exceptions.RequestException:
                     pass
         else:
@@ -197,13 +181,8 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(www_privacy_url)
             except requests.exceptions.RequestException:
                 pass
-            try:
-                response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    if www_terms_url not in pages_to_check:
-                        pages_to_check.append(www_terms_url)
-            except requests.exceptions.RequestException:
-                pass
+
+        logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
