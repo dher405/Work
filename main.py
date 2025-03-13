@@ -49,7 +49,7 @@ def get_chromedriver_binary():
     return chromedriver_binary
 
 # Driver Pool
-driver_pool = []
+driver_pool =
 pool_lock = Lock()
 pool_size = 5  # adjust as needed.
 
@@ -128,24 +128,19 @@ def extract_text_from_website(base_url):
         # Explicitly check non-www privacy policy first
         non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
         if "www." not in original_base_url:
-            if non_www_privacy_url not in pages_to_check:
-                try:
-                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
-                    if response.status_code == 200:
-                        pages_to_check.append(non_www_privacy_url)
-                except requests.exceptions.RequestException:
-                    pass
-        else:  # Correct alignment here
-            www_privacy_url = f"{base_url}/privacy-policy/"
             try:
-                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+                response = requests.get(non_www_privacy_url, allow_redirects=True, timeout=10, headers=headers)
+                logger.info(f"Response status: {response.status_code}")
+                logger.info(f"Response headers: {response.headers}")
                 if response.status_code == 200:
-                    if www_privacy_url not in pages_to_check:
-                        pages_to_check.append(www_privacy_url)
+                    pages_to_check = [non_www_privacy_url]  # Start ONLY with this page
+                    logger.info(f"Forced pages_to_check: {pages_to_check}")  # Log forced URLs
+                time.sleep(2) #Add delay.
             except requests.exceptions.RequestException:
                 pass
 
-        logger.info(f"pages_to_check before scraping: {pages_to_check}")
+        logger.info(f"pages_to_check before link parsing: {pages_to_check}")
 
         for link in soup.find_all("a", href=True):
             try:  # Add a try block here
@@ -185,9 +180,9 @@ def extract_text_from_website(base_url):
         if "www." not in original_base_url:
             if non_www_privacy_url not in pages_to_check:
                 try:
-                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
+                    response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                     if response.status_code == 200:
-                        pages_to_check.append(non_www_privacy_url)
+                        pages_to_check.append(www_privacy_url)
                 except requests.exceptions.RequestException:
                     pass
         else:
@@ -195,7 +190,9 @@ def extract_text_from_website(base_url):
                 response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
                     if www_privacy_url not in pages_to_check:
-                        pages_to_check.append(www_privacy
+                        pages_to_check.append(www_privacy_url)
+                except requests.exceptions.RequestException:
+                    pass
 
         logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
@@ -233,107 +230,107 @@ def check_compliance(text, source_urls):
     }
 
     payload = {
-    "model": "gpt-3.5-turbo",
-    "messages": [
-        {
-            "role": "system",
-            "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
-        },
-        {
-            "role": "user",
-            "content": f"""
-            Analyze the following website text for TCR SMS compliance. The compliance check should include **all extracted website pages**, not just the Privacy Policy and Terms & Conditions.
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
+            },
+            {
+                "role": "user",
+                "content": f"""
+                Analyze the following website text for TCR SMS compliance. The compliance check should include **all extracted website pages**, not just the Privacy Policy and Terms & Conditions.
 
-            **Key Compliance Requirements (Check All Pages for These Statements):**
-            
-            **Privacy Policy must contain:**
-            - **Explicit statement** that SMS consent data **will not be shared** with third parties or used for marketing purposes.
-            - **Clear explanation** of how consumer data is collected, used, and stored.
-            - **Example Compliant Wording (AI must detect even partial matches):**
-                - "Your phone number and consent will remain confidential."
-                - "We will not sell or share your information with third parties or affiliates for marketing purposes."
-                - "SMS communication is used strictly to facilitate interactions related to our services."
-                - "We do not disclose your phone number to marketing partners."
-                - "We respect your privacy and will not use your data for promotional purposes."
+                **Key Compliance Requirements (Check All Pages for These Statements):**
 
-            **Terms & Conditions must contain:**
-            - **Description of SMS messages** users will receive.
-            - **Mandatory disclosures including:**
-                - **Messaging frequency**: "Message frequency varies", "We may send multiple messages", or similar wording.
-                - **Data rates**: "Standard message and data rates may apply."
-                - **Opt-out instructions**: "To opt out, reply 'STOP' at any time." (Detect variations like "Text STOP to cancel").
-                - **Assistance instructions**: "For help, reply 'HELP' or contact support at [support URL or phone number]."
-            - **Example Compliant Wording (AI should match similar phrases, even if not exact):**
-                - "Message frequency varies. Standard message and data rates may apply."
-                - "To opt out, reply 'STOP' at any time."
-                - "For help, reply 'HELP' or contact us at www.example.com or (123) 456-7890."
-                - "You can unsubscribe by texting STOP."
-                - "Messaging rates apply. Reply STOP to end messages."
+                **Privacy Policy must contain:**
+                - **Explicit statement** that SMS consent data **will not be shared** with third parties or used for marketing purposes.
+                - **Clear explanation** of how consumer data is collected, used, and stored.
+                - **Example Compliant Wording (AI must detect even partial matches):**
+                    - "Your phone number and consent will remain confidential."
+                    - "We will not sell or share your information with third parties or affiliates for marketing purposes."
+                    - "SMS communication is used strictly to facilitate interactions related to our services."
+                    - "We do not disclose your phone number to marketing partners."
+                    - "We respect your privacy and will not use your data for promotional purposes."
 
-            **🚀 Force AI to List All Possible Matches**
-            - Before marking anything as "not found," AI must **return all similar statements found in the text**.
-            - If a statement is **not counted as compliant**, AI must explain **why** it was rejected.
+                **Terms & Conditions must contain:**
+                - **Description of SMS messages** users will receive.
+                - **Mandatory disclosures including:**
+                    - **Messaging frequency**: "Message frequency varies", "We may send multiple messages", or similar wording.
+                    - **Data rates**: "Standard message and data rates may apply."
+                    - **Opt-out instructions**: "To opt out, reply 'STOP' at any time." (Detect variations like "Text STOP to cancel").
+                    - **Assistance instructions**: "For help, reply 'HELP' or contact support at [support URL or phone number]."
+                - **Example Compliant Wording (AI should match similar phrases, even if not exact):**
+                    - "Message frequency varies. Standard message and data rates may apply."
+                    - "To opt out, reply 'STOP' at any time."
+                    - "For help, reply 'HELP' or contact us at www.example.com or (123) 456-7890."
+                    - "You can unsubscribe by texting STOP."
+                    - "Messaging rates apply. Reply STOP to end messages."
 
-            **Response Format (Include detected statements, even if rejected):**
-            {{
-                "json": {{
-                    "compliance_analysis": {{
-                        "privacy_policy": {{
-                            "sms_consent_statement": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty",
-                                "url": "URL where found or empty",
-                                "detected_candidates": ["list of similar statements found, even if rejected"],
-                                "rejection_reason": "If rejected, explain why here"
+                **🚀 Force AI to List All Possible Matches**
+                - Before marking anything as "not found," AI must **return all similar statements found in the text**.
+                - If a statement is **not counted as compliant**, AI must explain **why** it was rejected.
+
+                **Response Format (Include detected statements, even if rejected):**
+                {{
+                    "json": {{
+                        "compliance_analysis": {{
+                            "privacy_policy": {{
+                                "sms_consent_statement": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty",
+                                    "url": "URL where found or empty",
+                                    "detected_candidates": ["list of similar statements found, even if rejected"],
+                                    "rejection_reason": "If rejected, explain why here"
+                                }},
+                                "data_usage_explanation": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty",
+                                    "url": "URL where found or empty",
+                                    "detected_candidates": ["list of similar statements found, even if rejected"],
+                                    "rejection_reason": "If rejected, explain why here"
+                                }}
                             }},
-                            "data_usage_explanation": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty",
-                                "url": "URL where found or empty",
-                                "detected_candidates": ["list of similar statements found, even if rejected"],
-                                "rejection_reason": "If rejected, explain why here"
-                            }}
-                        }},
-                        "terms_conditions": {{
-                            "message_types_specified": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty",
-                                "url": "URL where found or empty",
-                                "detected_candidates": ["list of similar statements found, even if rejected"],
-                                "rejection_reason": "If rejected, explain why here"
+                            "terms_conditions": {{
+                                "message_types_specified": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty",
+                                    "url": "URL where found or empty",
+                                    "detected_candidates": ["list of similar statements found, even if rejected"],
+                                    "rejection_reason": "If rejected, explain why here"
+                                }},
+                                "mandatory_disclosures": {{
+                                    "status": "found/not_found",
+                                    "statement": "actual statement found or empty",
+                                    "url": "URL where found or empty",
+                                    "detected_candidates": ["list of similar statements found, even if rejected"],
+                                    "rejection_reason": "If rejected, explain why here"
+                                }}
                             }},
-                            "mandatory_disclosures": {{
-                                "status": "found/not_found",
-                                "statement": "actual statement found or empty",
-                                "url": "URL where found or empty",
-                                "detected_candidates": ["list of similar statements found, even if rejected"],
-                                "rejection_reason": "If rejected, explain why here"
-                            }}
-                        }},
-                        "overall_compliance": "compliant/partially_compliant/non_compliant",
-                        "recommendations": [
-                            "Recommendation 1",
-                            "Recommendation 2"
-                        ]
+                            "overall_compliance": "compliant/partially_compliant/non_compliant",
+                            "recommendations": [
+                                "Recommendation 1",
+                                "Recommendation 2"
+                            ]
+                        }}
                     }}
                 }}
-            }}
 
-            **🚨 Important:** 
-            - **Do NOT assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted pages.**
-            - **Match compliance wording even if phrased differently (e.g., "We will not share your data" vs. "Your consent remains confidential").**
-            - **If any statement is detected, return BOTH the found statement and its URL.**
-            - **If multiple compliant statements exist, return ALL of them.**
-            - **If AI is unsure, double-check all extracted text before marking a category as "not found."**
-            - **Recheck the following terms before making a final determination:** ["message frequency", "reply STOP", "data sharing", "consent protection", "HELP for support"].
+                **🚨 Important:**
+                - **Do NOT assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted pages.**
+                - **Match compliance wording even if phrased differently (e.g., "We will not share your data" vs. "Your consent remains confidential").**
+                - **If any statement is detected, return BOTH the found statement and its URL.**
+                - **If multiple compliant statements exist, return ALL of them.**
+                - **If AI is unsure, double-check all extracted text before marking a category as "not found."**
+                - **Recheck the following terms before making a final determination:** ["message frequency", "reply STOP", "data sharing", "consent protection", "HELP for support"].
 
-            Here is the extracted website text:
-            {text}
-            """
-        }
-    ],
-    "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
-}
+                Here is the extracted website text:
+                {text}
+                """
+            }
+        ],
+        "response_format": {"type": "json_object"}  # ✅ Ensures JSON consistency
+    }
 
     logger.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
 
@@ -359,11 +356,11 @@ def check_compliance(text, source_urls):
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
 
-    extracted_text, source_urls = extract_text_from_website(website_url) #get source_urls
+    extracted_text, source_urls = extract_text_from_website(website_url)  # get source_urls
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-    compliance_result = check_compliance(extracted_text, source_urls) #pass source_urls to check_compliance
+    compliance_result = check_compliance(extracted_text, source_urls)  # pass source_urls to check_compliance
 
     response = Response(content=json.dumps(compliance_result), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
