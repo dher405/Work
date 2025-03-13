@@ -125,12 +125,14 @@ def extract_text_from_website(base_url):
         non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
         if "www." not in original_base_url:
             try:
-                response = requests.get(non_www_privacy_url, allow_redirects=True, timeout=10)
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+                response = requests.get(non_www_privacy_url, allow_redirects=True, timeout=10, headers=headers)
                 logger.info(f"Response status: {response.status_code}")
                 logger.info(f"Response headers: {response.headers}")
                 if response.status_code == 200:
                     pages_to_check = [non_www_privacy_url]  # Start ONLY with this page
                     logger.info(f"Forced pages_to_check: {pages_to_check}")  # Log forced URLs
+                time.sleep(2) #Add delay.
             except requests.exceptions.RequestException:
                 pass
 
@@ -181,31 +183,10 @@ def extract_text_from_website(base_url):
                 if response.status_code == 200:
                     if www_privacy_url not in pages_to_check:
                         pages_to_check.append(www_privacy_url)
-            except requests.exceptions.RequestException:
-                pass
+                except requests.exceptions.RequestException:
+                    pass
 
-        logger.info(f"pages_to_check before scraping: {pages_to_check}")
-
-        for page in set(pages_to_check):
-            logger.info(f"Scraping page: {page}")
-            soup = fetch_page(page)
-            if soup is None:
-                continue
-            page_text = soup.get_text(separator="\n", strip=True)
-            extracted_text += page_text + "\n\n"
-            source_urls[page] = page_text
-
-        if len(extracted_text) < 100:
-            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
-
-        return extracted_text.strip(), source_urls
-
-    except Exception as e:
-        logger.error(f"Failed to extract text from {base_url}: {e}")
-        return "", {}
-
-    finally:
-        return_driver_to_pool(driver)
+        logger.info(f"pages_to_check before scraping: {
 
 # Function to check compliance using OpenAI API
 def check_compliance(text, source_urls):
