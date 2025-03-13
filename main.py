@@ -93,8 +93,8 @@ def enforce_www(website_url):
     return website_url
 
 def extract_text_from_website(base_url):
-    original_base_url = base_url  # Save the original URL
-    base_url = enforce_www(base_url)  # Enforce www for link searching
+    original_base_url = base_url
+    base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
     driver = get_driver_from_pool()
     extracted_text = ""
@@ -108,9 +108,8 @@ def extract_text_from_website(base_url):
             driver.get(url)
             time.sleep(15)
 
-            # Scroll to the bottom of the page
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)  # Give time for dynamic content to load
+            time.sleep(5)
 
             return BeautifulSoup(driver.page_source, "html.parser")
         except Exception as e:
@@ -122,7 +121,6 @@ def extract_text_from_website(base_url):
         if soup is None:
             return "", {}
 
-        # Enhanced link searching
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
@@ -151,9 +149,9 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
         # Explicit URL checking and handling www subdomain issues.
-        if "www." in original_base_url: #If the original URL had www.
+        if "www." in original_base_url:
             explicit_urls = [f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"]
-        else: #If the original URL did not have www.
+        else:
             explicit_urls = [f"{base_url.replace('www.', '')}/privacy-policy/", f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"]
 
         for explicit_url in explicit_urls:
@@ -161,7 +159,14 @@ def extract_text_from_website(base_url):
                 try:
                     response = requests.head(explicit_url, allow_redirects=False, timeout=10)
                     if response.status_code == 200:
-                        pages_to_check.append(explicit_url)
+                        if original_base_url.startswith("https://www.") and "www." not in explicit_url:
+                            if f"{explicit_url.replace('https://', 'https://www.')}" not in pages_to_check:
+                                pages_to_check.append(explicit_url)
+                        elif original_base_url.startswith("https://") and "www." in explicit_url:
+                            if f"{explicit_url.replace('https://www.', 'https://')}" not in pages_to_check:
+                                pages_to_check.append(explicit_url)
+                        else:
+                            pages_to_check.append(explicit_url)
                 except requests.exceptions.RequestException:
                     pass
 
