@@ -49,7 +49,7 @@ def get_chromedriver_binary():
     return chromedriver_binary
 
 # Driver Pool
-driver_pool =
+driver_pool = []
 pool_lock = Lock()
 pool_size = 5  # adjust as needed.
 
