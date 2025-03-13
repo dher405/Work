@@ -86,12 +86,6 @@ def return_driver_to_pool(driver):
     with pool_lock:
         driver_pool.append(driver)
 
-# Function to enforce www. on website URL
-def enforce_www(website_url):
-    if "www." not in website_url:
-        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
-    return website_url
-
 def extract_text_from_website(base_url):
     original_base_url = base_url
     base_url = enforce_www(base_url)
@@ -121,6 +115,28 @@ def extract_text_from_website(base_url):
         if soup is None:
             return "", {}
 
+        # Explicitly check non-www privacy policy first
+        non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
+        if "www." not in original_base_url:
+            try:
+                response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    pages_to_check = [non_www_privacy_url] # Start ONLY with this page
+                    pages_to_check.append(base_url) # Add the base url back.
+            except requests.exceptions.RequestException:
+                pass
+
+        # Explicitly check non-www terms of service first
+        non_www_terms_url = f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"
+        if "www." not in original_base_url:
+            try:
+                response = requests.head(non_www_terms_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if non_www_terms_url not in pages_to_check:
+                        pages_to_check.append(non_www_terms_url)
+            except requests.exceptions.RequestException:
+                pass
+
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
             if href.startswith("mailto:"):
@@ -148,19 +164,25 @@ def extract_text_from_website(base_url):
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
-        # Explicit URL checking and handling www subdomain issues.
-        non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
+        # Check www version if non-www was not found.
         www_privacy_url = f"{base_url}/privacy-policy/"
+        www_terms_url = f"{base_url}/tcs-digital-solutions-terms-of-service/"
 
         if "www." not in original_base_url:
-            try:
-                response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    pages_to_check = [url for url in pages_to_check if url != www_privacy_url] #Remove any www privacy policy urls.
-                    if non_www_privacy_url not in pages_to_check:
-                        pages_to_check.insert(1, non_www_privacy_url)
-            except requests.exceptions.RequestException:
-                pass
+            if non_www_privacy_url not in pages_to_check:
+                try:
+                    response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                    if response.status_code == 200:
+                        pages_to_check.append(www_privacy_url)
+                except requests.exceptions.RequestException:
+                    pass
+            if non_www_terms_url not in pages_to_check:
+                try:
+                    response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
+                    if response.status_code == 200:
+                        pages_to_check.append(www_terms_url)
+                except requests.exceptions.RequestException:
+                    pass
         else:
             try:
                 response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
@@ -169,20 +191,6 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(www_privacy_url)
             except requests.exceptions.RequestException:
                 pass
-
-        non_www_terms_url = f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"
-        www_terms_url = f"{base_url}/tcs-digital-solutions-terms-of-service/"
-
-        if "www." not in original_base_url:
-            try:
-                response = requests.head(non_www_terms_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    pages_to_check = [url for url in pages_to_check if url != www_terms_url] #Remove any www terms urls.
-                    if non_www_terms_url not in pages_to_check:
-                        pages_to_check.insert(1, non_www_terms_url)
-            except requests.exceptions.RequestException:
-                pass
-        else:
             try:
                 response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
