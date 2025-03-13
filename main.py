@@ -149,26 +149,59 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
         # Explicit URL checking and handling www subdomain issues.
-        if "www." in original_base_url:
-            explicit_urls = [f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"]
-        else:
-            explicit_urls = [f"{base_url.replace('www.', '')}/privacy-policy/", f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"]
+        non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
+        www_privacy_url = f"{base_url}/privacy-policy/"
 
-        for explicit_url in explicit_urls:
-            if explicit_url not in pages_to_check:
-                try:
-                    response = requests.head(explicit_url, allow_redirects=False, timeout=10)
-                    if response.status_code == 200:
-                        if original_base_url.startswith("https://www.") and "www." not in explicit_url:
-                            if f"{explicit_url.replace('https://', 'https://www.')}" not in pages_to_check:
-                                pages_to_check.append(explicit_url)
-                        elif original_base_url.startswith("https://") and "www." in explicit_url:
-                            if f"{explicit_url.replace('https://www.', 'https://')}" not in pages_to_check:
-                                pages_to_check.append(explicit_url)
-                        else:
-                            pages_to_check.append(explicit_url)
-                except requests.exceptions.RequestException:
-                    pass
+        if "www." not in original_base_url:
+            try:
+                response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if non_www_privacy_url not in pages_to_check:
+                        pages_to_check.insert(1, non_www_privacy_url) #Insert at position 1 to prioritize.
+            except requests.exceptions.RequestException:
+                pass
+            try:
+                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if www_privacy_url not in pages_to_check:
+                        pages_to_check.append(www_privacy_url)
+            except requests.exceptions.RequestException:
+                pass
+        else:
+            try:
+                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if www_privacy_url not in pages_to_check:
+                        pages_to_check.append(www_privacy_url)
+            except requests.exceptions.RequestException:
+                pass
+
+        non_www_terms_url = f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"
+        www_terms_url = f"{base_url}/tcs-digital-solutions-terms-of-service/"
+
+        if "www." not in original_base_url:
+            try:
+                response = requests.head(non_www_terms_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if non_www_terms_url not in pages_to_check:
+                        pages_to_check.insert(1, non_www_terms_url)
+            except requests.exceptions.RequestException:
+                pass
+            try:
+                response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if www_terms_url not in pages_to_check:
+                        pages_to_check.append(www_terms_url)
+            except requests.exceptions.RequestException:
+                pass
+        else:
+            try:
+                response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200:
+                    if www_terms_url not in pages_to_check:
+                        pages_to_check.append(www_terms_url)
+            except requests.exceptions.RequestException:
+                pass
 
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
