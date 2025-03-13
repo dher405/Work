@@ -152,7 +152,7 @@ def extract_text_from_website(base_url):
                     continue
 
                 link_text = link.get_text(strip=True).lower()
-                if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal", "policy"]):
+                if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
                     absolute_url = urljoin(base_url, href)
                     pages_to_check.append(absolute_url)
 
@@ -231,7 +231,7 @@ def check_compliance(text, source_urls, max_retries=3):
     }
 
     payload = {
-        "model": "gpt-3.5-turbo",
+        "model": "o3-mini",
         "messages": [
             {
                 "role": "system",
