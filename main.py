@@ -124,17 +124,23 @@ def extract_text_from_website(base_url):
         # Explicitly check non-www privacy policy first
         non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
         if "www." not in original_base_url:
+            if non_www_privacy_url not in pages_to_check:
+                try:
+                    response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                    if response.status_code == 200:
+                        pages_to_check.append(www_privacy_url)
+                except requests.exceptions.RequestException:
+                    pass
+        else:  # Correct alignment here
             try:
-                response = requests.get(non_www_privacy_url, allow_redirects=True, timeout=10)
-                logger.info(f"Response status: {response.status_code}")
-                logger.info(f"Response headers: {response.headers}")
+                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
-                    pages_to_check = [non_www_privacy_url]  # Start ONLY with this page
-                    logger.info(f"Forced pages_to_check: {pages_to_check}")  # Log forced URLs
-            except requests.exceptions.RequestException:
-                pass
+                    if www_privacy_url not in pages_to_check:
+                        pages_to_check.append(www_privacy_url)
+                except requests.exceptions.RequestException:
+                    pass
 
-        logger.info(f"pages_to_check before link parsing: {pages_to_check}")
+        logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
         for link in soup.find_all("a", href=True):
             href = link["href"].strip()
