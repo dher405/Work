@@ -143,31 +143,35 @@ def extract_text_from_website(base_url):
         logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
         for link in soup.find_all("a", href=True):
-            href = link["href"].strip()
-            if href.startswith("mailto:"):
-                continue
-            parsed_href = urlparse(urljoin(base_url, href))
-            if parsed_href.netloc and parsed_href.netloc != base_domain:
-                continue
-
-            link_text = link.get_text(strip=True).lower()
-            if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal", "policy"]):
-                absolute_url = urljoin(base_url, href)
-                pages_to_check.append(absolute_url)
-
-                sub_soup = fetch_page(absolute_url)
-                if sub_soup is None:
+            try:  # Add a try block here
+                href = link["href"].strip()
+                if href.startswith("mailto:"):
+                    continue
+                parsed_href = urlparse(urljoin(base_url, href))
+                if parsed_href.netloc and parsed_href.netloc != base_domain:
                     continue
 
-                for sub_link in sub_soup.find_all("a", href=True):
-                    sub_href = sub_link["href"].strip()
-                    if sub_href.startswith("mailto:"):
+                link_text = link.get_text(strip=True).lower()
+                if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal", "policy"]):
+                    absolute_url = urljoin(base_url, href)
+                    pages_to_check.append(absolute_url)
+
+                    sub_soup = fetch_page(absolute_url)
+                    if sub_soup is None:
                         continue
-                    parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
-                    if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
-                        continue
-                    if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
-                        pages_to_check.append(urljoin(absolute_url, sub_href))
+
+                    for sub_link in sub_soup.find_all("a", href=True):
+                        sub_href = sub_link["href"].strip()
+                        if sub_href.startswith("mailto:"):
+                            continue
+                        parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
+                        if parsed_sub_href.netloc and parsed_sub_href != base_domain:
+                            continue
+                        if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                            pages_to_check.append(urljoin(absolute_url, sub_href))
+            except Exception as e: #Add except block
+                logger.error(f"Error processing link: {e}")
+                continue
 
         logger.info(f"pages_to_check after link parsing: {pages_to_check}")
 
