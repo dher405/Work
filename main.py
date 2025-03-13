@@ -93,6 +93,7 @@ def enforce_www(website_url):
     return website_url
 
 def extract_text_from_website(base_url):
+    original_base_url = base_url  # Save the original URL
     base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
     driver = get_driver_from_pool()
@@ -150,25 +151,18 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
         # Explicit URL checking and handling www subdomain issues.
-        explicit_urls = [f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"]
+        explicit_urls = [f"{base_url.replace('www.', '')}/privacy-policy/", f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"] #Use base_url without www.
+        if "www." in base_url:
+            explicit_urls.extend([f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"])
+
         for explicit_url in explicit_urls:
             if explicit_url not in pages_to_check:
-                if "www." in explicit_url:
-                    no_www_url = explicit_url.replace("www.", "")
-                    try:
-                        response = requests.head(no_www_url, allow_redirects=False, timeout=10)
-                        if response.status_code == 200:
-                            if no_www_url not in pages_to_check: #Add this check.
-                                pages_to_check.append(no_www_url)
-                        else:
-                            if explicit_url not in pages_to_check: #Add this check.
-                                pages_to_check.append(explicit_url)
-                    except requests.exceptions.RequestException:
-                        if explicit_url not in pages_to_check: #Add this check.
-                            pages_to_check.append(explicit_url)
-                else:
-                    if explicit_url not in pages_to_check: #Add this check.
+                try:
+                    response = requests.head(explicit_url, allow_redirects=False, timeout=10)
+                    if response.status_code == 200:
                         pages_to_check.append(explicit_url)
+                except requests.exceptions.RequestException:
+                    pass
 
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
