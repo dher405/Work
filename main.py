@@ -102,16 +102,25 @@ def extract_text_from_website(base_url):
     base_domain = urlparse(base_url).netloc
     source_urls = {}
 
+    def fetch_page(url):
+        try:
+            driver.set_page_load_timeout(300)
+            driver.get(url)
+            time.sleep(15)
+
+            # Scroll to the bottom of the page
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)  # Give time for dynamic content to load
+
+            return BeautifulSoup(driver.page_source, "html.parser")
+        except Exception as e:
+            logger.error(f"Failed to fetch page {url}: {e}")
+            return None
+
     try:
-        driver.set_page_load_timeout(300)
-        driver.get(base_url)
-        time.sleep(15)
-
-        # Scroll to the bottom of the page
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)  # Give time for dynamic content to load
-
-        soup = BeautifulSoup(driver.page_source, "html.parser")
+        soup = fetch_page(base_url)
+        if soup is None:
+            return "", {}
 
         # Enhanced link searching
         for link in soup.find_all("a", href=True):
@@ -127,10 +136,10 @@ def extract_text_from_website(base_url):
                 absolute_url = urljoin(base_url, href)
                 pages_to_check.append(absolute_url)
 
-                driver.set_page_load_timeout(240)
-                driver.get(absolute_url)
-                time.sleep(6)
-                sub_soup = BeautifulSoup(driver.page_source, "html.parser")
+                sub_soup = fetch_page(absolute_url)
+                if sub_soup is None:
+                    continue
+
                 for sub_link in sub_soup.find_all("a", href=True):
                     sub_href = sub_link["href"].strip()
                     if sub_href.startswith("mailto:"):
@@ -141,18 +150,28 @@ def extract_text_from_website(base_url):
                     if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
-        # Explicit URL checking
-        if f"{base_url}/privacy-policy/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/privacy-policy/")
-        if f"{base_url}/tcs-digital-solutions-terms-of-service/" not in pages_to_check:
-            pages_to_check.append(f"{base_url}/tcs-digital-solutions-terms-of-service/")
+        # Explicit URL checking and handling www subdomain issues.
+        explicit_urls = [f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"]
+        for explicit_url in explicit_urls:
+            if explicit_url not in pages_to_check:
+                if "www." in explicit_url:
+                    no_www_url = explicit_url.replace("www.", "")
+                    try:
+                        response = requests.head(no_www_url, allow_redirects=False, timeout=10)
+                        if response.status_code == 200:
+                            pages_to_check.append(no_www_url)
+                        else:
+                            pages_to_check.append(explicit_url)
+                    except requests.exceptions.RequestException:
+                        pages_to_check.append(explicit_url)
+                else:
+                    pages_to_check.append(explicit_url)
 
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
-            driver.set_page_load_timeout(240)
-            driver.get(page)
-            time.sleep(10)
-            soup = BeautifulSoup(driver.page_source, "html.parser")
+            soup = fetch_page(page)
+            if soup is None:
+                continue
             page_text = soup.get_text(separator="\n", strip=True)
             extracted_text += page_text + "\n\n"
             source_urls[page] = page_text
