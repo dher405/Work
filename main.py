@@ -51,7 +51,7 @@ def get_chromedriver_binary():
 # Driver Pool
 driver_pool = []
 pool_lock = Lock()
-pool_size = 5 #adjust as needed.
+pool_size = 5  # adjust as needed.
 
 def initialize_driver():
     options = Options()
@@ -63,7 +63,9 @@ def initialize_driver():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-infobars")
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    )
 
     service = Service(get_chromedriver_binary())
     try:
@@ -89,7 +91,9 @@ def return_driver_to_pool(driver):
 # Function to enforce www. on website URL
 def enforce_www(website_url):
     if "www." not in website_url:
-        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
+        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith(
+            "https://"
+        ) else f"https://www.{website_url}"
     return website_url
 
 def extract_text_from_website(base_url):
@@ -126,19 +130,20 @@ def extract_text_from_website(base_url):
         if "www." not in original_base_url:
             if non_www_privacy_url not in pages_to_check:
                 try:
-                    response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
                     if response.status_code == 200:
-                        pages_to_check.append(www_privacy_url)
+                        pages_to_check.append(non_www_privacy_url)
                 except requests.exceptions.RequestException:
                     pass
         else:  # Correct alignment here
+            www_privacy_url = f"{base_url}/privacy-policy/"
             try:
                 response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
                     if www_privacy_url not in pages_to_check:
                         pages_to_check.append(www_privacy_url)
-                except requests.exceptions.RequestException:
-                    pass
+            except requests.exceptions.RequestException:
+                pass
 
         logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
@@ -169,7 +174,7 @@ def extract_text_from_website(base_url):
                             continue
                         if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
                             pages_to_check.append(urljoin(absolute_url, sub_href))
-            except Exception as e: #Add except block
+            except Exception as e:  # Add except block
                 logger.error(f"Error processing link: {e}")
                 continue
 
@@ -180,9 +185,9 @@ def extract_text_from_website(base_url):
         if "www." not in original_base_url:
             if non_www_privacy_url not in pages_to_check:
                 try:
-                    response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
                     if response.status_code == 200:
-                        pages_to_check.append(www_privacy_url)
+                        pages_to_check.append(non_www_privacy_url)
                 except requests.exceptions.RequestException:
                     pass
         else:
@@ -190,9 +195,7 @@ def extract_text_from_website(base_url):
                 response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
                     if www_privacy_url not in pages_to_check:
-                        pages_to_check.append(www_privacy_url)
-                except requests.exceptions.RequestException:
-                    pass
+                        pages_to_check.append(www_privacy
 
         logger.info(f"pages_to_check before scraping: {pages_to_check}")
 
