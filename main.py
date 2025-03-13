@@ -231,7 +231,7 @@ def check_compliance(text, source_urls, max_retries=3):
     }
 
     payload = {
-        "model": "o3-mini",
+        "model": "gpt-4o-mini-realtime-preview",
         "messages": [
             {
                 "role": "system",
