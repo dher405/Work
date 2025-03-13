@@ -86,6 +86,12 @@ def return_driver_to_pool(driver):
     with pool_lock:
         driver_pool.append(driver)
 
+# Function to enforce www. on website URL
+def enforce_www(website_url):
+    if "www." not in website_url:
+        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
+    return website_url
+
 def extract_text_from_website(base_url):
     original_base_url = base_url
     base_url = enforce_www(base_url)
