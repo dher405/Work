@@ -156,15 +156,9 @@ def extract_text_from_website(base_url):
             try:
                 response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
+                    pages_to_check = [url for url in pages_to_check if url != www_privacy_url] #Remove any www privacy policy urls.
                     if non_www_privacy_url not in pages_to_check:
-                        pages_to_check.insert(1, non_www_privacy_url) #Insert at position 1 to prioritize.
-            except requests.exceptions.RequestException:
-                pass
-            try:
-                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    if www_privacy_url not in pages_to_check:
-                        pages_to_check.append(www_privacy_url)
+                        pages_to_check.insert(1, non_www_privacy_url)
             except requests.exceptions.RequestException:
                 pass
         else:
@@ -183,15 +177,9 @@ def extract_text_from_website(base_url):
             try:
                 response = requests.head(non_www_terms_url, allow_redirects=False, timeout=10)
                 if response.status_code == 200:
+                    pages_to_check = [url for url in pages_to_check if url != www_terms_url] #Remove any www terms urls.
                     if non_www_terms_url not in pages_to_check:
                         pages_to_check.insert(1, non_www_terms_url)
-            except requests.exceptions.RequestException:
-                pass
-            try:
-                response = requests.head(www_terms_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200:
-                    if www_terms_url not in pages_to_check:
-                        pages_to_check.append(www_terms_url)
             except requests.exceptions.RequestException:
                 pass
         else:
