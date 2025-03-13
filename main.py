@@ -94,7 +94,7 @@ def enforce_www(website_url):
 
 def extract_text_from_website(base_url):
     original_base_url = base_url  # Save the original URL
-    base_url = enforce_www(base_url)
+    base_url = enforce_www(base_url)  # Enforce www for link searching
     logger.info(f"Checking compliance for: {base_url}")
     driver = get_driver_from_pool()
     extracted_text = ""
@@ -151,9 +151,10 @@ def extract_text_from_website(base_url):
                         pages_to_check.append(urljoin(absolute_url, sub_href))
 
         # Explicit URL checking and handling www subdomain issues.
-        explicit_urls = [f"{base_url.replace('www.', '')}/privacy-policy/", f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"] #Use base_url without www.
-        if "www." in base_url:
-            explicit_urls.extend([f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"])
+        if "www." in original_base_url: #If the original URL had www.
+            explicit_urls = [f"{base_url}/privacy-policy/", f"{base_url}/tcs-digital-solutions-terms-of-service/"]
+        else: #If the original URL did not have www.
+            explicit_urls = [f"{base_url.replace('www.', '')}/privacy-policy/", f"{base_url.replace('www.', '')}/tcs-digital-solutions-terms-of-service/"]
 
         for explicit_url in explicit_urls:
             if explicit_url not in pages_to_check:
