@@ -92,7 +92,6 @@ def enforce_www(website_url):
         website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
     return website_url
 
-# Function to extract text from website and track source URLs
 def extract_text_from_website(base_url):
     base_url = enforce_www(base_url)
     logger.info(f"Checking compliance for: {base_url}")
@@ -159,13 +158,17 @@ def extract_text_from_website(base_url):
                     try:
                         response = requests.head(no_www_url, allow_redirects=False, timeout=10)
                         if response.status_code == 200:
-                            pages_to_check.append(no_www_url)
+                            if no_www_url not in pages_to_check: #Add this check.
+                                pages_to_check.append(no_www_url)
                         else:
-                            pages_to_check.append(explicit_url)
+                            if explicit_url not in pages_to_check: #Add this check.
+                                pages_to_check.append(explicit_url)
                     except requests.exceptions.RequestException:
-                        pages_to_check.append(explicit_url)
+                        if explicit_url not in pages_to_check: #Add this check.
+                            pages_to_check.append(explicit_url)
                 else:
-                    pages_to_check.append(explicit_url)
+                    if explicit_url not in pages_to_check: #Add this check.
+                        pages_to_check.append(explicit_url)
 
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
