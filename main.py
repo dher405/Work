@@ -125,7 +125,7 @@ def extract_text_from_website(base_url):
         non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
         if "www." not in original_base_url:
             try:
-                response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
+                response = requests.head(non_www_privacy_url, allow_redirects=True, timeout=10)
                 if response.status_code == 200:
                     pages_to_check = [non_www_privacy_url]  # Start ONLY with this page
                     logger.info(f"Forced pages_to_check: {pages_to_check}")  # Log forced URLs
