@@ -231,7 +231,7 @@ def check_compliance(text, source_urls, max_retries=3):
     }
 
     payload = {
-        "model": "gpt-4o-mini",
+        "model": "gpt-3.5-turbo",
         "messages": [
             {
                 "role": "system",
