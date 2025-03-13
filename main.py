@@ -192,7 +192,20 @@ def extract_text_from_website(base_url):
             if soup is None:
                 continue
             page_text = soup.get_text(separator="\n", strip=True)
-            extracted_text += page_text + "\
+            extracted_text += page_text + "\n"
+            source_urls[page] = page_text
+
+        if len(extracted_text) < 100:
+            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
+
+        return extracted_text.strip(), source_urls
+
+    except Exception as e:
+        logger.error(f"Failed to extract text from {base_url}: {e}")
+        return "", {}
+
+    finally:
+        return_driver_to_pool(driver)
 
 # Function to check compliance using OpenAI API
 def check_compliance(text, source_urls):
