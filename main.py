@@ -217,11 +217,12 @@ def extract_text_from_website(base_url):
     finally:
         return_driver_to_pool(driver)
 
+# Function to check compliance using OpenAI API
 def check_compliance(text, source_urls, max_retries=3):
     """Function to check compliance using OpenAI API."""
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
-        logging.error("Missing OpenAI API key.")
+        logger.error("Missing OpenAI API key.")
         return {"error": "Missing API key."}
 
     headers = {
@@ -319,7 +320,7 @@ def check_compliance(text, source_urls, max_retries=3):
                     **🚨 Important:**
                     - **Do NOT assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted pages.**
                     - **Match compliance wording even if phrased differently (e.g., "We will not share your data" vs. "Your consent remains confidential").**
-                    - **If any statement is detected, return BOTH the found statement and its URL.**
+                    - **If any statement is detected, return BOTH the found statement and its URL from the following list:** {json.dumps(source_urls)}
                     - **If multiple compliant statements exist, return ALL of them.**
                     - **If AI is unsure, double-check all extracted text before marking a category as "not found."**
                     - **Recheck the following terms before making a final determination:** ["message frequency", "reply STOP", "data sharing", "consent protection", "HELP for support"].
@@ -352,7 +353,7 @@ def check_compliance(text, source_urls, max_retries=3):
                         return {"error": "Invalid AI response format. 'json' key not found."}
 
                 except json.JSONDecodeError as e:
-                    logging.error(f"JSONDecodeError: {e}. Content: {content}. Attempt: {attempt + 1}/{max_retries}")
+                    logger.error(f"JSONDecodeError: {e}. Content: {content}. Attempt: {attempt + 1}/{max_retries}")
                     if attempt == max_retries - 1:
                         return {"error": f"Invalid AI response format. JSON parsing failed after {max_retries} attempts: {e}"}
                     time.sleep(1)  # Add a small delay before retrying
