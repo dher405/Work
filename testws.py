@@ -8,12 +8,12 @@ import websockets
 from aiortc import RTCPeerConnection, RTCIceServer, RTCConfiguration
 
 # Configuration
-STUN_SERVERS = [
-    "stun:stun1.eo1.engage.ringcentral.com:19302",
-    "stun:stun2.eo1.engage.ringcentral.com:19302",
-    "stun:stun3.eo1.engage.ringcentral.com:19302",
-    "stun:stun.l.google.com:19302"
+ice_servers = [
+    ice_servers = [
+    RTCIceServer(urls="stun:stun.l.google.com:19302"),  # STUN (May not work on Render)
+    RTCIceServer(urls="turn:relay.metered.ca:80", username="open", credential="open")  # Public TURN
 ]
+
 
 WS_SERVER_BASE = "wss://wcm-ev-p02-eo1.engage.ringcentral.com:8080"
 ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiJ9.eyJhZ250IjpbMTUyOTg2XSwiYWdudC1hY2MiOnsiMTUyOTg2IjoiMjEyNzAwMDEifSwiZW1iZCI6ZmFsc2UsInJjYWMiOiIzNzQzOTUxMCIsImVzdSI6ZmFsc2UsImxhcHAiOiJTU08iLCJmbHIiOmZhbHNlLCJzc28iOnRydWUsInJjaWQiOjE5MTgwOTYwMDgsInBsYXQiOiJldi1wMDIiLCJhY2N0IjoiMjEyNzAwMDAiLCJleHAiOjE3NDIxODA5Nzl9.BCX5N73WAsmQZrHR4JyTWO-0g8wvujFy0haQZdXycoGjcfDL0OnFltvTNsewUhN3_camJv2zw1yNvCYB095GxocZNhFhRi5JFk-fQqsxVtctgqp1xeKM_OkQQb-3Fghblp2ss0KlrymzMyB7Yo3Io_rUAmlMwSzhoCKU1B2KffwWNnYGzRUfw79n_VIw_4tAub0nzbhYqumdUDz-9uGuk2Bb8F7rgw_vAkkYicoQncCI52pPQlV-dIktRcnQIVnnHsLigUvBmyAHKdVkjcapkSqTwNfdBLSenCxZ2i166j5-O63bIivjHSxjOVdH9fiCxgl3MDwai0Kmtilgv-KcwA";
