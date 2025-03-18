@@ -27,16 +27,39 @@ logger = logging.getLogger("STUN_WS_Test")
 # Function to perform DTLS handshake
 async def perform_dtls_handshake():
     logger.info("Attempting DTLS handshake before STUN...")
+
     try:
-        pc = RTCPeerConnection(RTCConfiguration(iceServers=[RTCIceServer(urls=STUN_SERVERS)]))
+        ice_servers = [RTCIceServer(urls="stun:stun.l.google.com:19302")]
+        pc = RTCPeerConnection(RTCConfiguration(iceServers=ice_servers))
+
         pc.createDataChannel("test")
-        await pc.createOffer()
-        await pc.setLocalDescription(pc.localDescription)
+
+        @pc.on("icecandidate")
+        async def on_ice_candidate(candidate):
+            if candidate:
+                logger.info(f"🔍 Found ICE Candidate: {candidate}")
+
+        @pc.on("iceconnectionstatechange")
+        async def on_ice_connection_state_change():
+            logger.info(f"🔄 ICE Connection State: {pc.iceConnectionState}")
+
+        offer = await pc.createOffer()
+        await pc.setLocalDescription(offer)
+
+        # ✅ Wait for ICE Gathering to Complete
+        await asyncio.sleep(5)
+
+        if pc.iceConnectionState == "failed":
+            logger.error("❌ ICE Candidate Gathering Failed! STUN might be blocked.")
+            return None
+
         logger.info("✅ DTLS handshake successful.")
         return pc
+
     except Exception as e:
         logger.error(f"❌ DTLS handshake failed: {e}")
         return None
+
 
 # Function to establish STUN connection and retrieve external IP & port
 async def setup_stun(pc):
