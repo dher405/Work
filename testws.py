@@ -12,6 +12,7 @@ ice_servers = [
     ice_servers = [
     RTCIceServer(urls="stun:stun.l.google.com:19302"),  # STUN (May not work on Render)
     RTCIceServer(urls="turn:relay.metered.ca:80", username="open", credential="open")  # Public TURN
+    ]
 ]
 
 
