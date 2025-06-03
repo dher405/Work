@@ -9,6 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from threading import Lock
@@ -106,19 +110,36 @@ def extract_text_from_website(base_url):
     base_domain = urlparse(base_url).netloc
     source_urls = {}
 
-    def fetch_page(url):
+    def fetch_page(url, max_wait=30):
+    try:
+        logger.info(f"Loading page: {url}")
+        driver.set_page_load_timeout(60)
+        driver.get(url)
+
+        # Wait until body tag is present or timeout occurs
         try:
-            driver.set_page_load_timeout(300)
-            driver.get(url)
-            time.sleep(15)
+            WebDriverWait(driver, max_wait).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+        except TimeoutException:
+            logger.warning(f"Timeout waiting for page body on {url}")
 
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)
+        # Scroll to bottom to trigger lazy-loaded content
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
 
-            return BeautifulSoup(driver.page_source, "html.parser")
-        except Exception as e:
-            logger.error(f"Failed to fetch page {url}: {e}")
+        page_source = driver.page_source
+        lower_text = page_source.lower()
+
+        if "verify you are human" in lower_text or "enable javascript and cookies" in lower_text:
+            logger.warning(f"Bot protection detected on page: {url}")
             return None
+
+        return BeautifulSoup(page_source, "html.parser")
+
+    except Exception as e:
+        logger.error(f"Failed to fetch page {url}: {e}")
+        return None
 
     try:
         soup = fetch_page(base_url)
