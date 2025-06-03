@@ -110,23 +110,107 @@ def extract_text_from_website(base_url):
     base_domain = urlparse(base_url).netloc
     source_urls = {}
 
-def fetch_page(url, max_wait=30):
-    from selenium.common.exceptions import TimeoutException
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
+    try:
+        soup = fetch_page(driver, base_url)
+        if soup is None:
+            return "", {}
 
+        non_www_privacy_url = f"{base_url.replace('www.', '')}/privacy-policy/"
+        if "www." not in original_base_url:
+            try:
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0'}
+                response = requests.get(non_www_privacy_url, headers=headers, timeout=10)
+                logger.info(f"Response status: {response.status_code}")
+                if response.status_code == 200:
+                    pages_to_check = [non_www_privacy_url]
+                time.sleep(2)
+            except requests.exceptions.RequestException:
+                pass
+
+        logger.info(f"pages_to_check before link parsing: {pages_to_check}")
+
+        for link in soup.find_all("a", href=True):
+            try:
+                href = link["href"].strip()
+                if href.startswith("mailto:"):
+                    continue
+                parsed_href = urlparse(urljoin(base_url, href))
+                if parsed_href.netloc and parsed_href.netloc != base_domain:
+                    continue
+
+                link_text = link.get_text(strip=True).lower()
+                if any(keyword in link_text or keyword in href.lower() for keyword in ["privacy", "terms", "legal"]):
+                    absolute_url = urljoin(base_url, href)
+                    pages_to_check.append(absolute_url)
+
+                    sub_soup = fetch_page(driver, absolute_url)
+                    if sub_soup is None:
+                        continue
+
+                    for sub_link in sub_soup.find_all("a", href=True):
+                        sub_href = sub_link["href"].strip()
+                        if sub_href.startswith("mailto:"):
+                            continue
+                        parsed_sub_href = urlparse(urljoin(absolute_url, sub_href))
+                        if parsed_sub_href.netloc and parsed_sub_href.netloc != base_domain:
+                            continue
+                        if any(keyword in sub_href.lower() for keyword in ["privacy", "terms", "legal"]):
+                            pages_to_check.append(urljoin(absolute_url, sub_href))
+            except Exception as e:
+                logger.error(f"Error processing link: {e}")
+                continue
+
+        logger.info(f"pages_to_check after link parsing: {pages_to_check}")
+
+        www_privacy_url = f"{base_url}/privacy-policy/"
+        if "www." not in original_base_url:
+            if non_www_privacy_url not in pages_to_check:
+                try:
+                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
+                    if response.status_code == 200:
+                        pages_to_check.append(non_www_privacy_url)
+                except requests.exceptions.RequestException:
+                    pass
+        else:
+            try:
+                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
+                if response.status_code == 200 and www_privacy_url not in pages_to_check:
+                    pages_to_check.append(www_privacy_url)
+            except requests.exceptions.RequestException:
+                pass
+
+        logger.info(f"pages_to_check before scraping: {pages_to_check}")
+
+        for page in set(pages_to_check):
+            logger.info(f"Scraping page: {page}")
+            soup = fetch_page(driver, page)
+            if soup is None:
+                continue
+            page_text = soup.get_text(separator="\n", strip=True)
+            extracted_text += page_text + "\n"
+            source_urls[page] = page_text
+
+        if len(extracted_text) < 100:
+            logger.warning(f"Extracted text from {base_url} appears too short, might have missed content.")
+
+        return extracted_text.strip(), source_urls
+
+    except Exception as e:
+        logger.error(f"Failed to extract text from {base_url}: {e}")
+        return "", {}
+
+    finally:
+        return_driver_to_pool(driver)
+
+def fetch_page(driver, url, max_wait=30):
     try:
         logger.info(f"Loading page: {url}")
         driver.set_page_load_timeout(60)
         driver.get(url)
 
-        try:
-            WebDriverWait(driver, max_wait).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
-        except TimeoutException:
-            logger.warning(f"Timeout waiting for page body on {url}")
+        WebDriverWait(driver, max_wait).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
