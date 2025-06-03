@@ -110,13 +110,17 @@ def extract_text_from_website(base_url):
     base_domain = urlparse(base_url).netloc
     source_urls = {}
 
-    def fetch_page(url, max_wait=30):
+def fetch_page(url, max_wait=30):
+    from selenium.common.exceptions import TimeoutException
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
     try:
         logger.info(f"Loading page: {url}")
         driver.set_page_load_timeout(60)
         driver.get(url)
 
-        # Wait until body tag is present or timeout occurs
         try:
             WebDriverWait(driver, max_wait).until(
                 EC.presence_of_element_located((By.TAG_NAME, "body"))
@@ -124,7 +128,6 @@ def extract_text_from_website(base_url):
         except TimeoutException:
             logger.warning(f"Timeout waiting for page body on {url}")
 
-        # Scroll to bottom to trigger lazy-loaded content
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
