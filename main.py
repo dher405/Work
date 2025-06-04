@@ -202,31 +202,34 @@ def extract_text_from_website(base_url):
     finally:
         return_driver_to_pool(driver)
 
-def fetch_page(driver, url, max_wait=30):
-    try:
-        logger.info(f"Loading page: {url}")
-        driver.set_page_load_timeout(60)
-        driver.get(url)
+def fetch_page(driver, url, max_wait=30, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Loading page: {url} (Attempt {attempt + 1})")
+            driver.set_page_load_timeout(60)
+            driver.get(url)
 
-        WebDriverWait(driver, max_wait).until(
-            EC.presence_of_element_located((By.TAG_NAME, "body"))
-        )
+            WebDriverWait(driver, max_wait).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
 
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(3)
+            time.sleep(3)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
 
-        page_source = driver.page_source
-        lower_text = page_source.lower()
+            page_source = driver.page_source.lower()
+            if "verify you are human" in page_source or "enable javascript and cookies" in page_source:
+                logger.warning(f"Bot protection still active (Attempt {attempt + 1}). Waiting and retrying...")
+                time.sleep(5)
+                continue  # Try again
+            return BeautifulSoup(driver.page_source, "html.parser")
 
-        if "verify you are human" in lower_text or "enable javascript and cookies" in lower_text:
-            logger.warning(f"Bot protection detected on page: {url}")
-            return None
+        except Exception as e:
+            logger.error(f"Failed to fetch page {url} on attempt {attempt + 1}: {e}")
+            time.sleep(3)
 
-        return BeautifulSoup(page_source, "html.parser")
-
-    except Exception as e:
-        logger.error(f"Failed to fetch page {url}: {e}")
-        return None
+    logger.error(f"Bot protection could not be bypassed after {max_retries} attempts.")
+    return None
 
     try:
         soup = fetch_page(base_url)
