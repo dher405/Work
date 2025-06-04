@@ -3,17 +3,14 @@ import time
 import json
 import requests
 import logging
+import undetected_chromedriver as uc
 from urllib.parse import urljoin, urlparse
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from threading import Lock
 
@@ -58,11 +55,9 @@ pool_lock = Lock()
 pool_size = 5  # adjust as needed.
 
 def initialize_driver():
-    options = Options()
-    options.binary_location = get_chrome_binary()
+    options = uc.ChromeOptions()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -70,13 +65,11 @@ def initialize_driver():
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     )
-
-    service = Service(get_chromedriver_binary())
     try:
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = uc.Chrome(options=options, version_main=114)
         return driver
     except Exception as e:
-        logger.error(f"Failed to start ChromeDriver: {e}")
+        logger.error(f"Failed to start Undetected ChromeDriver: {e}")
         raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
 
 def get_driver_from_pool():
@@ -513,7 +506,9 @@ def options_check_compliance():
 @app.get("/debug_chrome")
 def debug_chrome():
     try:
-        chrome_version = os.popen(f"{get_chrome_binary()} --version").read().strip()
+        chrome_version = os.popen("google-chrome --version").read().strip()
+        return {"chrome_version": chrome_version, "driver_status": "Using undetected-chromedriver"}
+
         driver_version = os.popen(f"{get_chromedriver_binary()} --version").read().strip()
         return {"chrome_version": chrome_version, "driver_version": driver_version}
     except FileNotFoundError as e:
