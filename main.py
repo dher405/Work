@@ -480,6 +480,25 @@ def check_compliance(text, source_urls, max_retries=3):
             logging.error(f"Request error occurred: {req_err}")
             return {"error": "AI processing failed due to request issue."}
 
+@app.get("/check_compliance")
+def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
+    logger.info(f"Checking compliance for: {website_url}")
+
+    extracted_text, source_urls = extract_text_from_website(website_url)  # get source_urls
+    if not extracted_text:
+        raise HTTPException(status_code=400, detail="Failed to extract text from website.")
+
+    compliance_result = check_compliance(extracted_text, source_urls)  # pass source_urls to check_compliance
+
+    response = Response(content=json.dumps(compliance_result), media_type="application/json")
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+
+    return response
+    
 @app.options("/check_compliance")
 def options_check_compliance():
     """Handle CORS preflight requests explicitly"""
