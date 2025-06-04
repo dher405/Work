@@ -3,6 +3,7 @@ import time
 import json
 import requests
 import logging
+import undetected_chromedriver as uc
 from urllib.parse import urljoin, urlparse
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -58,26 +59,21 @@ pool_lock = Lock()
 pool_size = 5  # adjust as needed.
 
 def initialize_driver():
-    options = Options()
-    options.binary_location = get_chrome_binary()
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=9222")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-infobars")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    )
-
-    service = Service(get_chromedriver_binary())
     try:
-        driver = webdriver.Chrome(service=service, options=options)
+        options = uc.ChromeOptions()
+        options.headless = True
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-infobars")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+        driver = uc.Chrome(options=options, headless=True)
         return driver
     except Exception as e:
-        logger.error(f"Failed to start ChromeDriver: {e}")
-        raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
+        logger.error(f"Failed to start Undetected ChromeDriver: {e}")
+        raise HTTPException(status_code=500, detail="Failed to start browser session with stealth mode.")
 
 def get_driver_from_pool():
     with pool_lock:
