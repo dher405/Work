@@ -13,3 +13,4 @@ psutil
 websocket-client
 websockets
 aiortc
+undetected-chromedriver
