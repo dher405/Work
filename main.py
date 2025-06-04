@@ -65,13 +65,22 @@ def initialize_driver():
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     )
+
+    chrome_binary = get_chrome_binary()  # make sure this returns a string path
+    logger.info(f"Using Chrome binary: {chrome_binary}")
+
     try:
-        driver = uc.Chrome(options=options, version_main=114)
+        driver = uc.Chrome(
+            options=options,
+            version_main=114,
+            browser_executable_path=chrome_binary,
+            use_subprocess=True
+        )
         return driver
     except Exception as e:
         logger.error(f"Failed to start Undetected ChromeDriver: {e}")
         raise HTTPException(status_code=500, detail="Failed to start browser session. Check server configuration.")
-
+        
 def get_driver_from_pool():
     with pool_lock:
         if driver_pool:
