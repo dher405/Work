@@ -50,11 +50,11 @@ def initialize_driver():
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-infobars")
-        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-        options.binary_location = get_chrome_binary()
-        
-        driver = uc.Chrome(options=options, user_data_dir='/tmp/udc-profile')
+        options.add_argument(
+            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        )
 
+        driver = uc.Chrome(options=options, user_data_dir='/tmp/udc-profile')
         return driver
     except Exception as e:
         logger.error(f"Failed to start Undetected ChromeDriver: {e}")
@@ -393,12 +393,3 @@ def options_check_compliance():
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
-
-@app.get("/debug_chrome")
-def debug_chrome():
-    try:
-        chrome_version = os.popen(f"{get_chrome_binary()} --version").read().strip()
-        driver_version = os.popen(f"{get_chromedriver_binary()} --version").read().strip()
-        return {"chrome_version": chrome_version, "driver_version": driver_version}
-    except FileNotFoundError as e:
-        return {"error": str(e)}
