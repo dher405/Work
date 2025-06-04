@@ -7,7 +7,6 @@ import undetected_chromedriver as uc
 from urllib.parse import urljoin, urlparse
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -39,7 +38,7 @@ app.add_middleware(
 # Driver Pool
 driver_pool = []
 pool_lock = Lock()
-pool_size = 5  # adjust as needed.
+pool_size = 5
 
 def initialize_driver():
     try:
@@ -50,9 +49,7 @@ def initialize_driver():
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-infobars")
-        options.add_argument(
-            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        )
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
         driver = uc.Chrome(options=options, user_data_dir='/tmp/udc-profile')
         return driver
@@ -73,12 +70,9 @@ def return_driver_to_pool(driver):
     with pool_lock:
         driver_pool.append(driver)
 
-# Function to enforce www. on website URL
 def enforce_www(website_url):
     if "www." not in website_url:
-        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith(
-            "https://"
-        ) else f"https://www.{website_url}"
+        website_url = website_url.replace("https://", "https://www.", 1) if website_url.startswith("https://") else f"https://www.{website_url}"
     return website_url
 
 def extract_text_from_website(base_url):
@@ -143,25 +137,6 @@ def extract_text_from_website(base_url):
 
         logger.info(f"pages_to_check after link parsing: {pages_to_check}")
 
-        www_privacy_url = f"{base_url}/privacy-policy/"
-        if "www." not in original_base_url:
-            if non_www_privacy_url not in pages_to_check:
-                try:
-                    response = requests.head(non_www_privacy_url, allow_redirects=False, timeout=10)
-                    if response.status_code == 200:
-                        pages_to_check.append(non_www_privacy_url)
-                except requests.exceptions.RequestException:
-                    pass
-        else:
-            try:
-                response = requests.head(www_privacy_url, allow_redirects=False, timeout=10)
-                if response.status_code == 200 and www_privacy_url not in pages_to_check:
-                    pages_to_check.append(www_privacy_url)
-            except requests.exceptions.RequestException:
-                pass
-
-        logger.info(f"pages_to_check before scraping: {pages_to_check}")
-
         for page in set(pages_to_check):
             logger.info(f"Scraping page: {page}")
             soup = fetch_page(driver, page)
@@ -202,7 +177,7 @@ def fetch_page(driver, url, max_wait=30, max_retries=3):
             if "verify you are human" in page_source or "enable javascript and cookies" in page_source:
                 logger.warning(f"Bot protection still active (Attempt {attempt + 1}). Waiting and retrying...")
                 time.sleep(5)
-                continue  # Try again
+                continue
             return BeautifulSoup(driver.page_source, "html.parser")
 
         except Exception as e:
@@ -212,184 +187,31 @@ def fetch_page(driver, url, max_wait=30, max_retries=3):
     logger.error(f"Bot protection could not be bypassed after {max_retries} attempts.")
     return None
 
-# Function to check compliance using OpenAI API
-def check_compliance(text, source_urls, max_retries=3):
-    """Function to check compliance using OpenAI API."""
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if not openai_api_key:
-        logger.error("Missing OpenAI API key.")
-        return {"error": "Missing API key."}
-
-    headers = {
-        "Authorization": f"Bearer {openai_api_key}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "o3-mini",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are an AI that checks website compliance for SMS regulations. Respond **only** in JSON format containing 'json' in a key."
-            },
-            {
-                "role": "user",
-                "content": f"""
-                    Analyze the following website text for TCR SMS compliance. The compliance check should include **all extracted website pages**, not just the Privacy Policy and Terms & Conditions.
-
-                    **Key Compliance Requirements (Check All Pages for These Statements):**
-
-                    **Privacy Policy must contain:**
-                    - **Explicit statement** that SMS consent data **will not be shared** with third parties or used for marketing purposes.
-                    - **Clear explanation** of how consumer data is collected, used, and stored.
-                    - **Example Compliant Wording (AI must detect even partial matches):**
-                        - "Your phone number and consent will remain confidential."
-                        - "We will not sell or share your information with third parties or affiliates for marketing purposes."
-                        - "SMS communication is used strictly to facilitate interactions related to our services."
-                        - "We do not disclose your phone number to marketing partners."
-                        - "We respect your privacy and will not use your data for promotional purposes."
-
-                    **Terms & Conditions must contain:**
-                    - **Description of SMS messages** users will receive.
-                    - **Mandatory disclosures including:**
-                        - **Messaging frequency**: "Message frequency varies", "We may send multiple messages", or similar wording.
-                        - **Data rates**: "Standard message and data rates may apply."
-                        - **Opt-out instructions**: "To opt out, reply 'STOP' at any time." (Detect variations like "Text STOP to cancel").
-                        - **Assistance instructions**: "For help, reply 'HELP' or contact support at [support URL or phone number]."
-                    - **Example Compliant Wording (AI should match similar phrases, even if not exact):**
-                        - "Message frequency varies. Standard message and data rates may apply."
-                        - "To opt out, reply 'STOP' at any time."
-                        - "For help, reply 'HELP' or contact us at www.example.com or (123) 456-7890."
-                        - "You can unsubscribe by texting STOP."
-                        - "Messaging rates apply. Reply STOP to end messages."
-
-                    **🚀 Force AI to List All Possible Matches**
-                    - Before marking anything as "not found," AI must **return all similar statements found in the text**.
-                    - If a statement is **not counted as compliant**, AI must explain **why** it was rejected.
-
-                    **Response Format (Include detected statements, even if rejected):**
-                    {{
-                        "json": {{
-                            "compliance_analysis": {{
-                                "privacy_policy": {{
-                                    "sms_consent_statement": {{
-                                        "status": "found/not_found",
-                                        "statement": "actual statement found or empty",
-                                        "url": "URL where found or empty",
-                                        "detected_candidates": ["list of similar statements found, even if rejected"],
-                                        "rejection_reason": "If rejected, explain why here"
-                                    }},
-                                    "data_usage_explanation": {{
-                                        "status": "found/not_found",
-                                        "statement": "actual statement found or empty",
-                                        "url": "URL where found or empty",
-                                        "detected_candidates": ["list of similar statements found, even if rejected"],
-                                        "rejection_reason": "If rejected, explain why here"
-                                    }}
-                                }},
-                                "terms_conditions": {{
-                                    "message_types_specified": {{
-                                        "status": "found/not_found",
-                                        "statement": "actual statement found or empty",
-                                        "url": "URL where found or empty",
-                                        "detected_candidates": ["list of similar statements found, even if rejected"],
-                                        "rejection_reason": "If rejected, explain why here"
-                                    }},
-                                    "mandatory_disclosures": {{
-                                        "status": "found/not_found",
-                                        "statement": "actual statement found or empty",
-                                        "url": "URL where found or empty",
-                                        "detected_candidates": ["list of similar statements found, even if rejected"],
-                                        "rejection_reason": "If rejected, explain why here"
-                                    }}
-                                }},
-                                "overall_compliance": "compliant/partially_compliant/non_compliant",
-                                "recommendations": [
-                                    "Recommendation 1",
-                                    "Recommendation 2"
-                                ]
-                            }}
-                        }}
-                    }}
-
-                    **🚨 Important:**
-                    - **Do NOT assume these statements are only in Privacy Policies or Terms & Conditions. Check all extracted pages.**
-                    - **Match compliance wording even if phrased differently (e.g., "We will not share your data" vs. "Your consent remains confidential").**
-                    - **If any statement is detected, return BOTH the found statement and its URL from the following list:** {json.dumps(source_urls)}
-                    - **If multiple compliant statements exist, return ALL of them.**
-                    - **If AI is unsure, double-check all extracted text before marking a category as "not found."**
-                    - **Recheck the following terms before making a final determination:** ["message frequency", "reply STOP", "data sharing", "consent protection", "HELP for support"].
-
-                    Here is the extracted website text:
-                    {text}
-                    """
-            }
-        ],
-        "response_format": {"type": "json_object"}
-    }
-
-    logging.info(f"Sending OpenAI request with payload: {json.dumps(payload, indent=2)}")
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            response.raise_for_status()
-            response_data = response.json()
-            logging.info(f"OpenAI API Response: {json.dumps(response_data, indent=2)}")
-
-            if "choices" in response_data and response_data["choices"]:
-                content = response_data["choices"][0]["message"]["content"]
-                try:
-                    result = json.loads(content)
-                    if "json" in result:
-                        return result
-                    else:
-                        logging.error(f"OpenAI did not return json with a 'json' key. Content: {content}")
-                        return {"error": "Invalid AI response format. 'json' key not found."}
-
-                except json.JSONDecodeError as e:
-                    logger.error(f"JSONDecodeError: {e}. Content: {content}. Attempt: {attempt + 1}/{max_retries}")
-                    if attempt == max_retries - 1:
-                        return {"error": f"Invalid AI response format. JSON parsing failed after {max_retries} attempts: {e}"}
-                    time.sleep(1)  # Add a small delay before retrying
-                    continue  # Retry the API call
-
-            else:
-                return {"error": "Invalid AI response format. 'choices' key not found."}
-
-        except requests.exceptions.HTTPError as http_err:
-            logging.error(f"HTTP error occurred: {http_err.response.text}")
-            return {"error": f"OpenAI API Error: {http_err.response.text}"}
-        except requests.exceptions.RequestException as req_err:
-            logging.error(f"Request error occurred: {req_err}")
-            return {"error": "AI processing failed due to request issue."}
-
 @app.get("/check_compliance")
 def check_website_compliance(website_url: str = Query(..., title="Website URL", description="URL of the website to check")):
     logger.info(f"Checking compliance for: {website_url}")
 
-    extracted_text, source_urls = extract_text_from_website(website_url)  # get source_urls
+    extracted_text, source_urls = extract_text_from_website(website_url)
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Failed to extract text from website.")
 
-    compliance_result = check_compliance(extracted_text, source_urls)  # pass source_urls to check_compliance
+    # Placeholder: Return raw text for now
+    response_data = {
+        "url": website_url,
+        "text_snippet": extracted_text[:1000],
+        "source_urls": list(source_urls.keys())
+    }
 
-    response = Response(content=json.dumps(compliance_result), media_type="application/json")
+    response = Response(content=json.dumps(response_data), media_type="application/json")
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-
     return response
 
 @app.options("/check_compliance")
 def options_check_compliance():
-    """Handle CORS preflight requests explicitly"""
     response = Response()
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
