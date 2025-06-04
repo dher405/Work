@@ -66,13 +66,12 @@ def initialize_driver():
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     )
 
-    chrome_binary = get_chrome_binary()  # make sure this returns a string path
+    chrome_binary = get_chrome_binary()
     logger.info(f"Using Chrome binary: {chrome_binary}")
 
     try:
         driver = uc.Chrome(
             options=options,
-            version_main=114,
             browser_executable_path=chrome_binary,
             use_subprocess=True
         )
