@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RingCentral Network Topology</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 3px solid #3b82f6;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        .topology-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin: 40px 0;
+        }
+        
+        /* ACCESS SIDE - LEFT */
+        .access-side {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .side-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .customer-section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .customer-section h3 {
+            color: #374151;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .isp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .isp-box {
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .isp-box.comcast {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        
+        .isp-box.att {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+        
+        .isp-box.verizon {
+            border-color: #dc2626;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        
+        .isp-box.spectrum {
+            border-color: #6366f1;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+        
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+        
+        .device-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .device-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .device-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .device-label {
+            font-size: 0.8rem;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .device-detail {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        /* RINGCENTRAL CLOUD - CENTER */
+        .rc-cloud {
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .cloud-shape {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
+            border: 4px solid #3b82f6;
+            border-radius: 120px;
+            padding: 40px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        
+        .cloud-shape::before {
+            content: "☁️";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+        }
+        
+        .cloud-header {
+            text-align: center;
+            color: #1e40af;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+        }
+        
+        .sbc-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .sbc-box {
+            background: white;
+            border: 3px solid;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            flex: 1;
+            margin: 0 8px;
+        }
+        
+        .sbc-box.hbc {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        
+        .sbc-box.sbx {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .sbc-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .sbc-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .sbc-box.hbc .sbc-title {
+            color: #1e40af;
+        }
+        
+        .sbc-box.sbx .sbc-title {
+            color: #065f46;
+        }
+        
+        .sbc-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .sbc-detail {
+            font-size: 0.7rem;
+            background: white;
+            padding: 6px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        
+        .tel-hmp {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: 3px solid #a78bfa;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+        
+        .tel-hmp-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+        
+        .tel-hmp-title {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+        
+        .tel-hmp-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+        
+        .tel-hmp-detail {
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
+        /* PSTN SIDE - RIGHT */
+        .pstn-side {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .pstn-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .carrier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        
+        .carrier-box {
+            background: white;
+            border: 3px solid;
+            border-radius: 8px;
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .carrier-box.verizon {
+            border-color: #dc2626;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+        
+        .carrier-box.att {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+        
+        .carrier-box.lumen {
+            border-color: #0ea5e9;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #075985;
+        }
+        
+        .carrier-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .carrier-name {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .carrier-detail {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .pstn-endpoints {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .pstn-endpoints h3 {
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+        
+        .endpoint-box {
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .endpoint-icon {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+        
+        /* ARROWS AND CONNECTIONS */
+        .connection-arrow {
+            text-align: center;
+            font-size: 3rem;
+            color: #3b82f6;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .connection-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        /* CALL FLOW TOGGLE */
+        .flow-toggle {
+            display: none;
+        }
+        
+        .toggle-container {
+            text-align: center;
+            margin: 32px 0;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .toggle-label {
+            display: inline-block;
+            padding: 16px 32px;
+            margin: 0 8px;
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .toggle-label:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+        
+        .flow-toggle:checked + .toggle-label {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .flow-diagram {
+            display: none;
+            background: white;
+            border: 3px solid;
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 24px;
+        }
+        
+        #show-outbound:checked ~ .flow-diagrams .outbound-diagram {
+            display: block;
+        }
+        
+        #show-inbound:checked ~ .flow-diagrams .inbound-diagram {
+            display: block;
+        }
+        
+        #show-internal:checked ~ .flow-diagrams .internal-diagram {
+            display: block;
+        }
+        
+        .flow-diagram.outbound {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        
+        .flow-diagram.inbound {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+        }
+        
+        .flow-diagram.internal {
+            border-color: #8b5cf6;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 6px solid;
+        }
+        
+        .flow-step.outbound {
+            border-left-color: #f59e0b;
+        }
+        
+        .flow-step.inbound {
+            border-left-color: #10b981;
+        }
+        
+        .flow-step.internal {
+            border-left-color: #8b5cf6;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        
+        .step-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .step-tech {
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #374151;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .legend {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+        
+        .legend h3 {
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .legend-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .legend-text {
+            font-size: 0.875rem;
+        }
+        
+        .legend-label {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .legend-desc {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 RingCentral Network Topology</h1>
+            <p class="subtitle">Access Side (Customer) ← RingCentral Cloud → PSTN Side (Carriers)</p>
+        </div>
+
+        <!-- MAIN TOPOLOGY DIAGRAM -->
+        <div class="topology-container">
+            <!-- LEFT SIDE - ACCESS (CUSTOMER) -->
+            <div class="access-side">
+                <div class="side-header">
+                    🌍 ACCESS SIDE<br>
+                    <span style="font-size: 0.8rem; font-weight: 400;">Customer Connectivity</span>
+                </div>
+                
+                <div class="customer-section">
+                    <h3>💼 Customer Networks & ISPs</h3>
+                    <div class="isp-grid">
+                        <div class="isp-box comcast">
+                            Comcast<br>
+                            <span style="font-size: 0.7rem; opacity: 0.7;">Business</span>
+                        </div>
+                        <div class="isp-box att">
+                            AT&T Fiber<br>
+                            <span style="font-size: 0.7rem; opacity: 0.7;">Enterprise</span>
+                        </div>
+                        <div class="isp-box verizon">
+                            Verizon<br>
+                            <span style="font-size: 0.7rem; opacity: 0.7;">FiOS/LTE</span>
+                        </div>
+                        <div class="isp-box spectrum">
+                            Spectrum<br>
+                            <span style="font-size: 0.7rem; opacity: 0.7;">Business</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin: 12px 0; font-size: 1.5rem; color: #9ca3af;">↓</div>
+                    <div style="text-align: center; font-size: 0.75rem; color: #6b7280; margin-bottom: 12px;">SIP over Public Internet</div>
+                </div>
+
+                <div class="customer-section">
+                    <h3>📱 Customer Devices & Apps</h3>
+                    <div class="device-grid">
+                        <div class="device-box">
+                            <div class="device-icon">📞</div>
+                            <div class="device-label">Desk Phones</div>
+                            <div class="device-detail">Polycom<br>Yealink<br>Cisco</div>
+                        </div>
+                        <div class="device-box">
+                            <div class="device-icon">💻</div>
+                            <div class="device-label">Desktop App</div>
+                            <div class="device-detail">Windows<br>macOS</div>
+                        </div>
+                        <div class="device-box">
+                            <div class="device-icon">📱</div>
+                            <div class="device-label">Mobile App</div>
+                            <div class="device-detail">iOS<br>Android</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding: 12px; background: #eff6ff; border-radius: 6px; font-size: 0.8rem; color: #1e40af;">
+                        <strong>Ports Used:</strong><br>
+                        • SIP: UDP/TCP 5060-5090, 5061<br>
+                        • RTP: UDP 10000-20000 (apps)<br>
+                        • RTP: UDP 16384-16482 (phones)
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 8px; padding: 16px; text-align: center; font-size: 0.85rem; color: #78350f; font-weight: 600;">
+                    📤 Outbound: Customer → RC Cloud<br>
+                    📥 Inbound: RC Cloud → Customer
+                </div>
+            </div>
+
+            <!-- CENTER - RINGCENTRAL CLOUD -->
+            <div class="rc-cloud">
+                <div class="connection-arrow">
+                    ⟷
+                    <div class="connection-label">SIP/RTP<br>Access Traffic</div>
+                </div>
+                
+                <div class="cloud-shape">
+                    <div class="cloud-header">
+                        ☁️ RINGCENTRAL CLOUD
+                    </div>
+                    
+                    <div class="sbc-container">
+                        <div class="sbc-box hbc">
+                            <div class="sbc-icon">🛡️</div>
+                            <div class="sbc-title">HBC</div>
+                            <div class="sbc-subtitle">Session Border Controller</div>
+                            <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px; margin: 8px 0;">
+                                <strong style="font-size: 0.8rem; color: #1e40af;">Access Side</strong>
+                            </div>
+                            <div class="sbc-detail">
+                                • Customer Authentication<br>
+                                • NAT Traversal<br>
+                                • Security & Fraud Detection<br>
+                                • Creates Access Leg ID
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 2.5rem; color: #8b5cf6; margin: 0 16px;">⟷</div>
+                        
+                        <div class="sbc-box sbx">
+                            <div class="sbc-icon">🛡️</div>
+                            <div class="sbc-title">SBX (Sonus)</div>
+                            <div class="sbc-subtitle">Session Border Controller</div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 8px; border-radius: 6px; margin: 8px 0;">
+                                <strong style="font-size: 0.8rem; color: #065f46;">PSTN Side</strong>
+                            </div>
+                            <div class="sbc-detail">
+                                • Carrier Interconnection<br>
+                                • Trunk Management<br>
+                                • Number Translation<br>
+                                • Creates PSTN Leg ID
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tel-hmp">
+                        <div class="tel-hmp-icon">🔄</div>
+                        <div class="tel-hmp-title">TEL / HMP</div>
+                        <div class="tel-hmp-subtitle">Telephony Media Processor</div>
+                        <div class="tel-hmp-detail">
+                            <strong style="display: block; margin-bottom: 8px;">Junction Point</strong>
+                            • Joins Access Leg + PSTN Leg<br>
+                            • Creates Session ID<br>
+                            • Generates Session Logs<br>
+                            • Bridges RTP Media Streams<br>
+                            • Records call metadata
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connection-arrow">
+                    ⟷
+                    <div class="connection-label">SIP Trunks<br>PSTN Traffic</div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE - PSTN -->
+            <div class="pstn-side">
+                <div class="pstn-header">
+                    PSTN SIDE<br>
+                    <span style="font-size: 0.8rem; font-weight: 400;">Carrier Connectivity</span>
+                </div>
+                
+                <div class="customer-section">
+                    <h3>🏢 PSTN Carriers & Trunks</h3>
+                    <div class="carrier-grid">
+                        <div class="carrier-box verizon">
+                            <div class="carrier-icon">📞</div>
+                            <div class="carrier-name">Verizon</div>
+                            <div class="carrier-detail">SIP Trunks<br>TDM PRIs</div>
+                        </div>
+                        <div class="carrier-box att">
+                            <div class="carrier-icon">📞</div>
+                            <div class="carrier-name">AT&T</div>
+                            <div class="carrier-detail">SIP Trunks<br>Managed Voice</div>
+                        </div>
+                        <div class="carrier-box lumen">
+                            <div class="carrier-icon">📞</div>
+                            <div class="carrier-name">Lumen</div>
+                            <div class="carrier-detail">Level3 SIP<br>Wholesale</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding: 12px; background: #d1fae5; border-radius: 6px; font-size: 0.8rem; color: #065f46;">
+                        <strong>Trunk Types:</strong><br>
+                        • SIP Trunks (Primary)<br>
+                        • TDM PRIs (Legacy)<br>
+                        • SS7 Interconnects
+                    </div>
+                </div>
+
+                <div class="pstn-endpoints">
+                    <h3>☎️ PSTN Endpoints</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint-box">
+                            <div class="endpoint-icon">☎️</div>
+                            Landlines
+                        </div>
+                        <div class="endpoint-box">
+                            <div class="endpoint-icon">📱</div>
+                            Mobile<br>Phones
+                        </div>
+                        <div class="endpoint-box">
+                            <div class="endpoint-icon">🏢</div>
+                            PBX<br>Systems
+                        </div>
+                        <div class="endpoint-box">
+                            <div class="endpoint-icon">📞</div>
+                            Other<br>VoIP
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981; border-radius: 8px; padding: 16px; text-align: center; font-size: 0.85rem; color: #065f46; font-weight: 600;">
+                    📤 Outbound: RC Cloud → Carriers<br>
+                    📥 Inbound: Carriers → RC Cloud
+                </div>
+            </div>
+        </div>
+
+        <!-- CALL FLOW TOGGLE AND DIAGRAMS -->
+        <input type="radio" name="callflow" id="show-outbound" class="flow-toggle" checked>
+        <input type="radio" name="callflow" id="show-inbound" class="flow-toggle">
+        <input type="radio" name="callflow" id="show-internal" class="flow-toggle">
+        
+        <div class="toggle-container">
+            <h3 style="color: #1f2937; margin-bottom: 16px;">Select Call Direction to View Detailed Flow:</h3>
+            <label for="show-outbound" class="toggle-label">
+                📤 Outbound Call Flow (Customer → PSTN)
+            </label>
+            <label for="show-inbound" class="toggle-label">
+                📥 Inbound Call Flow (PSTN → Customer)
+            </label>
+            <label for="show-internal" class="toggle-label">
+                🔄 Internal Call Flow (RC User → RC User)
+            </label>
+        </div>
+
+        <div class="flow-diagrams">
+            <!-- OUTBOUND FLOW DETAIL -->
+            <div class="flow-diagram outbound-diagram outbound">
+                <h3 style="color: #78350f; text-align: center; margin-bottom: 24px; font-size: 1.4rem;">📤 OUTBOUND CALL FLOW - Detailed Sequence</h3>
+                
+                <div class="flow-step outbound">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Customer Device Initiates Call</div>
+                        <div class="step-description">User dials external number → Device sends SIP INVITE</div>
+                        <div class="step-tech">
+                            From: Customer extension (e.g., +1-303-555-1001)<br>
+                            To: External PSTN number (e.g., +1-720-555-9876)<br>
+                            Direction: Customer Device → Public Internet → HBC
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step outbound">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">HBC SBC Processes Access Leg</div>
+                        <div class="step-description">Authentication, authorization, security checks, NAT traversal</div>
+                        <div class="step-tech">
+                            ✓ Access Leg ID created (e.g., Access_Leg_12345)<br>
+                            ✓ Customer IP address logged: 203.0.113.45<br>
+                            ✓ Device type identified: Polycom VVX 500<br>
+                            ✓ QoS metrics start collecting<br>
+                            → Logged in: HBC Kibana index (call_direction: "outbound")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step outbound">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">TEL/HMP Junctions Both Legs</div>
+                        <div class="step-description">Media Processor receives Access Leg, creates PSTN Leg, junctions RTP streams</div>
+                        <div class="step-tech">
+                            ✓ Session ID created (e.g., Session_ABC123DEF456)<br>
+                            ✓ Session Logs record:<br>
+                            &nbsp;&nbsp;• Access Leg ID: Access_Leg_12345<br>
+                            &nbsp;&nbsp;• PSTN Leg ID: PSTN_Leg_67890<br>
+                            &nbsp;&nbsp;• Start time, both numbers, duration<br>
+                            ✓ RTP media streams bridged (Access ← TEL → PSTN)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step outbound">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">SBX Routes to PSTN Carrier</div>
+                        <div class="step-description">Trunk selection, least-cost routing, number translation, carrier delivery</div>
+                        <div class="step-tech">
+                            ✓ PSTN Leg ID created (e.g., PSTN_Leg_67890)<br>
+                            ✓ Carrier selected: AT&T (Trunk: ATT_TRUNK_01)<br>
+                            ✓ Outbound Caller ID set (may differ from original)<br>
+                            ✓ SIP INVITE sent to carrier<br>
+                            → Logged in: SBX Kibana index (call_direction: "egress")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step outbound">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">Carrier Completes to Destination</div>
+                        <div class="step-description">PSTN carrier routes call to destination phone number</div>
+                        <div class="step-tech">
+                            ✓ Carrier responds with SIP 180 Ringing<br>
+                            ✓ Destination answers: SIP 200 OK<br>
+                            ✓ RTP media established end-to-end<br>
+                            ✓ Call active: Customer ← TEL/HMP → PSTN
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #f59e0b;">
+                    <h4 style="color: #78350f; margin-bottom: 12px; font-size: 1.1rem;">📊 Outbound Troubleshooting Path:</h4>
+                    <div style="font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                        <strong>Step 1:</strong> Session Logs (TEL/HMP) → Get Session ID + both Leg IDs<br>
+                        <strong>Step 2:</strong> HBC Kibana (Access Leg) → Check customer side (IP, auth, QoS)<br>
+                        <strong>Step 3:</strong> SBX Kibana (PSTN Leg) → Check carrier side (trunk, routing, response)<br>
+                        <strong>Step 4:</strong> Compare both legs → Identify which leg failed or had poor quality
+                    </div>
+                </div>
+            </div>
+
+            <!-- INBOUND FLOW DETAIL -->
+            <div class="flow-diagram inbound-diagram inbound">
+                <h3 style="color: #065f46; text-align: center; margin-bottom: 24px; font-size: 1.4rem;">📥 INBOUND CALL FLOW - Detailed Sequence</h3>
+                
+                <div class="flow-step inbound">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">External Caller Dials RingCentral DID</div>
+                        <div class="step-description">PSTN caller dials customer's RingCentral number</div>
+                        <div class="step-tech">
+                            From: External caller (e.g., +1-212-555-1234)<br>
+                            To: Customer DID (e.g., +1-303-555-9999)<br>
+                            Direction: PSTN Network → Carrier → SBX Trunk
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step inbound">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">SBX Receives Call from Carrier</div>
+                        <div class="step-description">Carrier authentication, DID validation, trunk capacity check</div>
+                        <div class="step-tech">
+                            ✓ PSTN Leg ID created FIRST (e.g., PSTN_Leg_11111)<br>
+                            ✓ Carrier identified: Verizon (Trunk: VZ_TRUNK_02)<br>
+                            ✓ DID validated: +1-303-555-9999 exists in routing<br>
+                            ✓ QoS metrics start collecting from carrier<br>
+                            → Logged in: SBX Kibana index (call_direction: "ingress")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step inbound">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">TEL/HMP Processes Inbound Call</div>
+                        <div class="step-description">DID routing lookup, applies call handling rules (IVR, greetings, voicemail), finds destination user/extension, creates Access Leg</div>
+                        <div class="step-tech">
+                            ✓ Session ID created (e.g., Session_XYZ789GHI012)<br>
+                            ✓ DID routing: +1-303-555-9999 → Extension 105<br>
+                            ✓ Call handling rules applied:<br>
+                            &nbsp;&nbsp;• Play greeting/IVR menu (if configured)<br>
+                            &nbsp;&nbsp;• Process DTMF selections from caller<br>
+                            &nbsp;&nbsp;• Check business hours/after-hours rules<br>
+                            &nbsp;&nbsp;• Apply call forwarding rules (if active)<br>
+                            &nbsp;&nbsp;• Route to voicemail if no answer/busy<br>
+                            ✓ Session Logs record:<br>
+                            &nbsp;&nbsp;• PSTN Leg ID: PSTN_Leg_11111 (arrived first)<br>
+                            &nbsp;&nbsp;• Access Leg ID: Access_Leg_22222 (created second)<br>
+                            &nbsp;&nbsp;• Call handling steps taken<br>
+                            ✓ Prepares to deliver to customer device
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step inbound">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">HBC Delivers Call to Customer</div>
+                        <div class="step-description">Finds registered device for extension, sends SIP INVITE to customer</div>
+                        <div class="step-tech">
+                            ✓ Access Leg ID created (e.g., Access_Leg_22222)<br>
+                            ✓ Device lookup: Extension 105 registered on 203.0.113.50<br>
+                            ✓ SIP INVITE sent to customer device<br>
+                            ✓ Caller ID presented: +1-212-555-1234<br>
+                            → Logged in: HBC Kibana index (call_direction: "inbound")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step inbound">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">Customer Device Rings and Answers</div>
+                        <div class="step-description">Phone/app rings, user answers, RTP media flows through both legs</div>
+                        <div class="step-tech">
+                            ✓ Device sends SIP 180 Ringing<br>
+                            ✓ User answers: SIP 200 OK<br>
+                            ✓ RTP media established: PSTN ← TEL/HMP → Customer<br>
+                            ✓ Both legs active and junctioned
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #10b981;">
+                    <h4 style="color: #065f46; margin-bottom: 12px; font-size: 1.1rem;">📊 Inbound Troubleshooting Path:</h4>
+                    <div style="font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                        <strong>Step 1:</strong> Session Logs (TEL/HMP) → Get Session ID + both Leg IDs<br>
+                        <strong>Step 2:</strong> SBX Kibana (PSTN Leg - Ingress) → Check carrier delivery first<br>
+                        <strong>Step 3:</strong> HBC Kibana (Access Leg) → Check customer delivery second<br>
+                        <strong>Step 4:</strong> If PSTN leg failed → Carrier/trunk issue<br>
+                        <strong>Step 5:</strong> If Access leg failed → Customer device/registration issue
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERNAL CALL FLOW DETAIL -->
+            <div class="flow-diagram internal-diagram internal">
+                <h3 style="color: #6b21a8; text-align: center; margin-bottom: 24px; font-size: 1.4rem;">🔄 INTERNAL CALL FLOW - RC User to RC User</h3>
+                
+                <div style="background: #f5f3ff; border: 2px solid #8b5cf6; padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: center;">
+                    <strong style="color: #6b21a8; font-size: 1rem;">⚡ No PSTN Leg - Both Users on RingCentral Platform</strong><br>
+                    <span style="font-size: 0.875rem; color: #7c3aed;">Call stays entirely within RingCentral network - faster setup, higher quality, no carrier costs</span>
+                </div>
+                
+                <div class="flow-step" style="border-left-color: #8b5cf6;">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Calling User Initiates Call</div>
+                        <div class="step-description">User A dials extension or direct number of User B (both on same RC account)</div>
+                        <div class="step-tech">
+                            From: Extension 101 (User A) - Registered on 203.0.113.45<br>
+                            To: Extension 105 (User B) - Target extension<br>
+                            Device: Desktop App / Desk Phone / Mobile App<br>
+                            Direction: User A Device → HBC SBC
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step" style="border-left-color: #8b5cf6;">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">HBC Processes Originating Leg (Leg A)</div>
+                        <div class="step-description">Authenticates User A, validates they can call User B</div>
+                        <div class="step-tech">
+                            ✓ Originating Leg ID created (e.g., Access_Leg_A_12345)<br>
+                            ✓ User A authenticated and authorized<br>
+                            ✓ Recognizes destination is internal RC user (not PSTN)<br>
+                            ✓ No PSTN leg needed - stays on platform<br>
+                            → Logged in: HBC Kibana index (call_direction: "internal" or "on-net")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step" style="border-left-color: #8b5cf6;">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">TEL/HMP Processes Internal Call Routing</div>
+                        <div class="step-description">Looks up User B's registration, applies call handling rules, creates terminating leg</div>
+                        <div class="step-tech">
+                            ✓ Session ID created (e.g., Session_INT_ABC123)<br>
+                            ✓ Looks up User B (Extension 105) registration status<br>
+                            ✓ Checks User B's call handling rules:<br>
+                            &nbsp;&nbsp;• Simultaneous ring settings<br>
+                            &nbsp;&nbsp;• Call forwarding rules<br>
+                            &nbsp;&nbsp;• Do Not Disturb status<br>
+                            &nbsp;&nbsp;• Custom hours/schedules<br>
+                            ✓ Session Logs record:<br>
+                            &nbsp;&nbsp;• Originating Leg ID: Access_Leg_A_12345 (User A)<br>
+                            &nbsp;&nbsp;• Terminating Leg ID: Access_Leg_B_67890 (User B)<br>
+                            &nbsp;&nbsp;• Call type: Internal/On-Net<br>
+                            ✓ NO PSTN Leg created - stays within RC network
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step" style="border-left-color: #8b5cf6;">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">HBC Delivers Call to User B's Device(s)</div>
+                        <div class="step-description">Finds all registered devices for User B, sends SIP INVITE to ring them</div>
+                        <div class="step-tech">
+                            ✓ Terminating Leg ID created (e.g., Access_Leg_B_67890)<br>
+                            ✓ Device lookup: Extension 105 registered on:<br>
+                            &nbsp;&nbsp;• Desk Phone: 203.0.113.60 (Polycom VVX 411)<br>
+                            &nbsp;&nbsp;• Desktop App: 203.0.113.61 (Windows PC)<br>
+                            &nbsp;&nbsp;• Mobile App: (via push notification)<br>
+                            ✓ SIP INVITE sent to all registered devices (simultaneous ring)<br>
+                            ✓ Caller ID presented: "User A" or Extension 101<br>
+                            → Logged in: HBC Kibana index (call_direction: "internal")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step" style="border-left-color: #8b5cf6;">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">User B's Device Rings and Answers</div>
+                        <div class="step-description">Device(s) ring, User B answers on one device, others stop ringing</div>
+                        <div class="step-tech">
+                            ✓ All devices send SIP 180 Ringing<br>
+                            ✓ User B answers on desk phone: SIP 200 OK<br>
+                            ✓ Other devices receive SIP CANCEL (call answered elsewhere)<br>
+                            ✓ RTP media established: User A ← TEL/HMP → User B<br>
+                            ✓ Both legs active, junctioned at TEL/HMP<br>
+                            ✓ High-quality codec used (typically Opus or G.722 for internal calls)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #8b5cf6;">
+                    <h4 style="color: #6b21a8; margin-bottom: 12px; font-size: 1.1rem;">🔄 Internal Call - Two Access Legs (No PSTN Leg):</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+                        <div style="background: #f5f3ff; padding: 12px; border-radius: 6px; border: 2px solid #a78bfa;">
+                            <strong style="color: #6b21a8; font-size: 0.9rem;">🔵 Originating Leg (User A)</strong>
+                            <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                <li>User A Device → HBC → TEL/HMP</li>
+                                <li>From: Extension 101 (User A)</li>
+                                <li>To: Extension 105 (User B)</li>
+                                <li>Logged in: HBC Kibana (call_direction: "internal")</li>
+                                <li>Contains: User A IP, device type, QoS</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f5f3ff; padding: 12px; border-radius: 6px; border: 2px solid #a78bfa;">
+                            <strong style="color: #6b21a8; font-size: 0.9rem;">🔵 Terminating Leg (User B)</strong>
+                            <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                <li>TEL/HMP → HBC → User B Device</li>
+                                <li>From: Extension 101 (displayed to User B)</li>
+                                <li>To: Extension 105 device(s)</li>
+                                <li>Logged in: HBC Kibana (call_direction: "internal")</li>
+                                <li>Contains: User B IP, device type, QoS</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding: 12px; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 6px;">
+                        <strong style="color: #065f46; display: block; margin-bottom: 6px;">✅ Benefits of Internal Calls:</strong>
+                        <ul style="margin-left: 20px; font-size: 0.875rem; color: #065f46;">
+                            <li><strong>No PSTN costs</strong> - No carrier charges</li>
+                            <li><strong>Higher quality codecs</strong> - Can use Opus or G.722 (vs G.711 on PSTN)</li>
+                            <li><strong>Faster setup</strong> - No carrier routing delay</li>
+                            <li><strong>Both legs logged in HBC</strong> - No SBX lookup needed</li>
+                            <li><strong>No Q.850 codes</strong> - Pure SIP response codes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #8b5cf6;">
+                    <h4 style="color: #6b21a8; margin-bottom: 12px; font-size: 1.1rem;">📊 Internal Call Troubleshooting Path:</h4>
+                    <div style="font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                        <strong>Step 1:</strong> Session Logs (TEL/HMP) → Get Session ID + both Access Leg IDs<br>
+                        <strong>Step 2:</strong> HBC Kibana (Originating Leg) → Check calling user's side (User A)<br>
+                        <strong>Step 3:</strong> HBC Kibana (Terminating Leg) → Check called user's side (User B)<br>
+                        <strong>Step 4:</strong> NO SBX lookup needed - both legs are on HBC<br>
+                        <strong>Step 5:</strong> Check if User B's device was registered and available<br>
+                        <strong>Step 6:</strong> Review call handling rules that may have affected routing
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEGEND -->
+        <div class="legend">
+            <h3>🗝️ Network Component Legend</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">HBC SBC</div>
+                        <div class="legend-desc">Access-side Session Border Controller</div>
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">SBX (Sonus)</div>
+                        <div class="legend-desc">PSTN-side Session Border Controller</div>
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">TEL/HMP</div>
+                        <div class="legend-desc">Telephony Media Processor (Junction)</div>
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">Customer Side</div>
+                        <div class="legend-desc">Devices, apps, ISP connections</div>
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">PSTN Side</div>
+                        <div class="legend-desc">Carriers, trunks, external endpoints</div>
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); border: 2px solid #3b82f6;"></div>
+                    <div class="legend-text">
+                        <div class="legend-label">RingCentral Cloud</div>
+                        <div class="legend-desc">Internal RC infrastructure</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEY TAKEAWAYS -->
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%); border: 3px solid #10b981; border-radius: 12px; padding: 24px; margin-top: 32px;">
+            <h3 style="color: #065f46; margin-bottom: 16px; font-size: 1.2rem;">🎯 Key Takeaways for Troubleshooting:</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 16px;">
+                <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                    <strong style="color: #6b21a8; display: block; margin-bottom: 8px;">📝 Session Logs (TEL/HMP)</strong>
+                    <ul style="margin-left: 20px; font-size: 0.85rem; color: #374151;">
+                        <li>Show BOTH legs of every call</li>
+                        <li>Contain Session ID for correlation</li>
+                        <li>First stop for all call troubleshooting</li>
+                        <li>Show success/failure of each leg</li>
+                    </ul>
+                </div>
+                
+                <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                    <strong style="color: #1e40af; display: block; margin-bottom: 8px;">🔵 Access Leg (HBC)</strong>
+                    <ul style="margin-left: 20px; font-size: 0.85rem; color: #374151;">
+                        <li>Customer IP addresses</li>
+                        <li>Device types and registration</li>
+                        <li>Customer-side QoS metrics</li>
+                        <li>Authentication/authorization</li>
+                    </ul>
+                </div>
+                
+                <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #10b981;">
+                    <strong style="color: #065f46; display: block; margin-bottom: 8px;">🟢 PSTN Leg (SBX)</strong>
+                    <ul style="margin-left: 20px; font-size: 0.85rem; color: #374151;">
+                        <li>Carrier and trunk information</li>
+                        <li>Number translation/routing</li>
+                        <li>Carrier response codes</li>
+                        <li>Q.850 cause codes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px; padding: 24px; background: #f9fafb; border-radius: 12px;">
+            <p style="color: #6b7280; font-size: 0.875rem;">
+                <strong style="color: #1f2937;">Created by:</strong> Dave Herron, Global Director of Tier 3 Technical Support<br>
+                <strong style="color: #1f2937;">Last Updated:</strong> November 2025<br>
+                <strong style="color: #1f2937;">For:</strong> RingCentral Technical Support - Network Topology Reference
+            </p>
+        </div>
+    </div>
+</body>
+</html>
