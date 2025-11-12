@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RingCentral Call Flow Troubleshooting Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .architecture-diagram {
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .flow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            font-weight: 600;
+        }
+        
+        .flow-box.customer {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .flow-box.hbc {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .flow-box.mp {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+        
+        .flow-box.sbx {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .flow-box.pstn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .flow-arrow {
+            font-size: 2rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .flow-label {
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .call-direction-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .direction-btn {
+            display: none;
+        }
+        
+        .direction-label {
+            padding: 16px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .direction-label:hover {
+            background: #e5e7eb;
+            border-color: #3b82f6;
+        }
+        
+        .direction-btn:checked + .direction-label {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        .section.red { border-color: #ef4444; }
+        .section.teal { border-color: #14b8a6; }
+        
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section.red .section-header {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .section.teal .section-header {
+            background: #ccfbf1;
+            color: #134e4a;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-toggle:checked ~ .section-content {
+            max-height: 8000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        .red .info-box { background: #fee2e2; color: #991b1b; }
+        .teal .info-box { background: #ccfbf1; color: #134e4a; }
+        
+        .direction-content {
+            display: none;
+        }
+        
+        #outbound:checked ~ .direction-sections .outbound-content,
+        #inbound:checked ~ .direction-sections .inbound-content {
+            display: block;
+        }
+        
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .query-box {
+            background: #1f2937;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 12px 0;
+            overflow-x: auto;
+            border-left: 4px solid #10b981;
+        }
+        
+        .query-label {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .field-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .field-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .field-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .critical-field {
+            background: #fef2f2;
+            font-weight: 600;
+        }
+        
+        .example-box {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .example-box h4 {
+            color: #065f46;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .example-data {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        
+        .troubleshooting-tip {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+        
+        .troubleshooting-tip strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .troubleshooting-tip p {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .tab-indicator {
+            background: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #075985;
+        }
+        
+        .leg-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .leg-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .leg-card.access {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .leg-card.pstn {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .leg-card h5 {
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .leg-card.access h5 {
+            color: #1e40af;
+        }
+        
+        .leg-card.pstn h5 {
+            color: #065f46;
+        }
+        
+        .leg-card ul {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+        
+        .leg-card li {
+            padding: 4px 0;
+            color: #6b7280;
+        }
+        
+        .leg-card strong {
+            color: #374151;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 RingCentral Call Flow Troubleshooting Guide</h1>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Internal Call Tracing & Troubleshooting</div>
+                <div class="alert-text">
+                    This guide walks you through tracing calls from Session Logs through both SBCs (HBC & SBX) using Kibana CDR data. Use this to identify which leg of the call failed and why.
+                </div>
+            </div>
+            
+            <div class="architecture-diagram">
+                <h3 style="color: #1f2937; margin-bottom: 16px;">📡 RingCentral Network Topology & Call Flow</h3>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <input type="radio" name="callflow" id="show-outbound" class="direction-btn" checked>
+                    <input type="radio" name="callflow" id="show-inbound" class="direction-btn">
+                    
+                    <label for="show-outbound" class="direction-label" style="display: inline-block; margin: 0 8px;">
+                        📤 Outbound Flow
+                    </label>
+                    <label for="show-inbound" class="direction-label" style="display: inline-block; margin: 0 8px;">
+                        📥 Inbound Flow
+                    </label>
+                </div>
+
+                <!-- NETWORK TOPOLOGY MAP -->
+                <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 8px; padding: 24px; margin-bottom: 20px;">
+                    <h4 style="color: #374151; text-align: center; margin-bottom: 24px; font-size: 1.1rem;">Network Architecture Overview</h4>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-height: 120px; display: flex; flex-direction: column; justify-content: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🏢</div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">CUSTOMER</div>
+                                <div style="font-size: 0.75rem; margin-top: 4px; opacity: 0.9;">Devices & Applications</div>
+                                <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.8;">IP Phones, Desktop App, Mobile App</div>
+                            </div>
+                        </div>
+                        
+                        <div style="flex: 0 0 60px; text-align: center;">
+                            <div style="font-size: 2.5rem; color: #3b82f6; font-weight: bold;">⟷</div>
+                            <div style="font-size: 0.7rem; color: #6b7280; margin-top: 4px;">SIP/RTP</div>
+                            <div style="font-size: 0.7rem; color: #6b7280;">Public Internet</div>
+                        </div>
+                        
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-height: 120px; display: flex; flex-direction: column; justify-content: center; border: 3px solid #60a5fa;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🛡️</div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">HBC SBC</div>
+                                <div style="font-size: 0.75rem; margin-top: 4px; opacity: 0.9;">Access Side</div>
+                                <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.8;">Session Border Controller</div>
+                                <div style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.7rem;">Customer Facing</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 32px 0;">
+                        <div style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 32px 48px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); border: 3px solid #a78bfa;">
+                            <div style="font-size: 2.5rem; margin-bottom: 8px;">🔄</div>
+                            <div style="font-weight: 700; font-size: 1.3rem;">TEL/HMP</div>
+                            <div style="font-size: 0.8rem; margin-top: 4px; opacity: 0.9;">Telephony Media Processor</div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; margin-top: 12px; font-size: 0.75rem;">Junction Point - Joins Both Legs</div>
+                            <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.8;">Creates Session Logs</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-height: 120px; display: flex; flex-direction: column; justify-content: center; border: 3px solid #34d399;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🛡️</div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">SBX (Sonus)</div>
+                                <div style="font-size: 0.75rem; margin-top: 4px; opacity: 0.9;">PSTN Side</div>
+                                <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.8;">Session Border Controller</div>
+                                <div style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.7rem;">Carrier Facing</div>
+                            </div>
+                        </div>
+                        
+                        <div style="flex: 0 0 60px; text-align: center;">
+                            <div style="font-size: 2.5rem; color: #10b981; font-weight: bold;">⟷</div>
+                            <div style="font-size: 0.7rem; color: #6b7280; margin-top: 4px;">SIP Trunks</div>
+                            <div style="font-size: 0.7rem; color: #6b7280;">TDM/SIP</div>
+                        </div>
+                        
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-height: 120px; display: flex; flex-direction: column; justify-content: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📡</div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">PSTN</div>
+                                <div style="font-size: 0.75rem; margin-top: 4px; opacity: 0.9;">Public Switched Telephone Network</div>
+                                <div style="font-size: 0.7rem; margin-top: 8px; opacity: 0.8;">AT&T, Verizon, Level3, etc.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OUTBOUND CALL FLOW VISUALIZATION -->
+                <div id="show-outbound:checked ~ " style="display: none;">
+                    <div style="background: white; border: 3px solid #3b82f6; border-radius: 8px; padding: 24px; margin-top: 24px;">
+                        <h4 style="color: #1e40af; text-align: center; margin-bottom: 20px; font-size: 1.2rem;">📤 OUTBOUND CALL FLOW (Customer → PSTN)</h4>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Step 1 -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #3b82f6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</div>
+                                <div style="flex: 1; background: #eff6ff; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                    <strong style="color: #1e40af;">Customer initiates call</strong><br>
+                                    <span style="font-size: 0.875rem; color: #1e40af;">Desk phone/Desktop app/Mobile app dials external number → SIP INVITE sent to HBC</span>
+                                </div>
+                                <div style="font-size: 2rem; color: #3b82f6;">→</div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #3b82f6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</div>
+                                <div style="flex: 1; background: #dbeafe; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                    <strong style="color: #1e40af;">HBC SBC processes (Access Leg created)</strong><br>
+                                    <span style="font-size: 0.875rem; color: #1e40af;">Authentication, authorization, NAT traversal, security checks → Forwards to TEL/HMP</span><br>
+                                    <span style="font-size: 0.75rem; color: #2563eb; font-weight: 600; margin-top: 4px; display: block;">✓ Access Leg ID created (for Kibana HBC index)</span>
+                                </div>
+                                <div style="font-size: 2rem; color: #8b5cf6;">→</div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #8b5cf6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</div>
+                                <div style="flex: 1; background: #f3e8ff; padding: 16px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                                    <strong style="color: #6b21a8;">TEL/HMP junctions call (Two Legs Join)</strong><br>
+                                    <span style="font-size: 0.875rem; color: #6b21a8;">Media Processor receives Access Leg, creates PSTN Leg, junctions RTP streams together</span><br>
+                                    <span style="font-size: 0.75rem; color: #7c3aed; font-weight: 600; margin-top: 4px; display: block;">✓ Session ID created - correlates both legs</span><br>
+                                    <span style="font-size: 0.75rem; color: #7c3aed; font-weight: 600; display: block;">✓ Session Logs show both Access Leg ID + PSTN Leg ID</span>
+                                </div>
+                                <div style="font-size: 2rem; color: #10b981;">→</div>
+                            </div>
+
+                            <!-- Step 4 -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #10b981; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">4</div>
+                                <div style="flex: 1; background: #d1fae5; padding: 16px; border-radius: 8px; border-left: 4px solid #10b981;">
+                                    <strong style="color: #065f46;">SBX routes to carrier (PSTN Leg created)</strong><br>
+                                    <span style="font-size: 0.875rem; color: #065f46;">Trunk selection, carrier routing, number translation → SIP INVITE to PSTN carrier</span><br>
+                                    <span style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 4px; display: block;">✓ PSTN Leg ID created (for Kibana SBX index)</span>
+                                </div>
+                                <div style="font-size: 2rem; color: #ef4444;">→</div>
+                            </div>
+
+                            <!-- Step 5 -->
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">5</div>
+                                <div style="flex: 1; background: #fee2e2; padding: 16px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                                    <strong style="color: #991b1b;">PSTN carrier completes call</strong><br>
+                                    <span style="font-size: 0.875rem; color: #991b1b;">Carrier delivers call to destination phone number → External party answers</span>
+                                </div>
+                                <div style="font-size: 2rem; color: #10b981;">✓</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 24px; padding: 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px;">
+                            <strong style="color: #78350f; display: block; margin-bottom: 8px;">📊 Outbound Call - Two Leg Structure:</strong>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+                                <div style="background: white; padding: 12px; border-radius: 6px; border: 2px solid #3b82f6;">
+                                    <strong style="color: #1e40af; font-size: 0.9rem;">🔵 Access Leg (Leg 1)</strong>
+                                    <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                        <li>Customer Device → HBC SBC → TEL/HMP</li>
+                                        <li>From: Customer extension/DID</li>
+                                        <li>To: Dialed external number</li>
+                                        <li>Logged in: HBC Kibana index</li>
+                                        <li>Contains: Customer IP, QoS metrics</li>
+                                    </ul>
+                                </div>
+                                <div style="background: white; padding: 12px; border-radius: 6px; border: 2px solid #10b981;">
+                                    <strong style="color: #065f46; font-size: 0.9rem;">🟢 PSTN Leg (Leg 2)</strong>
+                                    <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                        <li>TEL/HMP → SBX → PSTN Carrier</li>
+                                        <li>From: Outbound Caller ID (can differ)</li>
+                                        <li>To: Final PSTN destination</li>
+                                        <li>Logged in: SBX Kibana index</li>
+                                        <li>Contains: Carrier, trunk, Q.850 codes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INBOUND CALL FLOW VISUALIZATION (shown when inbound selected) -->
+                <div style="background: white; border: 3px solid #10b981; border-radius: 8px; padding: 24px; margin-top: 24px; display: none;" id="inbound-flow-diagram">
+                    <h4 style="color: #065f46; text-align: center; margin-bottom: 20px; font-size: 1.2rem;">📥 INBOUND CALL FLOW (PSTN → Customer)</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Step 1 -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</div>
+                            <div style="flex: 1; background: #fee2e2; padding: 16px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                                <strong style="color: #991b1b;">External caller dials customer DID</strong><br>
+                                <span style="font-size: 0.875rem; color: #991b1b;">PSTN caller dials RingCentral DID → Carrier routes to SBX trunk</span>
+                            </div>
+                            <div style="font-size: 2rem; color: #10b981;">→</div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: #10b981; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</div>
+                            <div style="flex: 1; background: #d1fae5; padding: 16px; border-radius: 8px; border-left: 4px solid #10b981;">
+                                <strong style="color: #065f46;">SBX receives call from carrier (PSTN Leg created)</strong><br>
+                                <span style="font-size: 0.875rem; color: #065f46;">Carrier authentication, DID validation, trunk capacity check → Forwards to TEL/HMP</span><br>
+                                <span style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-top: 4px; display: block;">✓ PSTN Leg ID created (for Kibana SBX index - Ingress)</span>
+                            </div>
+                            <div style="font-size: 2rem; color: #8b5cf6;">→</div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: #8b5cf6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</div>
+                            <div style="flex: 1; background: #f3e8ff; padding: 16px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                                <strong style="color: #6b21a8;">TEL/HMP junctions call (Two Legs Join)</strong><br>
+                                <span style="font-size: 0.875rem; color: #6b21a8;">Media Processor receives PSTN Leg, looks up DID routing, creates Access Leg to customer device</span><br>
+                                <span style="font-size: 0.75rem; color: #7c3aed; font-weight: 600; margin-top: 4px; display: block;">✓ Session ID created - correlates both legs</span><br>
+                                <span style="font-size: 0.75rem; color: #7c3aed; font-weight: 600; display: block;">✓ Session Logs show both PSTN Leg ID + Access Leg ID</span>
+                            </div>
+                            <div style="font-size: 2rem; color: #3b82f6;">→</div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: #3b82f6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">4</div>
+                            <div style="flex: 1; background: #dbeafe; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                <strong style="color: #1e40af;">HBC delivers to customer (Access Leg created)</strong><br>
+                                <span style="font-size: 0.875rem; color: #1e40af;">DID routing lookup, find user/extension, check device registration → SIP INVITE to customer device</span><br>
+                                <span style="font-size: 0.75rem; color: #2563eb; font-weight: 600; margin-top: 4px; display: block;">✓ Access Leg ID created (for Kibana HBC index)</span>
+                            </div>
+                            <div style="font-size: 2rem; color: #f59e0b;">→</div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: #f59e0b; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">5</div>
+                            <div style="flex: 1; background: #fef3c7; padding: 16px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                <strong style="color: #78350f;">Customer device rings and answers</strong><br>
+                                <span style="font-size: 0.875rem; color: #78350f;">Phone rings, user answers → RTP media flows through both legs junctioned at TEL/HMP</span>
+                            </div>
+                            <div style="font-size: 2rem; color: #10b981;">✓</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px; padding: 16px; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
+                        <strong style="color: #1e40af; display: block; margin-bottom: 8px;">📊 Inbound Call - Two Leg Structure:</strong>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+                            <div style="background: white; padding: 12px; border-radius: 6px; border: 2px solid #10b981;">
+                                <strong style="color: #065f46; font-size: 0.9rem;">🟢 PSTN Leg (Leg 1 - Arrives First)</strong>
+                                <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                    <li>PSTN Carrier → SBX → TEL/HMP</li>
+                                    <li>From: External caller number</li>
+                                    <li>To: Customer DID (e.g., +1-303-555-1234)</li>
+                                    <li>Logged in: SBX Kibana index (Ingress)</li>
+                                    <li>Contains: Carrier name, trunk, Q.850 codes</li>
+                                </ul>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 6px; border: 2px solid #3b82f6;">
+                                <strong style="color: #1e40af; font-size: 0.9rem;">🔵 Access Leg (Leg 2 - Created After)</strong>
+                                <ul style="margin: 8px 0 0 20px; font-size: 0.8rem; color: #374151;">
+                                    <li>TEL/HMP → HBC → Customer Device</li>
+                                    <li>From: External caller number (preserved)</li>
+                                    <li>To: Extension/User (internal routing)</li>
+                                    <li>Logged in: HBC Kibana index</li>
+                                    <li>Contains: Customer IP, device type, QoS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 12px; background: #f0fdf4; border-radius: 6px;">
+                    <p style="font-size: 0.875rem; color: #065f46;"><strong>🔑 Key Concept:</strong> Every call has TWO legs junctioned by TEL/HMP:</p>
+                    <ul style="margin-left: 20px; margin-top: 8px; font-size: 0.875rem; color: #065f46;">
+                        <li><strong>Outbound:</strong> Access Leg (Customer→TEL) + PSTN Leg (TEL→Carrier)</li>
+                        <li><strong>Inbound:</strong> PSTN Leg (Carrier→TEL) + Access Leg (TEL→Customer)</li>
+                        <li><strong>Session Logs:</strong> Shows BOTH legs with correlation via Session ID</li>
+                        <li><strong>Troubleshooting:</strong> Check BOTH legs to find which side failed</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 20px; padding: 16px; background: #e0e7ff; border-radius: 8px; border: 2px solid #6366f1;">
+                    <h4 style="color: #3730a3; margin-bottom: 12px;">🎯 Troubleshooting Strategy:</h4>
+                    <ol style="margin-left: 20px; font-size: 0.875rem; color: #3730a3; line-height: 1.8;">
+                        <li><strong>Start with Session Logs</strong> (TEL/HMP) → Get Session ID, Access Leg ID, PSTN Leg ID</li>
+                        <li><strong>Check Access Leg</strong> in HBC Kibana → Customer side issues (network, auth, QoS)</li>
+                        <li><strong>Check PSTN Leg</strong> in SBX Kibana → Carrier side issues (trunk, routing, carrier response)</li>
+                        <li><strong>Compare Both Legs</strong> → Identify which leg failed or had quality issues</li>
+                        <li><strong>Correlate timestamps</strong> → Verify call flow timing matches across all systems</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ First, select call direction below. Then follow the steps to trace through Session Logs and Kibana CDR.
+        </div>
+
+        <input type="radio" name="direction" id="outbound" class="direction-btn" checked>
+        <input type="radio" name="direction" id="inbound" class="direction-btn">
+
+        <div class="call-direction-selector">
+            <label for="outbound" class="direction-label">
+                📤 Outbound Calls<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Customer → PSTN</span>
+            </label>
+            <label for="inbound" class="direction-label">
+                📥 Inbound Calls<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">PSTN → Customer</span>
+            </label>
+        </div>
+
+        <div class="direction-sections">
+            <!-- OUTBOUND CALL FLOW -->
+            <div class="outbound-content direction-content">
+                <div class="tab-indicator">
+                    📤 <strong>Outbound Call Troubleshooting</strong> - Customer making calls to external numbers (PSTN)
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="out-step1" class="section-toggle">
+                    <label for="out-step1" class="section-header">
+                        <span>STEP 1: Find Call in Session Logs (Media Processor)</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Start Here - Session Logs Show Both Legs:</h4>
+                                <p>Session logs on the Media Processor junction point show BOTH legs of the call with their correlation</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Gather Call Information from Customer</div>
+                                        <div class="check-details">Get: Date/Time of call, Calling number (ANI), Called number (DNIS), approximate duration</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Session Logs</div>
+                                        <div class="check-details">Log into Media Processor or session log database/interface</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Search by Calling Number, Called Number, or Time Range</div>
+                                        <div class="check-details">Use filters to narrow down to the specific call</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📊 Key Session Log Fields - Outbound Call</h4>
+                            <table class="field-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Description</th>
+                                        <th>What to Look For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-field">
+                                        <td>Session ID</td>
+                                        <td>Unique identifier for entire call</td>
+                                        <td>Use to correlate both legs</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Access Leg ID</td>
+                                        <td>Call leg from customer to Media Processor</td>
+                                        <td>Use to search HBC Kibana</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>PSTN Leg ID</td>
+                                        <td>Call leg from Media Processor to PSTN</td>
+                                        <td>Use to search SBX Kibana</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Start Time / End Time</td>
+                                        <td>Call start and end timestamps</td>
+                                        <td>Verify matches customer report</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duration</td>
+                                        <td>Total call length</td>
+                                        <td>0 seconds = failed immediately</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Calling Number (ANI)</td>
+                                        <td>Original customer number</td>
+                                        <td>Verify correct source</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Called Number (DNIS)</td>
+                                        <td>Destination number dialed</td>
+                                        <td>May be modified for PSTN leg</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Outbound Caller ID</td>
+                                        <td>Caller ID sent to PSTN (may differ from ANI)</td>
+                                        <td>Customer can set custom caller ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Success Status</td>
+                                        <td>Overall call success/failure</td>
+                                        <td>Success, Failed, Partial</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Disconnect Reason</td>
+                                        <td>Why call ended</td>
+                                        <td>Normal, Busy, No Answer, Error</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="leg-box">
+                                <div class="leg-card access">
+                                    <h5>🔵 Access Leg (Customer → Media Processor)</h5>
+                                    <ul>
+                                        <li><strong>Leg ID:</strong> Access_Leg_12345</li>
+                                        <li><strong>From:</strong> +15551234567 (Customer)</li>
+                                        <li><strong>To:</strong> +15559876543 (Dialed)</li>
+                                        <li><strong>Duration:</strong> 120 seconds</li>
+                                        <li><strong>Status:</strong> Success</li>
+                                    </ul>
+                                </div>
+                                <div class="leg-card pstn">
+                                    <h5>🟢 PSTN Leg (Media Processor → PSTN)</h5>
+                                    <ul>
+                                        <li><strong>Leg ID:</strong> PSTN_Leg_67890</li>
+                                        <li><strong>From:</strong> +15551111111 (Outbound CID)</li>
+                                        <li><strong>To:</strong> +15559876543 (PSTN)</li>
+                                        <li><strong>Duration:</strong> 120 seconds</li>
+                                        <li><strong>Status:</strong> Success</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Document Both Leg IDs</div>
+                                        <div class="check-details">Copy Access Leg ID (for HBC Kibana) and PSTN Leg ID (for SBX Kibana) - you'll need both!</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="troubleshooting-tip">
+                                <strong>💡 Quick Analysis:</strong>
+                                <p>• If <strong>both legs</strong> show success with same duration = Call completed normally</p>
+                                <p>• If <strong>Access leg</strong> succeeded but <strong>PSTN leg</strong> failed = Problem on PSTN side (check SBX)</p>
+                                <p>• If <strong>Access leg</strong> failed = Problem on customer side (check HBC)</p>
+                                <p>• If <strong>durations differ</strong> = One side hung up early (check disconnect reason)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="out-step2" class="section-toggle">
+                    <label for="out-step2" class="section-header">
+                        <span>STEP 2: Check Access Leg in HBC Kibana (Customer Side)</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔍 HBC SBC - Access Side Analysis:</h4>
+                                <p>Use the Access Leg ID from Session Logs to find detailed CDR in Kibana</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Kibana and Select HBC Index</div>
+                                        <div class="check-details">Navigate to Kibana → Select HBC CDR index (e.g., "hbc-cdr-*" or "access-sbc-*")</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Search by Access Leg ID</div>
+                                        <div class="check-details">Use the Access Leg ID from session logs to find the exact CDR record</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="query-box">
+                                <div class="query-label">📝 Kibana Query Example - HBC Access Leg:</div>
+                                call_id: "Access_Leg_12345"<br>
+                                OR<br>
+                                session_id: "Session_12345" AND call_direction: "outbound"<br>
+                                <br>
+                                Time Range: [Set to call date/time from session logs]
+                            </div>
+
+                            <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📊 Critical HBC CDR Fields - Outbound</h4>
+                            <table class="field-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Description</th>
+                                        <th>What to Check</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-field">
+                                        <td>Call Direction</td>
+                                        <td>Inbound or Outbound</td>
+                                        <td>Should be "outbound" or "originating"</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Customer IP Address</td>
+                                        <td>Source IP of customer device/network</td>
+                                        <td>Verify matches customer network</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>SIP Response Code</td>
+                                        <td>Final SIP response (200, 403, 486, etc.)</td>
+                                        <td>Non-200 = failure (see codes below)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duration (seconds)</td>
+                                        <td>Call duration</td>
+                                        <td>Should match session log</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Calling Number (From)</td>
+                                        <td>Customer phone number</td>
+                                        <td>Verify correct user</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Called Number (To)</td>
+                                        <td>Number dialed by customer</td>
+                                        <td>Check for dial plan issues</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Packet Loss (%)</td>
+                                        <td>Percentage of lost RTP packets</td>
+                                        <td>Should be < 1% (Good), 1-3% (Warning), >3% (Bad)</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Jitter (ms)</td>
+                                        <td>Packet delay variation</td>
+                                        <td>Should be < 30ms (Good), 30-50ms (Warning), >50ms (Bad)</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Latency (ms)</td>
+                                        <td>Round-trip time</td>
+                                        <td>Should be < 150ms (Good), 150-300ms (Warning), >300ms (Bad)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>MOS Score</td>
+                                        <td>Mean Opinion Score (1-5)</td>
+                                        <td>Should be > 4.0 (Good), 3.5-4.0 (Warning), <3.5 (Bad)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Codec Used</td>
+                                        <td>Audio codec negotiated</td>
+                                        <td>G.711, G.729, Opus, etc.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Media IP/Port</td>
+                                        <td>Customer's RTP endpoint</td>
+                                        <td>Check NAT traversal issues</td>
+                                    </tr>
+                                    <tr>
+                                        <td>User Agent</td>
+                                        <td>Device/app making call</td>
+                                        <td>Identifies device type (desk phone, app)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Disconnect Reason</td>
+                                        <td>Why call ended</td>
+                                        <td>Normal Clearing, Busy, No Answer, etc.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="example-box">
+                                <h4>✅ Example: Successful Outbound Access Leg</h4>
+                                <div class="example-data">
+call_id: "Access_Leg_12345"<br>
+call_direction: "outbound"<br>
+customer_ip: "203.0.113.45"<br>
+from_number: "+15551234567"<br>
+to_number: "+15559876543"<br>
+duration: 120<br>
+sip_response: 200 (OK)<br>
+packet_loss: 0.5%<br>
+jitter: 15ms<br>
+latency: 45ms<br>
+mos_score: 4.2<br>
+codec: "G.711u"<br>
+disconnect_reason: "Normal Clearing"
+                                </div>
+                            </div>
+
+                            <div class="troubleshooting-tip">
+                                <strong>🚨 Common HBC Issues - Outbound:</strong>
+                                <p>• <strong>403 Forbidden:</strong> Customer not authorized / account issue</p>
+                                <p>• <strong>408 Request Timeout:</strong> Customer device not responding to SIP</p>
+                                <p>• <strong>High Packet Loss/Jitter:</strong> Customer network quality issue</p>
+                                <p>• <strong>Wrong Customer IP:</strong> Call from unexpected location/device</p>
+                                <p>• <strong>Codec Mismatch:</strong> Unsupported codec negotiation</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Customer IP Address</div>
+                                        <div class="check-details">Confirm IP matches customer's known network - unexpected IP may indicate unauthorized use</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check QoS Metrics</div>
+                                        <div class="check-details">Review packet loss, jitter, latency - poor metrics indicate customer network issues</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Review SIP Response Code</div>
+                                        <div class="check-details">200 = success. 4xx = client error. 5xx = server error. Document any non-200 codes.</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section orange">
+                    <input type="checkbox" id="out-step3" class="section-toggle">
+                    <label for="out-step3" class="section-header">
+                        <span>STEP 3: Check PSTN Leg in SBX Kibana (Carrier Side)</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔍 SBX (Sonus) SBC - PSTN Side Analysis:</h4>
+                                <p>Use the PSTN Leg ID from Session Logs to find carrier-side CDR in Kibana</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Kibana and Select SBX Index</div>
+                                        <div class="check-details">Navigate to Kibana → Select SBX CDR index (e.g., "sbx-cdr-*" or "sonus-sbc-*")</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Search by PSTN Leg ID</div>
+                                        <div class="check-details">Use the PSTN Leg ID from session logs to find the carrier-side CDR</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="query-box">
+                                <div class="query-label">📝 Kibana Query Example - SBX PSTN Leg:</div>
+                                call_id: "PSTN_Leg_67890"<br>
+                                OR<br>
+                                session_id: "Session_12345" AND call_direction: "outbound"<br>
+                                <br>
+                                Time Range: [Set to call date/time from session logs]
+                            </div>
+
+                            <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📊 Critical SBX CDR Fields - Outbound</h4>
+                            <table class="field-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Description</th>
+                                        <th>What to Check</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-field">
+                                        <td>Call Direction</td>
+                                        <td>Egress (outbound to PSTN)</td>
+                                        <td>Should be "egress" or "outbound"</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Trunk/Carrier Name</td>
+                                        <td>Which PSTN carrier handled call</td>
+                                        <td>Identifies carrier responsible</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Trunk Group ID</td>
+                                        <td>Specific trunk used</td>
+                                        <td>Check trunk capacity/health</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>SIP Response Code</td>
+                                        <td>Carrier's response (200, 404, 503, etc.)</td>
+                                        <td>Non-200 = carrier rejected call</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duration (seconds)</td>
+                                        <td>Call duration on PSTN leg</td>
+                                        <td>Should match access leg</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Calling Number (From)</td>
+                                        <td>Outbound Caller ID sent to PSTN</td>
+                                        <td>May differ from original ANI</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Called Number (To)</td>
+                                        <td>Destination number to PSTN</td>
+                                        <td>May be modified by dial plan</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Carrier Response Time (ms)</td>
+                                        <td>How long carrier took to answer SIP INVITE</td>
+                                        <td>>5000ms = slow carrier response</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Packet Loss (%)</td>
+                                        <td>Loss on carrier trunk</td>
+                                        <td>>1% indicates carrier network issue</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jitter (ms)</td>
+                                        <td>Delay variation on trunk</td>
+                                        <td>>30ms indicates carrier quality issue</td>
+                                    </tr>
+                                    <tr>
+                                        <td>MOS Score</td>
+                                        <td>Quality score for PSTN leg</td>
+                                        <td><3.5 = poor carrier audio quality</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Codec Used</td>
+                                        <td>Codec negotiated with carrier</td>
+                                        <td>Usually G.711 for PSTN</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Disconnect Initiator</td>
+                                        <td>Who hung up (Local/Remote)</td>
+                                        <td>Remote = carrier or called party</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Disconnect Reason</td>
+                                        <td>Why call ended</td>
+                                        <td>Normal, Busy, No Answer, Failed</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Q.850 Cause Code</td>
+                                        <td>ISDN disconnect reason code</td>
+                                        <td>16=Normal, 17=Busy, 19=No Answer</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="example-box">
+                                <h4>✅ Example: Successful Outbound PSTN Leg</h4>
+                                <div class="example-data">
+call_id: "PSTN_Leg_67890"<br>
+call_direction: "egress"<br>
+carrier_name: "AT&T"<br>
+trunk_group: "ATT_TRUNK_01"<br>
+from_number: "+15551111111" (Outbound CID)<br>
+to_number: "+15559876543"<br>
+duration: 120<br>
+sip_response: 200 (OK)<br>
+carrier_response_time: 850ms<br>
+packet_loss: 0.3%<br>
+jitter: 12ms<br>
+mos_score: 4.3<br>
+codec: "G.711a"<br>
+disconnect_initiator: "Remote"<br>
+disconnect_reason: "Normal Clearing"<br>
+q850_cause: 16
+                                </div>
+                            </div>
+
+                            <div class="troubleshooting-tip">
+                                <strong>🚨 Common SBX Issues - Outbound:</strong>
+                                <p>• <strong>404 Not Found:</strong> Invalid/unroutable destination number</p>
+                                <p>• <strong>503 Service Unavailable:</strong> Carrier trunk down or at capacity</p>
+                                <p>• <strong>High Carrier Response Time:</strong> Slow carrier (>5 sec = issue)</p>
+                                <p>• <strong>Q.850 Code 34:</strong> No circuit/channel available (trunk capacity)</p>
+                                <p>• <strong>Trunk Group Issues:</strong> All circuits busy or trunk down</p>
+                                <p>• <strong>High Packet Loss:</strong> Carrier network quality problem</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Identify Which Carrier/Trunk Was Used</div>
+                                        <div class="check-details">Document carrier name and trunk group - may need to contact carrier or check trunk health</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Carrier Response Time</div>
+                                        <div class="check-details">Slow response (>5 seconds) indicates carrier routing or congestion issues</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Review Q.850 Cause Code</div>
+                                        <div class="check-details">16=Normal, 17=Busy, 18=No User Response, 19=No Answer, 21=Rejected, 34=No Circuit</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Outbound Caller ID Presentation</div>
+                                        <div class="check-details">Check if customer's configured caller ID was properly sent to PSTN</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section purple">
+                    <input type="checkbox" id="out-step4" class="section-toggle">
+                    <label for="out-step4" class="section-header">
+                        <span>STEP 4: Correlate & Diagnose - Outbound Call Analysis</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Putting It All Together:</h4>
+                                <p>Compare Session Logs, HBC CDR, and SBX CDR to identify root cause</p>
+                            </div>
+
+                            <h4 style="color: #1f2937; margin: 20px 0 12px 0;">🔍 Decision Matrix - Outbound Calls</h4>
+
+                            <div class="troubleshooting-tip">
+                                <strong>✅ Scenario 1: Both Legs Successful</strong>
+                                <p>• Session Log: Both legs show success, same duration</p>
+                                <p>• HBC: SIP 200, good QoS metrics</p>
+                                <p>• SBX: SIP 200, good carrier metrics</p>
+                                <p><strong>Result:</strong> Call completed successfully - if customer reports issue, check audio quality metrics</p>
+                            </div>
+
+                            <div class="troubleshooting-tip" style="background: #fee2e2; border-color: #ef4444;">
+                                <strong style="color: #991b1b;">🚨 Scenario 2: Access Leg Failed, PSTN Leg Never Started</strong>
+                                <p style="color: #7f1d1d;">• Session Log: Access leg failed, no PSTN leg created</p>
+                                <p style="color: #7f1d1d;">• HBC: Non-200 SIP response (403, 408, etc.)</p>
+                                <p style="color: #7f1d1d;">• SBX: No CDR record found</p>
+                                <p style="color: #7f1d1d;"><strong>Root Cause:</strong> Customer-side issue - check HBC for authorization, network, or device problems</p>
+                            </div>
+
+                            <div class="troubleshooting-tip" style="background: #fef3c7; border-color: #f59e0b;">
+                                <strong style="color: #78350f;">⚠️ Scenario 3: Access Leg OK, PSTN Leg Failed</strong>
+                                <p style="color: #78350f;">• Session Log: Access leg success, PSTN leg failed</p>
+                                <p style="color: #78350f;">• HBC: SIP 200, call established</p>
+                                <p style="color: #78350f;">• SBX: Non-200 SIP response (404, 503, etc.)</p>
+                                <p style="color: #78350f;"><strong>Root Cause:</strong> PSTN/Carrier issue - check SBX for carrier rejection, trunk issues, or invalid destination</p>
+                            </div>
+
+                            <div class="troubleshooting-tip" style="background: #fffbeb; border-color: #f59e0b;">
+                                <strong style="color: #78350f;">⚠️ Scenario 4: Both Legs Connect, Durations Differ</strong>
+                                <p style="color: #78350f;">• Session Log: Both legs exist, different durations</p>
+                                <p style="color: #78350f;">• HBC: 120 seconds</p>
+                                <p style="color: #78350f;">• SBX: 30 seconds</p>
+                                <p style="color: #78350f;"><strong>Root Cause:</strong> One side disconnected early - check disconnect initiator and reason codes</p>
+                            </div>
+
+                            <div class="troubleshooting-tip" style="background: #fef3c7; border-color: #eab308;">
+                                <strong style="color: #78350f;">⚠️ Scenario 5: Good Connection, Poor Quality</strong>
+                                <p style="color: #78350f;">• Session Log: Both legs successful</p>
+                                <p style="color: #78350f;">• HBC: High packet loss/jitter on access leg</p>
+                                <p style="color: #78350f;">• SBX: Good metrics on PSTN leg</p>
+                                <p style="color: #78350f;"><strong>Root Cause:</strong> Customer network quality issue - refer to QoS troubleshooting guide</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Compare Timestamps Across All Systems</div>
+                                        <div class="check-details">Ensure call times match - clock skew can indicate system issues</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Document All Findings</div>
+                                        <div class="check-details">Record session ID, both leg IDs, SIP codes, disconnect reasons, and affected carrier/customer</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Determine if Issue is Systemic or Isolated</div>
+                                        <div class="check-details">Search for other calls from same customer/to same destination/using same trunk during same timeframe</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INBOUND CALL FLOW -->
+            <div class="inbound-content direction-content">
+                <div class="tab-indicator">
+                    📥 <strong>Inbound Call Troubleshooting</strong> - External calls (PSTN) coming to customers
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="in-step1" class="section-toggle">
+                    <label for="in-step1" class="section-header">
+                        <span>STEP 1: Find Inbound Call in Session Logs</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Start Here - Session Logs for Inbound:</h4>
+                                <p>For inbound calls, the flow is reversed: PSTN → SBX → Media Processor → HBC → Customer</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Gather Inbound Call Information</div>
+                                        <div class="check-details">Get: Date/Time, Calling number (external), Destination number (DID/customer), duration</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Session Logs</div>
+                                        <div class="check-details">Search by destination number (customer's DID) or calling number (external caller)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📊 Key Session Log Fields - Inbound Call</h4>
+                            <table class="field-table">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Description</th>
+                                        <th>What to Look For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-field">
+                                        <td>Session ID</td>
+                                        <td>Unique identifier for entire call</td>
+                                        <td>Use to correlate both legs</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>PSTN Leg ID</td>
+                                        <td>Call leg from PSTN to Media Processor</td>
+                                        <td>Use to search SBX Kibana (ingress)</td>
+                                    </tr>
+                                    <tr class="critical-field">
+                                        <td>Access Leg ID</td>
+                                        <td>Call leg from Media Processor to customer</td>
+                                        <td>Use to search HBC Kibana</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Calling Number (External)</td>
+                                        <td>Caller ID from PSTN</td>
+                                        <td>External phone number calling in</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Called Number (DID)</td>
+                                        <td>Customer's inbound number</td>
+                                        <td>Which customer DID was called</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Destination Extension/User</td>
+                                        <td>Where call was routed internally</td>
+                                        <td>Final destination user/queue</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Start / End Time</td>
+                                        <td>Call timestamps</td>
+                                        <td>Verify matches customer report</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duration</td>
+                                        <td>Call length</td>
+                                        <td>0 = immediate failure</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Success Status</td>
+                                        <td>Call outcome</td>
+                                        <td>Success, Failed, No Answer</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Disconnect Reason</td>
+                                        <td>Why call ended</td>
+                                        <td>Normal, Busy, No Answer, Error</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="leg-box">
+                                <div class="leg-card pstn">
+                                    <h5>🟢 PSTN Leg (PSTN → Media Processor)</h5>
+                                    <ul>
+                                        <li><strong>Leg ID:</strong> PSTN_Leg_11111</li>
+                                        <li><strong>From:</strong> +12125551234 (External)</li>
+                                        <li><strong>To:</strong> +15551112222 (DID)</li>
+                                        <li><strong>Duration:</strong> 90 seconds</li>
+                                        <li><strong>Status:</strong> Success</li>
+                                    </ul>
+                                </div>
+                                <div class="leg-card access">
+                                    <h5>🔵 Access Leg (Media Processor → Customer)</h5>
+                                    <ul>
+                                        <li><strong>Leg ID:</strong> Access_Leg_22222</li>
+                                        <li><strong>From:</strong> +12125551234 (Caller ID)</li>
+                                        <li><strong>To:</strong> Extension 1001 (User)</li>
+                                        <li><strong>Duration:</strong> 90 seconds</li>
+                                        <li><strong>Status:</strong> Success</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Document Both Leg IDs (Order Matters!)</div>
+                                        <div class="check-details">PSTN Leg ID (for SBX - ingress) and Access Leg ID (for HBC - delivery to customer)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="troubleshooting-tip">
+                                <strong>💡 Quick Analysis - Inbound:</strong>
+                                <p>• If <strong>PSTN leg</strong> failed = Carrier never delivered call to us (check SBX ingress)</p>
+                                <p>• If <strong>PSTN leg</strong> succeeded but <strong>Access leg</strong> failed = Problem delivering to customer (check HBC)</p>
+                                <p>• If <strong>both legs</strong> succeeded = Call completed (check quality if customer complains)</p>
+                                <p>• If <strong>no answer/busy</strong> = Check if customer device was registered and available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="in-step2" class="section-toggle">
+                    <label for="in-step2" class="section-header">
+                        <span>STEP 2: Check PSTN Leg in SBX Kibana (Carrier Ingress)</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔍 SBX - Inbound from Carrier:</h4>
+                                <p>Check how the carrier delivered the call to us - this is the first point of failure for inbound calls</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Kibana SBX Index</div>
+                                        <div class="check-details">Select SBX/Sonus CDR index in Kibana</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Search by PSTN Leg ID (Ingress)</div>
+                                        <div class="check-details">Use PSTN Leg ID from session logs</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="query-box">
+                                <div class="query-label">📝 Kibana Query Example - SBX Inbound:</div>
+                                call_id: "PSTN_Leg_11111"<br>
+                                AND call_direction: "ingress
