@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Phone Bootup & Provisioning Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .boot-sequence {
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .sequence-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .sequence-step {
+            display: flex;
+            align-items: start;
+            gap: 16px;
+            padding: 16px;
+            background: #f9fafb;
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px;
+        }
+        
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            color: #1e40af;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        
+        .step-content p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        .section.red { border-color: #ef4444; }
+        .section.teal { border-color: #14b8a6; }
+        .section.indigo { border-color: #6366f1; }
+        
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section.red .section-header {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .section.teal .section-header {
+            background: #ccfbf1;
+            color: #134e4a;
+        }
+        
+        .section.indigo .section-header {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-toggle:checked ~ .section-content {
+            max-height: 8000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        .red .info-box { background: #fee2e2; color: #991b1b; }
+        .teal .info-box { background: #ccfbf1; color: #134e4a; }
+        .indigo .info-box { background: #e0e7ff; color: #3730a3; }
+        
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .protocol-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .protocol-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .protocol-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .protocol-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .critical-row {
+            background: #fef2f2;
+            font-weight: 600;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 12px 0;
+            overflow-x: auto;
+            border-left: 4px solid #10b981;
+        }
+        
+        .code-label {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .example-box {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .example-box h4 {
+            color: #065f46;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .troubleshooting-tip {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+        
+        .troubleshooting-tip strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .troubleshooting-tip p {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .troubleshooting-tip ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .troubleshooting-tip li {
+            font-size: 0.875rem;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+        
+        .error-box {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+        
+        .error-box strong {
+            color: #991b1b;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .error-box p {
+            font-size: 0.875rem;
+            color: #7f1d1d;
+        }
+        
+        .error-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .error-box li {
+            font-size: 0.875rem;
+            color: #7f1d1d;
+            margin-bottom: 4px;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .vendor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .vendor-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .vendor-card h5 {
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .vendor-card ul {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+        
+        .vendor-card li {
+            padding: 4px 0;
+            color: #6b7280;
+        }
+        
+        .vendor-card strong {
+            color: #374151;
+        }
+        
+        .dhcp-option-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .dhcp-option-box h4 {
+            color: #78350f;
+            margin-bottom: 12px;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📞 SIP Phone Bootup & Provisioning Guide</h1>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Phone Startup & Registration Process</div>
+                <div class="alert-text">
+                    This guide walks through the complete phone boot process: Power-on → DHCP → Firmware Check → Provisioning → Registration. Use this to troubleshoot phones that won't boot, provision, or register.
+                </div>
+            </div>
+            
+            <div class="boot-sequence">
+                <h3 style="color: #1f2937; margin-bottom: 16px;">🔄 Complete Boot Sequence Overview</h3>
+                
+                <div class="sequence-steps">
+                    <div class="sequence-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Power On & Boot Loader</h4>
+                            <p>Phone powers on, loads boot ROM, displays manufacturer logo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>DHCP Request</h4>
+                            <p>Phone sends DHCP DISCOVER, receives IP address, subnet, gateway, DNS, and DHCP options</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Provisioning Server Discovery</h4>
+                            <p>Phone gets provisioning server URL from DHCP Option 66/160 or uses pre-configured address</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Firmware Version Check</h4>
+                            <p>Phone compares current firmware vs provisioning server, downloads if update needed</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Configuration Download</h4>
+                            <p>Phone downloads config file (usually XML/JSON) specific to its MAC address</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>SIP Registration (MD5 Auth)</h4>
+                            <p>Phone sends SIP REGISTER with MD5 hashed credentials, receives authentication challenge, responds with proper hash</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Ready State</h4>
+                            <p>Phone displays "Ready" or registered extension number, can make/receive calls</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 12px; background: #f0fdf4; border-radius: 6px;">
+                    <p style="font-size: 0.875rem; color: #065f46;"><strong>Total Boot Time:</strong> Typically 1-3 minutes (longer if firmware update required)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ Follow each step below to troubleshoot specific boot/provisioning failures. Check items as you verify them.
+        </div>
+
+        <div class="section blue">
+            <input type="checkbox" id="step1" class="section-toggle">
+            <label for="step1" class="section-header">
+                <span>STEP 1: Power On & Initial Boot</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔌 Initial Power & Boot Loader:</h4>
+                        <p>Phone receives power and loads initial boot firmware from flash memory</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Phone Has Power</div>
+                                <div class="check-details">Check PoE switch port status or AC adapter. Phone should show lights/screen activity.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check PoE Power Delivery</div>
+                                <div class="check-details">Desk phones typically need 802.3af (15.4W) or 802.3at (30W) PoE. Verify switch provides adequate power.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>💡 What You Should See:</strong>
+                        <ul>
+                            <li>Screen powers on (may be backlight only initially)</li>
+                            <li>Manufacturer logo appears (Polycom, Yealink, Cisco, etc.)</li>
+                            <li>Boot progress indicator or "Loading..." message</li>
+                            <li>Network port LEDs should light up (link activity)</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Observe Boot Screen Messages</div>
+                                <div class="check-details">Phone should display manufacturer logo and boot messages. Note any error codes.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Network Cable Connection</div>
+                                <div class="check-details">Verify Ethernet cable is properly connected and link LED is lit (green/amber).</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="error-box">
+                        <strong>🚨 Common Boot Failures:</strong>
+                        <ul>
+                            <li><strong>No power/No lights:</strong> Check PoE capability, cable, or power adapter</li>
+                            <li><strong>Boot loop (restarting repeatedly):</strong> Corrupt firmware or insufficient PoE power</li>
+                            <li><strong>"Boot ROM" message stuck:</strong> Firmware corruption - may need factory reset or TFTP recovery</li>
+                            <li><strong>No network link LED:</strong> Bad cable, switch port disabled, or network port failure</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify VLAN Configuration (if applicable)</div>
+                                <div class="check-details">If phones are on voice VLAN, switch must be configured for VLAN tagging (802.1Q).</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section green">
+            <input type="checkbox" id="step2" class="section-toggle">
+            <label for="step2" class="section-header">
+                <span>STEP 2: DHCP Discovery & IP Assignment</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🌐 DHCP Process:</h4>
+                        <p>Phone broadcasts DHCP DISCOVER to obtain IP address and critical configuration options</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Phone Should Display "Obtaining IP" or "DHCP"</div>
+                                <div class="check-details">Watch phone screen - should show network initialization status</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📊 Critical DHCP Parameters</h4>
+                    <table class="protocol-table">
+                        <thead>
+                            <tr>
+                                <th>DHCP Field</th>
+                                <th>Description</th>
+                                <th>Required?</th>
+                                <th>Common Issues</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="critical-row">
+                                <td>IP Address</td>
+                                <td>Phone's network address</td>
+                                <td>✓ YES</td>
+                                <td>Pool exhausted, wrong scope</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>Subnet Mask</td>
+                                <td>Network boundary</td>
+                                <td>✓ YES</td>
+                                <td>Wrong mask = can't reach gateway</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>Default Gateway</td>
+                                <td>Router IP for internet access</td>
+                                <td>✓ YES</td>
+                                <td>Wrong gateway = no provisioning</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>DNS Server(s)</td>
+                                <td>Resolves provisioning server hostname</td>
+                                <td>✓ YES</td>
+                                <td>Wrong DNS = can't resolve pp.ringcentral.com</td>
+                            </tr>
+                            <tr>
+                                <td>DHCP Lease Time</td>
+                                <td>How long IP is valid</td>
+                                <td>Recommended</td>
+                                <td>Too short = frequent disconnections</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>Option 66 (TFTP Server)</td>
+                                <td>Provisioning server address (legacy)</td>
+                                <td>For auto-provisioning</td>
+                                <td>Missing = phone can't find provisioning</td>
+                            </tr>
+                            <tr>
+                                <td>Option 160 (HTTP URL)</td>
+                                <td>Provisioning server URL (modern)</td>
+                                <td>Preferred method</td>
+                                <td>Takes precedence over Option 66</td>
+                            </tr>
+                            <tr>
+                                <td>Option 2 (Time Offset)</td>
+                                <td>Timezone offset</td>
+                                <td>Optional</td>
+                                <td>Wrong time display</td>
+                            </tr>
+                            <tr>
+                                <td>Option 42 (NTP Server)</td>
+                                <td>Time synchronization</td>
+                                <td>Recommended</td>
+                                <td>Time drift, certificate validation issues</td>
+                            </tr>
+                            <tr>
+                                <td>Option 120 (SIP Server)</td>
+                                <td>SIP server address (direct)</td>
+                                <td>Alternative method</td>
+                                <td>Bypasses provisioning for simple setups</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="dhcp-option-box">
+                        <h4>🔑 DHCP Option 66 vs Option 160 - RingCentral</h4>
+                        <p style="margin-bottom: 12px; font-size: 0.875rem; color: #78350f;"><strong>Option 66 (Legacy TFTP):</strong></p>
+                        <div class="code-block">
+                            <div class="code-label">DHCP Option 66 Example:</div>
+pp.ringcentral.com<br>
+OR<br>
+provisioning.ringcentral.com
+                        </div>
+                        
+                        <p style="margin: 12px 0; font-size: 0.875rem; color: #78350f;"><strong>Option 160 (Modern HTTP/HTTPS - Preferred):</strong></p>
+                        <div class="code-block">
+                            <div class="code-label">DHCP Option 160 Example:</div>
+https://pp.ringcentral.com/provision<br>
+OR<br>
+https://provisioning.ringcentral.com/provision
+                        </div>
+                        
+                        <p style="margin-top: 12px; font-size: 0.875rem; color: #78350f;"><strong>Note:</strong> Option 160 takes precedence if both are configured. RingCentral recommends Option 160 with HTTPS.</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Phone Received IP Address</div>
+                                <div class="check-details">Check phone menu: Settings → Status → Network → Should show IP, mask, gateway, DNS</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>💡 How to Check DHCP Settings on Phone:</strong>
+                        <ul>
+                            <li><strong>Polycom:</strong> Menu → Settings → Status → Network → TCP/IP Parameters</li>
+                            <li><strong>Yealink:</strong> Menu → Status → Network → IP Address</li>
+                            <li><strong>Cisco:</strong> Settings → Status → Network Configuration</li>
+                            <li><strong>Via Web Interface:</strong> Browse to phone IP → Network Settings</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Test Phone Can Reach Gateway</div>
+                                <div class="check-details">From PC on same network: ping phone IP. From phone (if available): network test to gateway.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify DNS Resolution Works</div>
+                                <div class="check-details">Phone must be able to resolve pp.ringcentral.com or provisioning.ringcentral.com</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="error-box">
+                        <strong>🚨 Common DHCP Issues:</strong>
+                        <ul>
+                            <li><strong>No IP (0.0.0.0 or 169.254.x.x):</strong> DHCP server not responding or wrong VLAN</li>
+                            <li><strong>Wrong subnet:</strong> Phone on different subnet than expected - check VLAN configuration</li>
+                            <li><strong>Can't reach gateway:</strong> Verify gateway IP is correct and routing is configured</li>
+                            <li><strong>DNS not working:</strong> Can't resolve provisioning server - check DNS server addresses</li>
+                            <li><strong>Option 66/160 missing:</strong> Phone defaults to manual config or fails provisioning</li>
+                            <li><strong>DHCP lease expired:</strong> Phone loses connectivity after lease time - increase lease duration</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check DHCP Server Logs</div>
+                                <div class="check-details">Verify phone MAC address received DHCP OFFER and ACK responses with correct options</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Example: Successful DHCP Response</h4>
+                        <div class="code-block" style="background: white; color: #374151; border-color: #10b981;">
+DHCP Offer for MAC: 00:04:F2:12:34:56<br>
+IP Address: 10.50.100.45<br>
+Subnet Mask: 255.255.255.0<br>
+Default Gateway: 10.50.100.1<br>
+DNS Servers: 8.8.8.8, 8.8.4.4<br>
+Lease Time: 86400 seconds (24 hours)<br>
+Option 66: pp.ringcentral.com<br>
+Option 160: https://pp.ringcentral.com/provision<br>
+Option 42: time.google.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section orange">
+            <input type="checkbox" id="step3" class="section-toggle">
+            <label for="step3" class="section-header">
+                <span>STEP 3: Provisioning Server Discovery & Connection</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔍 Provisioning Server Connection:</h4>
+                        <p>Phone contacts provisioning server to download configuration and firmware</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Phone Should Display "Contacting Provisioning Server"</div>
+                                <div class="check-details">Watch for status message indicating server connection attempt</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4 style="color: #1f2937; margin: 20px 0 12px 0;">🌐 Provisioning Server Methods</h4>
+                    
+                    <div class="vendor-grid">
+                        <div class="vendor-card">
+                            <h5>Method 1: DHCP Option 160 (Preferred)</h5>
+                            <ul>
+                                <li><strong>Source:</strong> DHCP server</li>
+                                <li><strong>Format:</strong> Full HTTP/HTTPS URL</li>
+                                <li><strong>Example:</strong> https://pp.ringcentral.com/provision</li>
+                                <li><strong>Priority:</strong> Highest (overrides other methods)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="vendor-card">
+                            <h5>Method 2: DHCP Option 66 (Legacy)</h5>
+                            <ul>
+                                <li><strong>Source:</strong> DHCP server</li>
+                                <li><strong>Format:</strong> Hostname or IP</li>
+                                <li><strong>Example:</strong> pp.ringcentral.com</li>
+                                <li><strong>Protocol:</strong> Phone adds HTTP/TFTP</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="vendor-card">
+                            <h5>Method 3: Pre-configured URL</h5>
+                            <ul>
+                                <li><strong>Source:</strong> Phone's existing config</li>
+                                <li><strong>When:</strong> Previous successful provision</li>
+                                <li><strong>Fallback:</strong> Used if DHCP options missing</li>
+                                <li><strong>Issue:</strong> May be outdated</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="vendor-card">
+                            <h5>Method 4: Manual Configuration</h5>
+                            <ul>
+                                <li><strong>Source:</strong> Admin sets via web UI</li>
+                                <li><strong>When:</strong> No auto-provisioning</li>
+                                <li><strong>Use Case:</strong> Testing or special setups</li>
+                                <li><strong>Limitation:</strong> Not scalable</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Provisioning Server is Reachable</div>
+                                <div class="check-details">From PC on same network: ping pp.ringcentral.com or browse to provisioning URL</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-label">💻 Test Provisioning Server Access:</div>
+# Test DNS resolution<br>
+nslookup pp.ringcentral.com<br>
+<br>
+# Test HTTP/HTTPS connectivity<br>
+curl -I https://pp.ringcentral.com/provision<br>
+<br>
+# Check firewall allows outbound HTTPS (443)<br>
+telnet pp.ringcentral.com 443
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Firewall Allows Provisioning Traffic</div>
+                                <div class="check-details">Outbound TCP 443 (HTTPS), TCP 80 (HTTP), UDP 69 (TFTP if used) must be allowed</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Phone Requests Correct Config File</div>
+                                <div class="check-details">Phone requests config based on MAC address: https://pp.ringcentral.com/provision/{MAC}.cfg</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>📋 Provisioning URL Format - RingCentral</h4>
+                        <div class="code-block" style="background: white; color: #374151; border-color: #10b981;">
+Base URL: https://pp.ringcentral.com/provision/<br>
+<br>
+Config Request Format:<br>
+https://pp.ringcentral.com/provision/000004F2ABCD.cfg<br>
+                             (MAC address with vendor prefix)<br>
+<br>
+Firmware Request Format:<br>
+https://pp.ringcentral.com/firmware/{model}/{version}.ld<br>
+<br>
+Example:<br>
+Config: https://pp.ringcentral.com/provision/000004F212345.cfg<br>
+Firmware: https://pp.ringcentral.com/firmware/vvx500/5.9.7.3480.ld
+                        </div>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>💡 How to Find Phone MAC Address:</strong>
+                        <ul>
+                            <li><strong>On Phone Screen:</strong> Settings → Status → Network → MAC Address</li>
+                            <li><strong>On Phone Label:</strong> Usually on bottom or back of device</li>
+                            <li><strong>Via Web UI:</strong> Browse to phone IP → System Info</li>
+                            <li><strong>On Network:</strong> Check DHCP server leases or ARP table</li>
+                        </ul>
+                    </div>
+
+                    <div class="error-box">
+                        <strong>🚨 Common Provisioning Connection Issues:</strong>
+                        <ul>
+                            <li><strong>DNS resolution fails:</strong> Can't resolve pp.ringcentral.com - check DNS servers</li>
+                            <li><strong>Timeout connecting:</strong> Firewall blocking HTTPS/443 or routing issue</li>
+                            <li><strong>HTTP 404 Not Found:</strong> Config file doesn't exist for this MAC address - phone not added to account</li>
+                            <li><strong>HTTP 403 Forbidden:</strong> Authentication issue or phone not authorized</li>
+                            <li><strong>Certificate error:</strong> Phone's clock wrong or missing root certificates</li>
+                            <li><strong>Proxy interference:</strong> Corporate proxy blocking or modifying provisioning requests</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Phone Time/Date Settings</div>
+                                <div class="check-details">Incorrect time can cause TLS certificate validation failures. Phone should sync via NTP.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Phone is Added to RingCentral Account</div>
+                                <div class="check-details">Log into Service Web → Phones → Check phone MAC is listed and assigned to user</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section purple">
+            <input type="checkbox" id="step4" class="section-toggle">
+            <label for="step4" class="section-header">
+                <span>STEP 4: Firmware Version Check & Update</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔄 Firmware Update Process:</h4>
+                        <p>Phone compares current firmware with required version from provisioning server, downloads if mismatch</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Phone May Display "Checking Firmware" or "Updating"</div>
+                                <div class="check-details">This step can take 5-30 minutes depending on firmware size and network speed</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4 style="color: #1f2937; margin: 20px 0 12px 0;">⚙️ Firmware Update Flow</h4>
+                    
+                    <div class="boot-sequence" style="margin: 16px 0;">
+                        <div class="sequence-steps">
+                            <div class="sequence-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Current Version Check</h4>
+                                    <p>Phone reads its current firmware version from flash memory</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Required Version from Config</h4>
+                                    <p>Provisioning config file specifies required firmware version/URL</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Version Comparison</h4>
+                                    <p>If current ≠ required, phone initiates firmware download</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Firmware Download</h4>
+                                    <p>Phone downloads firmware file via HTTP/HTTPS (typically 10-50MB)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4>Firmware Validation</h4>
+                                    <p>Phone verifies firmware integrity (checksum/signature)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h4>Flash Write & Reboot</h4>
+                                    <p>Phone writes new firmware to flash memory and automatically reboots</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">7</div>
+                                <div class="step-content">
+                                    <h4>Boot with New Firmware</h4>
+                                    <p>Phone boots with updated firmware, repeats provisioning process</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Current Firmware Version</div>
+                                <div class="check-details">Menu → Settings → Status → Phone Info → Software Version</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>💡 How to Find Firmware Version by Vendor:</strong>
+                        <ul>
+                            <li><strong>Polycom:</strong> Menu → Settings → Status → Software → Application/Updater</li>
+                            <li><strong>Yealink:</strong> Menu → Status → Firmware</li>
+                            <li><strong>Cisco:</strong> Settings → Status → Firmware Versions</li>
+                            <li><strong>Via Web UI:</strong> Browse to phone IP → Device Information</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Firmware Download Progress</div>
+                                <div class="check-details">Phone should show progress bar or percentage. Download speeds: 100-500 KB/s typical</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">DO NOT POWER OFF During Firmware Update</div>
+                                <div class="check-details">Interrupting firmware update can brick the phone. Wait for automatic reboot.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>📋 Example: Firmware Update in Config File</h4>
+                        <div class="code-block" style="background: white; color: #374151; border-color: #10b981;">
+&lt;firmware&gt;<br>
+  &lt;version&gt;5.9.7.3480&lt;/version&gt;<br>
+  &lt;url&gt;https://pp.ringcentral.com/firmware/vvx500/5.9.7.3480.ld&lt;/url&gt;<br>
+  &lt;checksum&gt;a3f5c8d9e1b2...&lt;/checksum&gt;<br>
+&lt;/firmware&gt;<br>
+<br>
+Phone Logic:<br>
+IF current_version ≠ 5.9.7.3480 THEN<br>
+  Download firmware from URL<br>
+  Verify checksum matches<br>
+  Write to flash<br>
+  Reboot<br>
+END IF
+                        </div>
+                    </div>
+
+                    <div class="error-box">
+                        <strong>🚨 Common Firmware Update Issues:</strong>
+                        <ul>
+                            <li><strong>Download timeout:</strong> Slow network or large firmware file - increase timeout or check bandwidth</li>
+                            <li><strong>Checksum mismatch:</strong> Corrupted download - phone will retry or fail</li>
+                            <li><strong>Insufficient flash memory:</strong> Phone can't store new firmware - factory reset may help</li>
+                            <li><strong>Update loop:</strong> Phone updates, reboots, updates again - wrong firmware URL in config</li>
+                            <li><strong>Firmware downgrade blocked:</strong> Some phones prevent downgrading for security - may need manual intervention</li>
+                            <li><strong>Power loss during update:</strong> Phone bricked - may need TFTP recovery mode</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Firmware Update Completed Successfully</div>
+                                <div class="check-details">After reboot, verify phone shows new firmware version in status menu</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Monitor for Multiple Reboot Cycles</div>
+                                <div class="check-details">Firmware updates may require 2-3 reboots (bootloader update + app update). Allow process to complete.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>⏱️ Typical Firmware Update Times:</strong>
+                        <ul>
+                            <li><strong>Download:</strong> 2-10 minutes (depends on file size 10-50MB and network speed)</li>
+                            <li><strong>Flash Write:</strong> 1-3 minutes (writing firmware to flash memory)</li>
+                            <li><strong>Reboot:</strong> 1-2 minutes (phone restart with new firmware)</li>
+                            <li><strong>Total:</strong> 5-15 minutes for single update, 10-30 minutes for multi-stage updates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section teal">
+            <input type="checkbox" id="step5" class="section-toggle">
+            <label for="step5" class="section-header">
+                <span>STEP 5: Configuration Download & Processing</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>📥 Configuration File Download:</h4>
+                        <p>Phone downloads its specific configuration file containing SIP credentials, server addresses, and settings</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Phone Should Display "Downloading Configuration"</div>
+                                <div class="check-details">Status message indicates config file is being retrieved from provisioning server</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4 style="color: #1f2937; margin: 20px 0 12px 0;">📄 Configuration File Contents</h4>
+                    <table class="protocol-table">
+                        <thead>
+                            <tr>
+                                <th>Config Section</th>
+                                <th>What It Contains</th>
+                                <th>Impact if Missing/Wrong</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="critical-row">
+                                <td>SIP Credentials</td>
+                                <td>Username (extension), Password (for MD5 auth), Auth ID</td>
+                                <td>Phone won't register</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>SIP Server Address</td>
+                                <td>sip.ringcentral.com or specific SBC address</td>
+                                <td>Can't reach registration server</td>
+                            </tr>
+                            <tr class="critical-row">
+                                <td>Outbound Proxy</td>
+                                <td>Proxy server for SIP signaling</td>
+                                <td>Registration may fail or routing issues</td>
+                            </tr>
+                            <tr>
+                                <td>Transport Protocol</td>
+                                <td>UDP, TCP, or TLS for SIP</td>
+                                <td>Wrong protocol = connection refused</td>
+                            </tr>
+                            <tr>
+                                <td>SIP Ports</td>
+                                <td>5060 (UDP/TCP) or 5061 (TLS)</td>
+                                <td>Can't connect to SIP server</td>
+                            </tr>
+                            <tr>
+                                <td>Codec List</td>
+                                <td>Allowed audio codecs (G.711, G.729, Opus)</td>
+                                <td>Audio negotiation failure</td>
+                            </tr>
+                            <tr>
+                                <td>DTMF Method</td>
+                                <td>RFC2833, SIP INFO, or inband</td>
+                                <td>Dial pad tones won't work</td>
+                            </tr>
+                            <tr>
+                                <td>Time Server (NTP)</td>
+                                <td>NTP server address for time sync</td>
+                                <td>Wrong time display, cert issues</td>
+                            </tr>
+                            <tr>
+                                <td>Timezone</td>
+                                <td>Timezone offset</td>
+                                <td>Incorrect time display</td>
+                            </tr>
+                            <tr>
+                                <td>Display Name</td>
+                                <td>User's name for caller ID</td>
+                                <td>Wrong name shown on calls</td>
+                            </tr>
+                            <tr>
+                                <td>Line Keys</td>
+                                <td>Button assignments (BLF, speed dial)</td>
+                                <td>Buttons don't function</td>
+                            </tr>
+                            <tr>
+                                <td>QoS Settings</td>
+                                <td>DSCP/ToS values for voice packets</td>
+                                <td>Poor call quality without QoS</td>
+                            </tr>
+                            <tr>
+                                <td>Admin Password</td>
+                                <td>Web UI admin credentials</td>
+                                <td>Can't access phone config</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="example-box">
+                        <h4>📋 Example: SIP Configuration Section (XML)</h4>
+                        <div class="code-block" style="background: white; color: #374151; border-color: #10b981;">
+&lt;sip&gt;<br>
+  &lt;user&gt;17325551234&lt;/user&gt;  &lt;!-- Extension/Username --&gt;<br>
+  &lt;authId&gt;17325551234*101&lt;/authId&gt;  &lt;!-- Auth Username --&gt;<br>
+  &lt;password&gt;a8f5e3d9c4b7...&lt;/password&gt;  &lt;!-- SIP Password --&gt;<br>
+  &lt;server&gt;sip.ringcentral.com&lt;/server&gt;<br>
+  &lt;port&gt;5060&lt;/port&gt;<br>
+  &lt;transport&gt;UDP&lt;/transport&gt;<br>
+  &lt;outboundProxy&gt;sip.ringcentral.com:5060&lt;/outboundProxy&gt;<br>
+  &lt;registerExpires&gt;3600&lt;/registerExpires&gt;<br>
+  &lt;displayName&gt;John Smith&lt;/displayName&gt;<br>
+&lt;/sip&gt;
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify Config File Downloaded Successfully</div>
+                                <div class="check-details">Phone should show "Configuration Complete" or similar success message</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check Phone Applies Configuration</div>
+                                <div class="check-details">Phone parses XML/JSON config and applies settings (may reboot again)</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="troubleshooting-tip">
+                        <strong>💡 How to View Applied Configuration:</strong>
+                        <ul>
+                            <li><strong>Via Web UI:</strong> Browse to phone IP → login → Configuration/Settings</li>
+                            <li><strong>Phone Menu:</strong> Settings → Advanced → SIP Settings (may need admin password)</li>
+                            <li><strong>Export Config:</strong> Many phones allow exporting current config via web UI</li>
+                            <li><strong>PCAP Trace:</strong> Capture provisioning traffic to see config file contents</li>
+                        </ul>
+                    </div>
+
+                    <div class="error-box">
+                        <strong>🚨 Common Configuration Issues:</strong>
+                        <ul>
+                            <li><strong>HTTP 404:</strong> Config file doesn't exist - phone not added to account or wrong MAC</li>
+                            <li><strong>XML parse error:</strong> Malformed config file - provisioning server issue</li>
+                            <li><strong>Missing SIP credentials:</strong> Incomplete config - phone can't register</li>
+                            <li><strong>Wrong SIP server:</strong> Phone tries to reach wrong server - no registration</li>
+                            <li><strong>Certificate validation failure:</strong> HTTPS download failed - check phone time/certs</li>
+                            <li><strong>Config applied but phone reboots again:</strong> Normal if config changes require restart</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify SIP Server Address is Correct</div>
+                                <div class="check-details">Check via web UI or phone menu: should be sip.ringcentral.com or specific SBC address</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Confirm Extension/Username is Set</div>
+                                <div class="check-details">Phone should show extension number or username in status/SIP settings</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section indigo">
+            <input type="checkbox" id="step6" class="section-toggle">
+            <label for="step6" class="section-header">
+                <span>STEP 6: SIP Registration with MD5 Authentication</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔐 SIP Registration Process with MD5 Digest Authentication:</h4>
+                        <p>Phone authenticates to SIP server using MD5 hash challenge-response to prove identity</p>
+                    </div>
+
+                    <h4 style="color: #1f2937; margin: 20px 0 12px 0;">🔄 MD5 Authentication Flow</h4>
+                    
+                    <div class="boot-sequence" style="margin: 16px 0;">
+                        <div class="sequence-steps">
+                            <div class="sequence-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Initial REGISTER (Unauthorized)</h4>
+                                    <p>Phone sends REGISTER to sip.ringcentral.com with username but NO password</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>401 Unauthorized Challenge</h4>
+                                    <p>Server responds with 401, includes WWW-Authenticate header with realm, nonce, algorithm=MD5</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>MD5 Hash Calculation</h4>
+                                    <p>Phone calculates MD5 hash: MD5(username:realm:password) + nonce + method + uri</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Second REGISTER (with Authorization)</h4>
+                                    <p>Phone sends REGISTER again with Authorization header containing MD5 response hash</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4>Server Validates Hash</h4>
+                                    <p>Server calculates same hash with stored password, compares to phone's response</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h4>200 OK - Registered</h4>
+                                    <p>Server accepts registration, responds with 200 OK and registration expiration time</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sequence-step">
+                                <div class="step-number">7</div>
+                                <div class="step-content
