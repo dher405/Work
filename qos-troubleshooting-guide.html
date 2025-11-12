@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RingCentral QoS Troubleshooting Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .symptom-card {
+            border-left: 4px solid;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .symptom-card.red {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+        
+        .symptom-card.orange {
+            background: #fff7ed;
+            border-color: #ea580c;
+        }
+        
+        .symptom-card.yellow {
+            background: #fefce8;
+            border-color: #eab308;
+        }
+        
+        .symptom-card.blue {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        
+        .symptom-card h3 {
+            color: #1f2937;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        .symptom-card p {
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .metric-card.good { border-color: #10b981; background: #f0fdf4; }
+        .metric-card.warning { border-color: #f59e0b; background: #fefce8; }
+        .metric-card.bad { border-color: #ef4444; background: #fef2f2; }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .metric-status {
+            font-size: 0.875rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .platform-btn {
+            display: none;
+        }
+        
+        .platform-label {
+            padding: 16px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .platform-label:hover {
+            background: #e5e7eb;
+            border-color: #3b82f6;
+        }
+        
+        .platform-btn:checked + .platform-label {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        .section.red { border-color: #ef4444; }
+        .section.teal { border-color: #14b8a6; }
+        .section.indigo { border-color: #6366f1; }
+        
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section.red .section-header {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .section.teal .section-header {
+            background: #ccfbf1;
+            color: #134e4a;
+        }
+        
+        .section.indigo .section-header {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-toggle:checked ~ .section-content {
+            max-height: 6000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        .red .info-box { background: #fee2e2; color: #991b1b; }
+        .teal .info-box { background: #ccfbf1; color: #134e4a; }
+        .indigo .info-box { background: #e0e7ff; color: #3730a3; }
+        
+        .platform-content {
+            display: none;
+        }
+        
+        #deskphone:checked ~ .platform-sections .deskphone-content,
+        #softphone:checked ~ .platform-sections .softphone-content,
+        #mobile:checked ~ .platform-sections .mobile-content,
+        #allplatforms:checked ~ .platform-sections .all-content {
+            display: block;
+        }
+        
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .customer-action {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .customer-action p:first-child {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .customer-action p:last-child {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .escalation-box {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+        
+        .escalation-box strong {
+            color: #991b1b;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .escalation-box ul {
+            margin-left: 20px;
+            color: #7f1d1d;
+            font-size: 0.875rem;
+        }
+        
+        .portal-guide {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .portal-guide h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .portal-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .portal-steps li {
+            counter-increment: step-counter;
+            margin-bottom: 12px;
+            padding-left: 35px;
+            position: relative;
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .portal-steps li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #3b82f6;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        .dscp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .dscp-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .dscp-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .dscp-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .critical-row {
+            background: #fef2f2;
+            font-weight: 600;
+        }
+        
+        .dscp-box {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .dscp-box h4 {
+            color: #065f46;
+            margin-bottom: 12px;
+        }
+        
+        .dscp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .dscp-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .dscp-card h5 {
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        .dscp-card p {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .dscp-value {
+            background: #065f46;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        
+        .decision-tree {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 24px;
+        }
+        
+        .decision-tree h3 {
+            font-size: 1.25rem;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        
+        .decision-item {
+            border-left: 4px solid;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        
+        .decision-item.red { border-color: #ef4444; }
+        .decision-item.orange { border-color: #f97316; }
+        .decision-item.yellow { border-color: #eab308; }
+        .decision-item.blue { border-color: #3b82f6; }
+        .decision-item.purple { border-color: #8b5cf6; }
+        
+        .decision-item p:first-child {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .decision-item p:last-child {
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .tab-indicator {
+            background: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #075985;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 RingCentral QoS Troubleshooting Guide</h1>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Platform-Specific QoS Reference</div>
+                <div class="alert-text">
+                    Select your platform below to see specific QoS settings, DSCP markings, and prioritization requirements. Different devices require different QoS configurations.
+                </div>
+            </div>
+            
+            <div class="symptom-grid">
+                <div class="symptom-card red">
+                    <h3>🔇 Choppy/Robotic Audio</h3>
+                    <p><strong>Usually:</strong> Packet loss or jitter</p>
+                </div>
+                <div class="symptom-card orange">
+                    <h3>⏱️ Delayed/Echo Audio</h3>
+                    <p><strong>Usually:</strong> High latency or network delay</p>
+                </div>
+                <div class="symptom-card yellow">
+                    <h3>🔊 Dropouts/Cutting</h3>
+                    <p><strong>Usually:</strong> Bandwidth issues or congestion</p>
+                </div>
+                <div class="symptom-card blue">
+                    <h3>📉 Intermittent Issues</h3>
+                    <p><strong>Usually:</strong> Network congestion during peak times</p>
+                </div>
+            </div>
+            
+            <div class="metric-grid">
+                <div class="metric-card good">
+                    <div class="metric-value">✓ Good</div>
+                    <div class="metric-label">Packet Loss</div>
+                    <div class="metric-status">&lt; 1%</div>
+                </div>
+                <div class="metric-card good">
+                    <div class="metric-value">✓ Good</div>
+                    <div class="metric-label">Jitter</div>
+                    <div class="metric-status">&lt; 30ms</div>
+                </div>
+                <div class="metric-card good">
+                    <div class="metric-value">✓ Good</div>
+                    <div class="metric-label">Latency</div>
+                    <div class="metric-status">&lt; 150ms</div>
+                </div>
+                <div class="metric-card good">
+                    <div class="metric-value">✓ Good</div>
+                    <div class="metric-label">MOS Score</div>
+                    <div class="metric-status">&gt; 4.0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ First, select your platform type below for platform-specific QoS settings and DSCP markings.
+        </div>
+
+        <input type="radio" name="platform" id="allplatforms" class="platform-btn" checked>
+        <input type="radio" name="platform" id="deskphone" class="platform-btn">
+        <input type="radio" name="platform" id="softphone" class="platform-btn">
+        <input type="radio" name="platform" id="mobile" class="platform-btn">
+
+        <div class="platform-selector">
+            <label for="allplatforms" class="platform-label">
+                📋 All Platforms<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Complete QoS guide</span>
+            </label>
+            <label for="deskphone" class="platform-label">
+                📞 Desk Phones<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Hardware phones</span>
+            </label>
+            <label for="softphone" class="platform-label">
+                💻 Desktop App<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Windows/Mac</span>
+            </label>
+            <label for="mobile" class="platform-label">
+                📱 Mobile App<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">iOS/Android</span>
+            </label>
+        </div>
+
+        <div class="platform-sections">
+            <!-- ALL PLATFORMS VIEW -->
+            <div class="all-content platform-content">
+                <div class="section indigo">
+                    <input type="checkbox" id="all-dscp" class="section-toggle">
+                    <label for="all-dscp" class="section-header">
+                        <span>📊 Complete DSCP & QoS Reference - All Platforms</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Understanding DSCP Markings:</h4>
+                                <p>DSCP (Differentiated Services Code Point) values tell routers how to prioritize packets. RingCentral uses industry-standard markings for voice traffic.</p>
+                            </div>
+
+                            <div class="dscp-box">
+                                <h4>🔑 Key DSCP Values for RingCentral</h4>
+                                <div class="dscp-grid">
+                                    <div class="dscp-card">
+                                        <h5>Voice/Audio (Highest Priority)</h5>
+                                        <p><strong>DSCP:</strong> EF (Expedited Forwarding)</p>
+                                        <span class="dscp-value">46 (0x2E)</span>
+                                        <p style="margin-top: 8px;">Used for RTP/SRTP voice packets</p>
+                                    </div>
+                                    <div class="dscp-card">
+                                        <h5>Signaling (High Priority)</h5>
+                                        <p><strong>DSCP:</strong> CS3 (Class Selector 3)</p>
+                                        <span class="dscp-value">24 (0x18)</span>
+                                        <p style="margin-top: 8px;">Used for SIP signaling packets</p>
+                                    </div>
+                                    <div class="dscp-card">
+                                        <h5>Video (High Priority)</h5>
+                                        <p><strong>DSCP:</strong> AF41 (Assured Forwarding)</p>
+                                        <span class="dscp-value">34 (0x22)</span>
+                                        <p style="margin-top: 8px;">Used for video conferencing</p>
+                                    </div>
+                                    <div class="dscp-card">
+                                        <h5>Default/Data (Normal Priority)</h5>
+                                        <p><strong>DSCP:</strong> CS0 (Best Effort)</p>
+                                        <span class="dscp-value">0 (0x00)</span>
+                                        <p style="margin-top: 8px;">Used for non-real-time traffic</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Desk Phones - DSCP & QoS Settings</h3>
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Ports</th>
+                                        <th>DSCP Value</th>
+                                        <th>ToS/CoS</th>
+                                        <th>Priority Level</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-row">
+                                        <td>RTP Audio</td>
+                                        <td>UDP 16384-16482</td>
+                                        <td>EF (46)</td>
+                                        <td>ToS 184 / CoS 5</td>
+                                        <td>Highest</td>
+                                        <td>Voice media - most critical</td>
+                                    </tr>
+                                    <tr class="critical-row">
+                                        <td>SRTP Audio</td>
+                                        <td>UDP 16384-16482</td>
+                                        <td>EF (46)</td>
+                                        <td>ToS 184 / CoS 5</td>
+                                        <td>Highest</td>
+                                        <td>Encrypted voice - same priority</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP 5060-5090</td>
+                                        <td>CS3 (24)</td>
+                                        <td>ToS 96 / CoS 3</td>
+                                        <td>High</td>
+                                        <td>Call setup/teardown</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP 5061</td>
+                                        <td>CS3 (24)</td>
+                                        <td>ToS 96 / CoS 3</td>
+                                        <td>High</td>
+                                        <td>Encrypted signaling</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Provisioning</td>
+                                        <td>TCP 443</td>
+                                        <td>CS0 (0)</td>
+                                        <td>ToS 0 / CoS 0</td>
+                                        <td>Normal</td>
+                                        <td>Configuration downloads</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Desktop App (Windows/Mac) - DSCP & QoS Settings</h3>
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Ports</th>
+                                        <th>DSCP Value</th>
+                                        <th>ToS/CoS</th>
+                                        <th>Priority Level</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-row">
+                                        <td>RTP Audio</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>EF (46)</td>
+                                        <td>ToS 184 / CoS 5</td>
+                                        <td>Highest</td>
+                                        <td>Voice media - most critical</td>
+                                    </tr>
+                                    <tr class="critical-row">
+                                        <td>SRTP Audio</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>EF (46)</td>
+                                        <td>ToS 184 / CoS 5</td>
+                                        <td>Highest</td>
+                                        <td>Encrypted voice (default)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Video (RCV)</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>AF41 (34)</td>
+                                        <td>ToS 136 / CoS 4</td>
+                                        <td>High</td>
+                                        <td>Video conferencing</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP 5060-5090</td>
+                                        <td>CS3 (24)</td>
+                                        <td>ToS 96 / CoS 3</td>
+                                        <td>High</td>
+                                        <td>Call control</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP 5061</td>
+                                        <td>CS3 (24)</td>
+                                        <td>ToS 96 / CoS 3</td>
+                                        <td>High</td>
+                                        <td>Default for desktop app</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HTTPS/API</td>
+                                        <td>TCP 443, 8443</td>
+                                        <td>CS0 (0)</td>
+                                        <td>ToS 0 / CoS 0</td>
+                                        <td>Normal</td>
+                                        <td>App functions, messaging</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Mobile App (iOS/Android) - DSCP & QoS Settings</h3>
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Ports</th>
+                                        <th>DSCP Value</th>
+                                        <th>ToS/CoS</th>
+                                        <th>Priority Level</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-row">
+                                        <td>SRTP Audio</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>EF (46)</td>
+                                        <td>ToS 184 / CoS 5</td>
+                                        <td>Highest</td>
+                                        <td>Always encrypted on mobile</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Video</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>AF41 (34)</td>
+                                        <td>ToS 136 / CoS 4</td>
+                                        <td>High</td>
+                                        <td>Mobile video calls</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP 5061</td>
+                                        <td>CS3 (24)</td>
+                                        <td>ToS 96 / CoS 3</td>
+                                        <td>High</td>
+                                        <td>Always uses TLS</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HTTPS/API</td>
+                                        <td>TCP 443</td>
+                                        <td>CS0 (0)</td>
+                                        <td>ToS 0 / CoS 0</td>
+                                        <td>Normal</td>
+                                        <td>App functions</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Push Notifications</td>
+                                        <td>TCP 443, 5223</td>
+                                        <td>CS2 (16)</td>
+                                        <td>ToS 64 / CoS 2</td>
+                                        <td>Medium</td>
+                                        <td>Incoming call alerts</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="dscp-box">
+                                <h4>📝 DSCP Priority Queue Recommendations</h4>
+                                <p style="margin-bottom: 12px; font-size: 0.875rem; color: #374151;">Configure your router/firewall with these priority queues:</p>
+                                <ol style="margin-left: 20px; font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                                    <li><strong>Queue 1 (Highest):</strong> DSCP EF (46) - Voice audio (RTP/SRTP) - 30% bandwidth guaranteed</li>
+                                    <li><strong>Queue 2 (High):</strong> DSCP AF41 (34) - Video - 25% bandwidth guaranteed</li>
+                                    <li><strong>Queue 3 (Medium):</strong> DSCP CS3 (24) - Signaling (SIP/TLS) - 10% bandwidth guaranteed</li>
+                                    <li><strong>Queue 4 (Normal):</strong> DSCP CS0 (0) - Best effort - Remaining bandwidth</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="all-analytics" class="section-toggle">
+                    <label for="all-analytics" class="section-header">
+                        <span>STEP 1: Access QoS Analytics in Service Web Portal</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>📍 How to Access QoS Analytics:</h4>
+                                <p>The Service Web portal provides detailed call quality metrics to diagnose issues</p>
+                            </div>
+
+                            <div class="portal-guide">
+                                <h4>Accessing QoS Analytics Portal</h4>
+                                <ol class="portal-steps">
+                                    <li>Log in to <strong>service.ringcentral.com</strong></li>
+                                    <li>Navigate to <strong>Analytics → Quality of Service</strong></li>
+                                    <li>Select <strong>Date Range</strong> (when issue occurred)</li>
+                                    <li>Filter by <strong>User, Site, or Device</strong> if needed</li>
+                                    <li>Review the <strong>Call Quality Dashboard</strong></li>
+                                </ol>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Access Service Web Portal</div>
+                                        <div class="check-details">Confirm you can access service.ringcentral.com and have admin permissions to view QoS data</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Identify Affected Calls & Device Types</div>
+                                        <div class="check-details">Look for calls with poor MOS scores - note if issues are on desk phones, softphones, or mobile</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Time Patterns</div>
+                                        <div class="check-details">Note if issues occur at specific times (peak hours = network congestion/QoS not working)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Review Detailed Call Records</div>
+                                        <div class="check-details">Click individual calls to see packet loss, jitter, latency, MOS scores for each leg</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💡 What to Tell Customer:</p>
+                                <p>"I'm reviewing your call quality metrics in our system. I can see the specific network conditions during your calls which will help us identify if QoS is working properly."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="all-metrics" class="section-toggle">
+                    <label for="all-metrics" class="section-header">
+                        <span>STEP 2: Understand QoS Metrics & Thresholds</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>📊 Key Quality Metrics:</h4>
+                                <p>Understanding what each metric means and acceptable thresholds</p>
+                            </div>
+
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>What It Means</th>
+                                        <th>Good</th>
+                                        <th>Warning</th>
+                                        <th>Bad</th>
+                                        <th>Symptom</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Packet Loss</strong></td>
+                                        <td>% of voice packets lost in transit</td>
+                                        <td>&lt; 1%</td>
+                                        <td>1-3%</td>
+                                        <td>&gt; 3%</td>
+                                        <td>Choppy, robotic audio</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Jitter</strong></td>
+                                        <td>Variation in packet arrival time</td>
+                                        <td>&lt; 30ms</td>
+                                        <td>30-50ms</td>
+                                        <td>&gt; 50ms</td>
+                                        <td>Choppy, stuttering audio</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Latency</strong></td>
+                                        <td>Round-trip time for packets</td>
+                                        <td>&lt; 150ms</td>
+                                        <td>150-300ms</td>
+                                        <td>&gt; 300ms</td>
+                                        <td>Delay, echo, talking over</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MOS Score</strong></td>
+                                        <td>Overall call quality rating (1-5)</td>
+                                        <td>&gt; 4.0</td>
+                                        <td>3.5-4.0</td>
+                                        <td>&lt; 3.5</td>
+                                        <td>Poor overall quality</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Identify Which Metrics Are Bad</div>
+                                        <div class="check-details">Check packet loss, jitter, latency, and MOS score against thresholds - if metrics are bad, QoS may not be configured</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check if Issues Occur During Peak Hours</div>
+                                        <div class="check-details">Good quality off-hours but bad during peak = QoS not prioritizing voice traffic properly</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Compare Different Device Types</div>
+                                        <div class="check-details">If desk phones have issues but softphones don't (or vice versa), may be device-specific QoS problem</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💡 What to Tell Customer:</p>
+                                <p>"Looking at your call metrics, I can see [specific metric] is at [value], which suggests QoS isn't properly prioritizing your voice traffic. The ideal range should be [threshold]."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESK PHONE SPECIFIC -->
+            <div class="deskphone-content platform-content">
+                <div class="tab-indicator">
+                    📞 <strong>Desk Phone QoS Configuration</strong> - Hardware IP phones (Polycom, Yealink, Cisco, etc.)
+                </div>
+
+                <div class="section indigo">
+                    <input type="checkbox" id="desk-dscp" class="section-toggle">
+                    <label for="desk-dscp" class="section-header">
+                        <span>Desk Phone DSCP & Priority Settings</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Desk Phone QoS Requirements:</h4>
+                                <p>Hardware phones typically honor DSCP markings and require router-level QoS</p>
+                            </div>
+
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Ports</th>
+                                        <th>DSCP Value</th>
+                                        <th>Priority Queue</th>
+                                        <th>Bandwidth %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-row">
+                                        <td>RTP Audio (Unencrypted)</td>
+                                        <td>UDP 16384-16482</td>
+                                        <td>EF (46)</td>
+                                        <td>Queue 1 (Highest)</td>
+                                        <td>30%</td>
+                                    </tr>
+                                    <tr class="critical-row">
+                                        <td>SRTP Audio (Encrypted)</td>
+                                        <td>UDP 16384-16482</td>
+                                        <td>EF (46)</td>
+                                        <td>Queue 1 (Highest)</td>
+                                        <td>30%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP 5060-5090</td>
+                                        <td>CS3 (24)</td>
+                                        <td>Queue 3 (Medium)</td>
+                                        <td>10%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP 5061</td>
+                                        <td>CS3 (24)</td>
+                                        <td>Queue 3 (Medium)</td>
+                                        <td>10%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="dscp-box">
+                                <h4>⚙️ Router Configuration for Desk Phones</h4>
+                                <p style="margin-bottom: 12px; font-size: 0.875rem; color: #374151;"><strong>Critical settings to check:</strong></p>
+                                <ol style="margin-left: 20px; font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                                    <li><strong>Trust DSCP Markings:</strong> Router must respect DSCP values from phones (don't remark)</li>
+                                    <li><strong>Create Priority Queue:</strong> DSCP EF (46) → Highest priority queue</li>
+                                    <li><strong>Bandwidth Allocation:</strong> Guarantee 30% for voice queue, 10% for signaling</li>
+                                    <li><strong>Port-Based QoS (if DSCP not available):</strong> Prioritize UDP 16384-16482 to highest queue</li>
+                                    <li><strong>Voice VLAN Tagging:</strong> If using voice VLAN, tag with CoS 5 (802.1p)</li>
+                                </ol>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Phone DSCP Markings</div>
+                                        <div class="check-details">Check phone config - should mark RTP with DSCP EF (46) and SIP with CS3 (24)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💬 How to Check Phone DSCP Settings:</p>
+                                <p>"Access your phone's web interface (usually phone's IP address in browser). Look for QoS or DSCP settings. Voice/Audio should be EF (46) and SIP should be CS3 (24)."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Router Trusts DSCP</div>
+                                        <div class="check-details">Router must not remark DSCP values from phones - should trust them and queue accordingly</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Voice VLAN CoS Tagging (if applicable)</div>
+                                        <div class="check-details">If phones are on voice VLAN, switch should tag packets with CoS 5 (802.1p priority)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="escalation-box">
+                                <strong>⚠️ Escalate to Network Engineering for:</strong>
+                                <ul>
+                                    <li>Configuring DSCP-based QoS policies on routers/firewalls</li>
+                                    <li>Setting up voice VLAN with proper CoS tagging</li>
+                                    <li>Creating priority queues and bandwidth allocation</li>
+                                    <li>Vendor-specific QoS commands (Cisco, Meraki, etc.)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="desk-qos-check" class="section-toggle">
+                    <label for="desk-qos-check" class="section-header">
+                        <span>Basic Desk Phone QoS Checks</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>✅ Simple QoS Verification:</h4>
+                                <p>Basic checks before escalating to Network Engineering</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Is QoS Enabled on Router?</div>
+                                        <div class="check-details">Check router settings - QoS or Traffic Prioritization must be enabled</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💬 Customer Check:</p>
+                                <p>"Log into your router admin page and look for 'QoS' or 'Quality of Service' - is it enabled? If not, enable it and set VoIP/Voice to highest priority."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check if VoIP is Prioritized</div>
+                                        <div class="check-details">In QoS settings, VoIP, Voice, or SIP category should be set to highest priority</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Upload Bandwidth Setting</div>
+                                        <div class="check-details">QoS needs accurate upload speed configured (80-90% of actual speed from speed test)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Test During Peak vs Off-Peak Hours</div>
+                                        <div class="check-details">If quality is good off-hours but bad during peak, QoS configuration is insufficient</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💡 Customer Check:</p>
+                                <p>"Can you test a call right now during your busiest time? If quality is better early morning or late evening, that confirms QoS needs adjustment."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFTPHONE/DESKTOP APP SPECIFIC -->
+            <div class="softphone-content platform-content">
+                <div class="tab-indicator">
+                    💻 <strong>Desktop App QoS Configuration</strong> - RingCentral App for Windows/Mac
+                </div>
+
+                <div class="section indigo">
+                    <input type="checkbox" id="soft-dscp" class="section-toggle">
+                    <label for="soft-dscp" class="section-header">
+                        <span>Desktop App DSCP & Priority Settings</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🎯 Desktop App QoS Requirements:</h4>
+                                <p>Desktop app marks packets with DSCP but requires both PC and router QoS</p>
+                            </div>
+
+                            <table class="dscp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Ports</th>
+                                        <th>DSCP Value</th>
+                                        <th>Priority Queue</th>
+                                        <th>Bandwidth %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical-row">
+                                        <td>SRTP Audio (Default)</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>EF (46)</td>
+                                        <td>Queue 1 (Highest)</td>
+                                        <td>30%</td>
+                                    </tr>
+                                    <tr class="critical-row">
+                                        <td>RTP Audio (Fallback)</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>EF (46)</td>
+                                        <td>Queue 1 (Highest)</td>
+                                        <td>30%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Video (RCV)</td>
+                                        <td>UDP 10000-20000</td>
+                                        <td>AF41 (34)</td>
+                                        <td>Queue 2 (High)</td>
+                                        <td>25%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP 5061</td>
+                                        <td>CS3 (24)</td>
+                                        <td>Queue 3 (Medium)</td>
+                                        <td>10%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HTTPS/WebSocket</td>
+                                        <td>TCP 443, 8443</td>
+                                        <td>CS0 (0)</td>
+                                        <td>Queue 4 (Normal)</td>
+                                        <td>Remaining</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="dscp-box">
+                                <h4>⚙️ Desktop App QoS Configuration</h4>
+                                <p style="margin-bottom: 12px; font-size: 0.875rem; color: #374151;"><strong>Two-layer approach required:</strong></p>
+                                
+                                <h5 style="color: #065f46; margin: 12px 0 8px 0; font-size: 0.9rem;">1. Windows PC QoS Policy:</h5>
+                                <ul style="margin-left: 20px; font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                                    <li>Open Group Policy Editor (gpedit.msc)</li>
+                                    <li>Navigate to: Computer Config → Windows Settings → Policy-based QoS</li>
+                                    <li>Create policy for RingCentral.exe</li>
+                                    <li>Set DSCP value to 46 for audio ports (UDP 10000-20000)</li>
+                                    <li>Set throttle rate (optional): Limit to prevent bandwidth hogging</li>
+                                </ul>
+
+                                <h5 style="color: #065f46; margin: 12px 0 8px 0; font-size: 0.9rem;">2. Router QoS Configuration:</h5>
+                                <ul style="margin-left: 20px; font-size: 0.875rem; color: #374151; line-height: 1.8;">
+                                    <li>Trust DSCP markings from internal network</li>
+                                    <li>Create queue for DSCP EF (46) with highest priority</li>
+                                    <li>Allocate 30% bandwidth to voice queue</li>
+                                    <li>Alternative: Use port-based QoS for UDP 10000-20000</li>
+                                </ul>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Windows QoS Policy (Windows)</div>
+                                        <div class="check-details">Verify Windows has QoS policy for RingCentral app marking packets with DSCP 46</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">
+                                <p>💬 Windows QoS Policy Check:</p>
+                                <p>"Open Command Prompt as Admin and run: 'netsh advfirewall show allprofiles' - look for QoS policies. Or check Group Policy Editor → Windows Settings → Policy-based QoS"</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Router Honors PC DSCP Markings</div>
+                                        <div class="check-details">Router must trust DSCP from internal network (don't remark LAN traffic)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Test with Network Packet Capture</div>
+                                        <div class="check-details">Use Wireshark to verify app is marking packets with DSCP EF (46) - ToS field should be 184</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="escalation-box">
+                                <strong>⚠️ Escalate to Network Engineering for:</strong>
+                                <ul>
+                                    <li>Configuring Windows Group Policy for QoS across domain</li>
+                                    <li>Setting up router to trust internal DSCP markings</li>
+                                    <li>Advanced QoS policies for mixed device environments</li>
+                                    <li>Troubleshooting DSCP remarking issues</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="soft-qos-check" class="section-toggle">
+                    <label for="soft-qos-check" class="section-header">
+                        <span>Basic Desktop App QoS Checks</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>✅ Quick QoS Verification:</h4>
+                                <p>Simple checks for desktop app quality issues</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Router QoS for Softphones</div>
+                                        <div class="check-details">Router QoS should prioritize UDP 10000-20000 (larger range than desk phones)</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-action">

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Audio Troubleshooting Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .symptom-card {
+            border-left: 4px solid;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        
+        .symptom-card.red {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+        
+        .symptom-card.orange {
+            background: #fff7ed;
+            border-color: #ea580c;
+        }
+        
+        .symptom-card h3 {
+            color: #1f2937;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .symptom-card p {
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .symptom-card .hint {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        /* CSS-only collapsible sections */
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        
+        /* Hide the checkbox */
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        /* Hide content by default */
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        /* Show content when checkbox is checked */
+        .section-toggle:checked ~ .section-content {
+            max-height: 3000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        /* Rotate chevron when expanded */
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        
+        /* CSS-only checkboxes with visual feedback */
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .customer-check {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        
+        .customer-check p:first-child {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .customer-check p:last-child {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .decision-tree {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 24px;
+        }
+        
+        .decision-tree h3 {
+            font-size: 1.25rem;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        
+        .decision-item {
+            border-left: 4px solid;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        
+        .decision-item.red { border-color: #ef4444; }
+        .decision-item.orange { border-color: #f97316; }
+        .decision-item.yellow { border-color: #eab308; }
+        .decision-item.blue { border-color: #3b82f6; }
+        
+        .decision-item p:first-child {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .decision-item p:last-child {
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .common-fixes {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        
+        .common-fixes p {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .common-fixes ol {
+            margin-left: 20px;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .common-fixes li {
+            margin-bottom: 4px;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎧 SIP Audio Troubleshooting Guide</h1>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Quick Audio Issue Reference</div>
+                <div class="alert-text">
+                    Use this guide to walk customers through checking their firewall/router settings.
+                    Check items as you verify them with the customer.
+                </div>
+            </div>
+            
+            <div class="symptom-grid">
+                <div class="symptom-card red">
+                    <h3>🔇 No Audio (Both Ways)</h3>
+                    <p>Usually = <strong>Media ports blocked</strong></p>
+                    <p class="hint">Focus on UDP 10000-20000</p>
+                </div>
+                <div class="symptom-card orange">
+                    <h3>🔊 One-Way Audio</h3>
+                    <p>Usually = <strong>NAT or routing issue</strong></p>
+                    <p class="hint">Check NAT settings & asymmetric routing</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ Click section headers to expand. Check boxes turn green when completed.
+        </div>
+
+        <div class="section blue">
+            <input type="checkbox" id="toggle1" class="section-toggle">
+            <label for="toggle1" class="section-header">
+                <span>STEP 1: Verify Required Ports are Open</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>✅ What to Check:</h4>
+                        <p>Ask customer to check their firewall (local PC or router) for these specific ports</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">SIP Signaling Ports (CRITICAL)</div>
+                                <div class="check-details">UDP/TCP 5060-5090 - These handle call setup. If blocked, calls won't connect at all.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Media/Audio Ports (CRITICAL for audio)</div>
+                                <div class="check-details">UDP 10000-20000 (RTP) - This is where actual voice travels. Most common cause of no audio!</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">HTTPS/Web Traffic</div>
+                                <div class="check-details">TCP 443 & TCP 80 - Needed for app registration and provisioning</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Secure SIP (if using TLS)</div>
+                                <div class="check-details">TCP 5061 - Only needed if customer uses encrypted SIP</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="customer-check">
+                        <p>💡 Customer Check:</p>
+                        <p>"Can you check your firewall settings and confirm these port ranges are allowed for outbound traffic?"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section green">
+            <input type="checkbox" id="toggle2" class="section-toggle">
+            <label for="toggle2" class="section-header">
+                <span>STEP 2: Check NAT & Router Settings</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔍 Why This Matters:</h4>
+                        <p>NAT (Network Address Translation) can block return audio packets, causing one-way audio</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">NAT/Session Timeout Settings</div>
+                                <div class="check-details">Should be at least 5 minutes (300 seconds). Cisco phones send keepalive every 4 minutes.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">SIP ALG (Application Layer Gateway)</div>
+                                <div class="check-details">Often causes problems! Try DISABLING SIP ALG on the router if audio issues persist.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">NAT Type Configuration</div>
+                                <div class="check-details">Symmetric NAT can cause issues. Full Cone NAT works best for VoIP.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">STUN Server Access</div>
+                                <div class="check-details">UDP ports 19302 and 3478 must be open for NAT traversal (STUN servers)</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="customer-check">
+                        <p>💡 Customer Check:</p>
+                        <p>"In your router settings, look for 'SIP ALG' or 'SIP Helper' and try disabling it. Also check NAT timeout is set to at least 5 minutes."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section orange">
+            <input type="checkbox" id="toggle3" class="section-toggle">
+            <label for="toggle3" class="section-header">
+                <span>STEP 3: Verify Network Path & Routing</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🛣️ Check the Path:</h4>
+                        <p>Make sure traffic can flow correctly to RingCentral's network</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">RingCentral IP Supernets Whitelisted</div>
+                                <div class="check-details">Firewall must allow traffic to/from RingCentral's IP ranges (check RC documentation for current ranges)</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Symmetric Routing Check</div>
+                                <div class="check-details">Traffic going out and coming back should use the same path. Asymmetric routing breaks audio.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">DNS Resolution Working</div>
+                                <div class="check-details">Phone must resolve provisioning domains (e.g., sip.ringcentral.com). Test with nslookup/dig.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">VLAN Configuration (if applicable)</div>
+                                <div class="check-details">If phones are on separate VLAN, check inter-VLAN routing allows required ports</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="customer-check">
+                        <p>💡 Customer Check:</p>
+                        <p>"Can you check if your phone can reach sip.ringcentral.com? Also verify your firewall isn't blocking RingCentral's IP addresses."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section purple">
+            <input type="checkbox" id="toggle4" class="section-toggle">
+            <label for="toggle4" class="section-header">
+                <span>STEP 4: Advanced Firewall Checks</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔧 Deep Packet Issues:</h4>
+                        <p>Some firewall features interfere with VoIP traffic</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Deep Packet Inspection (DPI)</div>
+                                <div class="check-details">DPI on UDP traffic can cause delays/drops. Disable for VoIP traffic if possible.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">QoS/Traffic Shaping</div>
+                                <div class="check-details">Make sure VoIP traffic is prioritized (DSCP marking). Low priority = choppy audio.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">UDP Flood Protection</div>
+                                <div class="check-details">Anti-DoS/flood protection can block legitimate RTP packets. May need exceptions for phones.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Stateful Firewall Inspection</div>
+                                <div class="check-details">Should track SIP sessions and automatically open RTP ports. Check if working correctly.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="customer-check">
+                        <p>💡 Customer Check:</p>
+                        <p>"Check if your firewall has 'Deep Packet Inspection' or 'UDP Flood Protection' enabled. These can interfere with VoIP."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="decision-tree">
+            <h3>📋 Quick Decision Tree</h3>
+            
+            <div class="decision-item red">
+                <p>No audio at all (both directions)?</p>
+                <p>→ Check UDP 10000-20000 is open on firewall</p>
+            </div>
+            
+            <div class="decision-item orange">
+                <p>Customer can hear but can't be heard (or vice versa)?</p>
+                <p>→ Check NAT timeout settings and try disabling SIP ALG</p>
+            </div>
+            
+            <div class="decision-item yellow">
+                <p>Audio is choppy or cuts out?</p>
+                <p>→ Check QoS settings and disable UDP flood protection for phone IPs</p>
+            </div>
+            
+            <div class="decision-item blue">
+                <p>Calls won't connect at all?</p>
+                <p>→ Check UDP/TCP 5060-5090 and verify DNS can resolve sip.ringcentral.com</p>
+            </div>
+
+            <div class="common-fixes">
+                <p>🎯 Most Common Fixes:</p>
+                <ol>
+                    <li>Open UDP 10000-20000 on firewall (fixes 70% of audio issues)</li>
+                    <li>Disable SIP ALG on router (fixes most one-way audio)</li>
+                    <li>Increase NAT timeout to 5+ minutes</li>
+                    <li>Create firewall exceptions for phone IP addresses</li>
+                    <li>Disable UDP flood protection for VoIP devices</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            <p>ℹ️ Need More Details?</p>
+            <p>Full documentation: support.ringcentral.com → Network Requirements</p>
+        </div>
+    </div>
+</body>
+</html>

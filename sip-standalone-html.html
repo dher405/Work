@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Audio Troubleshooting Guide - RingCentral</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .symptom-card {
+            border-left: 4px solid;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        
+        .symptom-card.red {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+        
+        .symptom-card.orange {
+            background: #fff7ed;
+            border-color: #ea580c;
+        }
+        
+        .symptom-card h3 {
+            color: #1f2937;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .symptom-card p {
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .platform-btn {
+            display: none;
+        }
+        
+        .platform-label {
+            padding: 16px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .platform-label:hover {
+            background: #e5e7eb;
+            border-color: #3b82f6;
+        }
+        
+        .platform-btn:checked + .platform-label {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        .section.red { border-color: #ef4444; }
+        
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section.red .section-header {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-toggle:checked ~ .section-content {
+            max-height: 6000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        .red .info-box { background: #fee2e2; color: #991b1b; }
+        
+        .platform-content {
+            display: none;
+        }
+        
+        #deskphone:checked ~ .platform-sections .deskphone-content,
+        #softphone:checked ~ .platform-sections .softphone-content,
+        #mobile:checked ~ .platform-sections .mobile-content,
+        #allplatforms:checked ~ .platform-sections .all-content {
+            display: block;
+        }
+        
+        .port-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .port-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .port-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .port-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .critical {
+            background: #fee2e2;
+            font-weight: 600;
+            color: #991b1b;
+        }
+        
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .customer-check {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        
+        .customer-check p:first-child {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .customer-check p:last-child {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .protocol-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .protocol-box h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+        
+        .protocol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .protocol-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .protocol-card.secure {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .protocol-card h5 {
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .protocol-card p {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .decision-tree {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 24px;
+        }
+        
+        .decision-tree h3 {
+            font-size: 1.25rem;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        
+        .decision-item {
+            border-left: 4px solid;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        
+        .decision-item.red { border-color: #ef4444; }
+        .decision-item.orange { border-color: #f97316; }
+        .decision-item.yellow { border-color: #eab308; }
+        .decision-item.blue { border-color: #3b82f6; }
+        
+        .decision-item p:first-child {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .decision-item p:last-child {
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .tab-indicator {
+            background: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #075985;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎧 SIP Audio Troubleshooting Guide</h1>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Platform-Specific Quick Reference</div>
+                <div class="alert-text">
+                    Select your platform below to see specific port requirements and troubleshooting steps. Different devices use different ports for signaling and media.
+                </div>
+            </div>
+            
+            <div class="symptom-grid">
+                <div class="symptom-card red">
+                    <h3>🔇 No Audio (Both Ways)</h3>
+                    <p>Usually = <strong>Media ports blocked</strong></p>
+                    <p style="font-size: 0.75rem; opacity: 0.8;">Focus on RTP/SRTP ports</p>
+                </div>
+                <div class="symptom-card orange">
+                    <h3>🔊 One-Way Audio</h3>
+                    <p>Usually = <strong>NAT or routing issue</strong></p>
+                    <p style="font-size: 0.75rem; opacity: 0.8;">Check NAT settings & SIP ALG</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ First, select your platform type below. Then expand sections for detailed troubleshooting.
+        </div>
+
+        <input type="radio" name="platform" id="allplatforms" class="platform-btn" checked>
+        <input type="radio" name="platform" id="deskphone" class="platform-btn">
+        <input type="radio" name="platform" id="softphone" class="platform-btn">
+        <input type="radio" name="platform" id="mobile" class="platform-btn">
+
+        <div class="platform-selector">
+            <label for="allplatforms" class="platform-label">
+                📋 All Platforms<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">View all ports</span>
+            </label>
+            <label for="deskphone" class="platform-label">
+                📞 Desk Phones<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Hardware phones</span>
+            </label>
+            <label for="softphone" class="platform-label">
+                💻 Desktop App<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">Windows/Mac</span>
+            </label>
+            <label for="mobile" class="platform-label">
+                📱 Mobile App<br>
+                <span style="font-size: 0.75rem; font-weight: 400; color: #6b7280;">iOS/Android</span>
+            </label>
+        </div>
+
+        <div class="platform-sections">
+            <!-- ALL PLATFORMS VIEW -->
+            <div class="all-content platform-content">
+                <div class="section blue">
+                    <input type="checkbox" id="all-ports" class="section-toggle">
+                    <label for="all-ports" class="section-header">
+                        <span>📊 Complete Port Reference - All Platforms</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔍 Platform & Protocol Overview:</h4>
+                                <p>Different platforms and security settings require different port configurations</p>
+                            </div>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Desk Phones (Hardware IP Phones)</h3>
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Protocol</th>
+                                        <th>Ports</th>
+                                        <th>Direction</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP</td>
+                                        <td>5060-5090</td>
+                                        <td>Outbound</td>
+                                        <td>Call setup/teardown</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP</td>
+                                        <td>5061</td>
+                                        <td>Outbound</td>
+                                        <td>Encrypted signaling</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>RTP Media</td>
+                                        <td>UDP</td>
+                                        <td>16384-16482</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (unencrypted)</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>SRTP Media</td>
+                                        <td>UDP</td>
+                                        <td>16384-16482</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (encrypted)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Provisioning</td>
+                                        <td>HTTPS</td>
+                                        <td>443</td>
+                                        <td>Outbound</td>
+                                        <td>Configuration download</td>
+                                    </tr>
+                                    <tr>
+                                        <td>STUN</td>
+                                        <td>UDP</td>
+                                        <td>3478, 19302</td>
+                                        <td>Outbound</td>
+                                        <td>NAT traversal</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Desktop App (RingCentral App - Windows/Mac)</h3>
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Protocol</th>
+                                        <th>Ports</th>
+                                        <th>Direction</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP</td>
+                                        <td>5060-5090</td>
+                                        <td>Outbound</td>
+                                        <td>Call setup/teardown</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP</td>
+                                        <td>5061</td>
+                                        <td>Outbound</td>
+                                        <td>Encrypted signaling</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>RTP Media</td>
+                                        <td>UDP</td>
+                                        <td>10000-20000</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (unencrypted)</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>SRTP Media</td>
+                                        <td>UDP</td>
+                                        <td>10000-20000</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (encrypted)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HTTPS/API</td>
+                                        <td>TCP</td>
+                                        <td>443, 8443</td>
+                                        <td>Outbound</td>
+                                        <td>App functionality</td>
+                                    </tr>
+                                    <tr>
+                                        <td>WebRTC Media</td>
+                                        <td>UDP</td>
+                                        <td>10000-20000</td>
+                                        <td>Both</td>
+                                        <td>Browser-based calls</td>
+                                    </tr>
+                                    <tr>
+                                        <td>STUN</td>
+                                        <td>UDP</td>
+                                        <td>3478, 19302</td>
+                                        <td>Outbound</td>
+                                        <td>NAT traversal</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3 style="color: #1f2937; margin: 20px 0 12px 0;">Mobile App (iOS/Android)</h3>
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Type</th>
+                                        <th>Protocol</th>
+                                        <th>Ports</th>
+                                        <th>Direction</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>SIP Signaling</td>
+                                        <td>UDP/TCP</td>
+                                        <td>5060-5090</td>
+                                        <td>Outbound</td>
+                                        <td>Call setup/teardown</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>TCP</td>
+                                        <td>5061</td>
+                                        <td>Outbound</td>
+                                        <td>Encrypted signaling</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>RTP Media</td>
+                                        <td>UDP</td>
+                                        <td>10000-20000</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (unencrypted)</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>SRTP Media</td>
+                                        <td>UDP</td>
+                                        <td>10000-20000</td>
+                                        <td>Both</td>
+                                        <td>Voice audio (encrypted)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>HTTPS/API</td>
+                                        <td>TCP</td>
+                                        <td>443</td>
+                                        <td>Outbound</td>
+                                        <td>App functionality</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Push Notifications</td>
+                                        <td>TCP</td>
+                                        <td>443, 5223</td>
+                                        <td>Outbound</td>
+                                        <td>Call notifications</td>
+                                    </tr>
+                                    <tr>
+                                        <td>STUN</td>
+                                        <td>UDP</td>
+                                        <td>3478, 19302</td>
+                                        <td>Outbound</td>
+                                        <td>NAT traversal</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="protocol-box">
+                                <h4>🔒 Understanding RTP vs SRTP</h4>
+                                <div class="protocol-grid">
+                                    <div class="protocol-card">
+                                        <h5>RTP (Real-time Transport Protocol)</h5>
+                                        <p><strong>Security:</strong> Unencrypted</p>
+                                        <p><strong>Use:</strong> Default for most desk phones</p>
+                                        <p><strong>Ports:</strong> Same range, no encryption overhead</p>
+                                    </div>
+                                    <div class="protocol-card secure">
+                                        <h5>SRTP (Secure RTP)</h5>
+                                        <p><strong>Security:</strong> Encrypted (AES)</p>
+                                        <p><strong>Use:</strong> Desktop/Mobile apps, secure phones</p>
+                                        <p><strong>Ports:</strong> Same range, with encryption</p>
+                                    </div>
+                                </div>
+                                <p style="margin-top: 12px; font-size: 0.875rem; color: #374151;"><strong>Note:</strong> RTP and SRTP use the same port ranges, but SRTP adds encryption. Both protocols need the same firewall rules.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESK PHONE SPECIFIC -->
+            <div class="deskphone-content platform-content">
+                <div class="tab-indicator">
+                    📞 <strong>Desk Phone Troubleshooting</strong> - Hardware IP phones (Polycom, Yealink, Cisco, etc.)
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="desk-ports" class="section-toggle">
+                    <label for="desk-ports" class="section-header">
+                        <span>STEP 1: Verify Desk Phone Ports are Open</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔑 Critical Ports for Desk Phones:</h4>
+                                <p>Desk phones use a smaller RTP range (16384-16482) compared to softphones</p>
+                            </div>
+
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Port Range</th>
+                                        <th>Protocol</th>
+                                        <th>Purpose</th>
+                                        <th>Critical?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>5060-5090</td>
+                                        <td>UDP/TCP</td>
+                                        <td>SIP Signaling</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>16384-16482</td>
+                                        <td>UDP</td>
+                                        <td>RTP/SRTP Media (Voice)</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5061</td>
+                                        <td>TCP</td>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>If using encryption</td>
+                                    </tr>
+                                    <tr>
+                                        <td>443</td>
+                                        <td>TCP</td>
+                                        <td>Provisioning/HTTPS</td>
+                                        <td>For config updates</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3478, 19302</td>
+                                        <td>UDP</td>
+                                        <td>STUN (NAT traversal)</td>
+                                        <td>For NAT environments</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">SIP Signaling Ports (5060-5090) - CRITICAL</div>
+                                        <div class="check-details">Must be open UDP/TCP. If blocked, phone won't register or make calls.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">RTP Media Ports (16384-16482) - CRITICAL</div>
+                                        <div class="check-details">Desk phones use this SMALLER range. If blocked = no audio. This is different from softphones!</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">STUN Ports (3478, 19302)</div>
+                                        <div class="check-details">Required for NAT traversal. If blocked = one-way audio or connection issues.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"For your desk phone, we need UDP ports 5060-5090 for signaling and UDP ports 16384-16482 for audio. Note that desk phones use a different port range than our desktop app."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="desk-nat" class="section-toggle">
+                    <label for="desk-nat" class="section-header">
+                        <span>STEP 2: Desk Phone NAT & Router Settings</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔍 Desk Phone NAT Considerations:</h4>
+                                <p>Hardware phones are more sensitive to NAT issues than softphones</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Disable SIP ALG (Application Layer Gateway)</div>
+                                        <div class="check-details">SIP ALG causes 80% of desk phone audio issues. MUST be disabled on router.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">NAT Timeout Must Be 5+ Minutes</div>
+                                        <div class="check-details">Desk phones send keepalive every 4 minutes. NAT timeout must be longer.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Static IP or DHCP Reservation</div>
+                                        <div class="check-details">Desk phones work best with static IPs or DHCP reservations to prevent address changes.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Phone Uses STUN Server</div>
+                                        <div class="check-details">Check phone config: STUN should be enabled and pointing to stun.ringcentral.com</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"Log into your router and find 'SIP ALG' or 'SIP Helper' - this MUST be disabled for desk phones to work properly. Also set NAT timeout to at least 5 minutes."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section orange">
+                    <input type="checkbox" id="desk-vlan" class="section-toggle">
+                    <label for="desk-vlan" class="section-header">
+                        <span>STEP 3: Desk Phone VLAN & Network Segmentation</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>📡 VLAN Troubleshooting:</h4>
+                                <p>Many organizations put desk phones on separate voice VLANs</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check if Phone is on Voice VLAN</div>
+                                        <div class="check-details">Ask customer if phones are on a separate network segment from computers</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Inter-VLAN Routing Allows Required Ports</div>
+                                        <div class="check-details">Voice VLAN must route to internet gateway with ports 5060-5090 and 16384-16482 open</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check QoS/DSCP Tagging on Voice VLAN</div>
+                                        <div class="check-details">Voice VLAN should tag traffic with DSCP EF (46) for priority</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify DHCP Option 66/160 for Provisioning</div>
+                                        <div class="check-details">If phones use DHCP for provisioning, Option 66 must point to provisioning server</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"Are your phones on a separate VLAN from your computers? If so, we need to verify the VLAN can route to the internet and has the correct QoS settings."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFTPHONE/DESKTOP APP SPECIFIC -->
+            <div class="softphone-content platform-content">
+                <div class="tab-indicator">
+                    💻 <strong>Desktop App Troubleshooting</strong> - RingCentral App for Windows/Mac
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="soft-ports" class="section-toggle">
+                    <label for="soft-ports" class="section-header">
+                        <span>STEP 1: Verify Desktop App Ports are Open</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔑 Critical Ports for Desktop App:</h4>
+                                <p>Desktop app uses a LARGER RTP range (10000-20000) than desk phones</p>
+                            </div>
+
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Port Range</th>
+                                        <th>Protocol</th>
+                                        <th>Purpose</th>
+                                        <th>Critical?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>5060-5090</td>
+                                        <td>UDP/TCP</td>
+                                        <td>SIP Signaling</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>10000-20000</td>
+                                        <td>UDP</td>
+                                        <td>RTP/SRTP Media (Voice)</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5061</td>
+                                        <td>TCP</td>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>✓ YES (default)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>443, 8443</td>
+                                        <td>TCP</td>
+                                        <td>HTTPS/API/WebSocket</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3478, 19302</td>
+                                        <td>UDP</td>
+                                        <td>STUN (NAT traversal)</td>
+                                        <td>For NAT environments</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">SIP Signaling Ports (5060-5090) - CRITICAL</div>
+                                        <div class="check-details">Must be open UDP/TCP. Desktop app can use regular or secure SIP.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">RTP Media Ports (10000-20000) - CRITICAL</div>
+                                        <div class="check-details">Desktop app uses this LARGER range (vs desk phones 16384-16482). If blocked = no audio!</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Secure SIP (5061) - Usually Required</div>
+                                        <div class="check-details">Desktop app defaults to encrypted signaling. TCP 5061 must be open.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">HTTPS/API Ports (443, 8443)</div>
+                                        <div class="check-details">Required for app functionality, messaging, presence, and WebRTC calls.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"For the RingCentral desktop app, we need UDP ports 10000-20000 for voice (this is a much wider range than desk phones). Also need TCP 443, 5061, and 8443 for the app to function."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="soft-firewall" class="section-toggle">
+                    <label for="soft-firewall" class="section-header">
+                        <span>STEP 2: Desktop App Local Firewall Settings</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🛡️ Local PC/Mac Firewall:</h4>
+                                <p>Desktop app can be blocked by Windows Firewall or Mac firewall</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Windows Firewall (Windows)</div>
+                                        <div class="check-details">RingCentral app should be allowed in Windows Firewall. Check both Private and Public network rules.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💬 Windows Instructions:</p>
+                                <p>"Go to Windows Settings → Privacy & Security → Windows Security → Firewall & Network Protection → Allow an app through firewall. Make sure RingCentral is checked for both Private and Public networks."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check macOS Firewall (Mac)</div>
+                                        <div class="check-details">RingCentral app should be allowed in macOS Security & Privacy settings.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💬 Mac Instructions:</p>
+                                <p>"Go to System Settings → Network → Firewall → Options. Make sure RingCentral is set to 'Allow incoming connections'."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Corporate Endpoint Security</div>
+                                        <div class="check-details">If using corporate antivirus/endpoint protection (Crowdstrike, Carbon Black, etc.), it may block UDP ports.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Test Without VPN</div>
+                                        <div class="check-details">Corporate VPNs often block or route VoIP traffic incorrectly. Test with VPN disconnected.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"Can you temporarily disconnect from your VPN and test a call? Many corporate VPNs interfere with voice traffic. If it works without VPN, we need to configure split tunneling."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section orange">
+                    <input type="checkbox" id="soft-webrtc" class="section-toggle">
+                    <label for="soft-webrtc" class="section-header">
+                        <span>STEP 3: WebRTC & Browser-Based Calls</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🌐 WebRTC Calling:</h4>
+                                <p>Desktop app can make calls using WebRTC (browser technology) as backup</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify WebRTC Ports (Same as RTP)</div>
+                                        <div class="check-details">WebRTC uses UDP 10000-20000 (same as regular RTP) plus HTTPS on 443</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check TURN Server Access (if STUN fails)</div>
+                                        <div class="check-details">If behind restrictive firewall, app may use TURN relay servers on TCP 443</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Browser Permissions (Web App)</div>
+                                        <div class="check-details">If using RingCentral in browser, microphone permissions must be granted</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"The desktop app can fall back to WebRTC if normal SIP fails. This uses HTTPS (port 443) for signaling and the same UDP 10000-20000 range for audio."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOBILE APP SPECIFIC -->
+            <div class="mobile-content platform-content">
+                <div class="tab-indicator">
+                    📱 <strong>Mobile App Troubleshooting</strong> - RingCentral App for iOS/Android
+                </div>
+
+                <div class="section blue">
+                    <input type="checkbox" id="mobile-ports" class="section-toggle">
+                    <label for="mobile-ports" class="section-header">
+                        <span>STEP 1: Mobile App Port Requirements</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>🔑 Critical Ports for Mobile App:</h4>
+                                <p>Mobile app primarily uses SRTP (encrypted) and requires push notification ports</p>
+                            </div>
+
+                            <table class="port-table">
+                                <thead>
+                                    <tr>
+                                        <th>Port Range</th>
+                                        <th>Protocol</th>
+                                        <th>Purpose</th>
+                                        <th>Critical?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="critical">
+                                        <td>5060-5090</td>
+                                        <td>UDP/TCP</td>
+                                        <td>SIP Signaling</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>10000-20000</td>
+                                        <td>UDP</td>
+                                        <td>RTP/SRTP Media (Voice)</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>5061</td>
+                                        <td>TCP</td>
+                                        <td>Secure SIP (TLS)</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>443</td>
+                                        <td>TCP</td>
+                                        <td>HTTPS/API</td>
+                                        <td>✓ YES</td>
+                                    </tr>
+                                    <tr class="critical">
+                                        <td>5223</td>
+                                        <td>TCP</td>
+                                        <td>Apple Push Notifications</td>
+                                        <td>✓ iOS only</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3478, 19302</td>
+                                        <td>UDP</td>
+                                        <td>STUN (NAT traversal)</td>
+                                        <td>For WiFi networks</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">SRTP Media Ports (10000-20000) - CRITICAL</div>
+                                        <div class="check-details">Mobile app ALWAYS uses encrypted SRTP. Same port range as desktop app.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Push Notification Ports - CRITICAL</div>
+                                        <div class="check-details">iOS: Port 5223 for Apple Push. Android: Port 443 for Google FCM. Required for incoming calls!</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Cellular vs WiFi Network</div>
+                                        <div class="check-details">Firewall rules only apply when on WiFi. On cellular, carrier handles routing.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Important Note:</p>
+                                <p>"Mobile app firewall requirements ONLY apply when connected to WiFi networks. When on cellular data, your carrier handles the connection and no firewall config is needed."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section green">
+                    <input type="checkbox" id="mobile-wifi" class="section-toggle">
+                    <label for="mobile-wifi" class="section-header">
+                        <span>STEP 2: Mobile App on Corporate WiFi</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>📡 Corporate WiFi Considerations:</h4>
+                                <p>Corporate WiFi networks often block mobile VoIP traffic</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify WiFi Allows VoIP Traffic</div>
+                                        <div class="check-details">Many corporate WiFi networks block SIP/RTP ports. Test on cellular first.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💬 Test Instructions:</p>
+                                <p>"Can you switch to cellular data and make a test call? If it works on cellular but not WiFi, your corporate WiFi is blocking VoIP traffic."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Guest WiFi vs Corporate WiFi</div>
+                                        <div class="check-details">Guest WiFi may have different (more open) firewall rules. Test both networks.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Push Notifications Work</div>
+                                        <div class="check-details">Have someone call the mobile device. Does it ring? If not, push notifications are blocked.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check WiFi Calling Settings (iOS/Android)</div>
+                                        <div class="check-details">Device WiFi calling settings can interfere. Try disabling carrier WiFi calling.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"Go to your phone settings and check if 'WiFi Calling' is enabled. Try disabling it and test the RingCentral app again. Sometimes carrier WiFi calling interferes."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section orange">
+                    <input type="checkbox" id="mobile-permissions" class="section-toggle">
+                    <label for="mobile-permissions" class="section-header">
+                        <span>STEP 3: Mobile App Permissions & Settings</span>
+                        <span class="chevron">›</span>
+                    </label>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <div class="info-box">
+                                <h4>⚙️ App Permission Issues:</h4>
+                                <p>Mobile OS permissions can block audio even when network is fine</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Microphone Permissions (iOS & Android)</div>
+                                        <div class="check-details">RingCentral app must have microphone permission granted</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💬 iOS Instructions:</p>
+                                <p>"Go to Settings → RingCentral → Make sure 'Microphone' is enabled."</p>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💬 Android Instructions:</p>
+                                <p>"Go to Settings → Apps → RingCentral → Permissions → Make sure 'Microphone' is allowed."</p>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Notification Permissions</div>
+                                        <div class="check-details">Without notification permissions, incoming calls won't ring the device</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Verify Background App Refresh (iOS)</div>
+                                        <div class="check-details">iOS needs Background App Refresh enabled for RingCentral to receive calls</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="check-item">
+                                <label>
+                                    <input type="checkbox">
+                                    <div class="check-content">
+                                        <div class="check-label">Check Battery Optimization (Android)</div>
+                                        <div class="check-details">Android battery saver can kill RingCentral background processes. Exempt it from optimization.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="customer-check">
+                                <p>💡 Customer Check:</p>
+                                <p>"Android users: Go to Settings → Battery → Battery Optimization → Find RingCentral → Select 'Don't optimize'. This prevents Android from killing the app in the background."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMON SECTIONS (shown for all platforms) -->
+        <div class="section purple">
+            <input type="checkbox" id="common-nat" class="section-toggle">
+            <label for="common-nat" class="section-header">
+                <span>NAT & Router Troubleshooting (All Platforms)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>🔍 NAT Issues Affect All Platforms:</h4>
+                        <p>These steps apply regardless of device type</p>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Disable SIP ALG on Router</div>
+                                <div class="check-details">SIP ALG causes 80% of one-way audio issues. Must be disabled. Check under Advanced → SIP ALG or SIP Helper.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Set NAT Timeout to 5+ Minutes</div>
+                                <div class="check-details">NAT session timeout must be longer than SIP keepalive interval (4 minutes for desk phones).</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Verify STUN Access (Ports 3478, 19302)</div>
+                                <div class="check-details">STUN helps devices discover their public IP for NAT traversal. Must be accessible.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Check for Symmetric NAT</div>
+                                <div class="check-details">Symmetric NAT causes audio issues. Prefer Full Cone or Restricted Cone NAT types.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="customer-check">
+                        <p>💡 Customer Check:</p>
+                        <p>"Log into your router admin page and find 'SIP ALG' or 'SIP Helper' - this

@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tier 2 to Tier 3 Escalation Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .meta-info {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .meta-info strong {
+            color: #374151;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #78350f;
+            margin-bottom: 4px;
+        }
+        
+        .alert-text {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .checklist-intro {
+            background: white;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .checklist-intro h3 {
+            color: #991b1b;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+        }
+        
+        .pre-escalation-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .pre-step {
+            display: flex;
+            align-items: start;
+            gap: 16px;
+            padding: 16px;
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            border-radius: 4px;
+        }
+        
+        .pre-step-number {
+            background: #ef4444;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .pre-step-content h4 {
+            color: #991b1b;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        
+        .pre-step-content p {
+            font-size: 0.875rem;
+            color: #7f1d1d;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section.blue { border-color: #3b82f6; }
+        .section.green { border-color: #10b981; }
+        .section.orange { border-color: #f97316; }
+        .section.purple { border-color: #8b5cf6; }
+        .section.red { border-color: #ef4444; }
+        .section.teal { border-color: #14b8a6; }
+        .section.indigo { border-color: #6366f1; }
+        .section.yellow { border-color: #eab308; }
+        
+        .section-toggle {
+            display: none;
+        }
+        
+        .section-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            user-select: none;
+        }
+        
+        .section.blue .section-header {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        
+        .section.green .section-header {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .section.orange .section-header {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .section.purple .section-header {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .section.red .section-header {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .section.teal .section-header {
+            background: #ccfbf1;
+            color: #134e4a;
+        }
+        
+        .section.indigo .section-header {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .section.yellow .section-header {
+            background: #fef3c7;
+            color: #78350f;
+        }
+        
+        .section-header:hover {
+            opacity: 0.9;
+        }
+        
+        .chevron {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-toggle:checked ~ .section-content {
+            max-height: 8000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .section-toggle:checked ~ .section-header .chevron {
+            transform: rotate(90deg);
+        }
+        
+        .section-content-inner {
+            padding: 24px;
+        }
+        
+        .info-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+        
+        .info-box h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .blue .info-box { background: #dbeafe; color: #1e3a8a; }
+        .green .info-box { background: #d1fae5; color: #065f46; }
+        .orange .info-box { background: #ffedd5; color: #7c2d12; }
+        .purple .info-box { background: #ede9fe; color: #5b21b6; }
+        .red .info-box { background: #fee2e2; color: #991b1b; }
+        .teal .info-box { background: #ccfbf1; color: #134e4a; }
+        .indigo .info-box { background: #e0e7ff; color: #3730a3; }
+        .yellow .info-box { background: #fef3c7; color: #78350f; }
+        
+        .check-item {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .check-item:has(input:checked) {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .check-item label {
+            display: flex;
+            align-items: start;
+            cursor: pointer;
+        }
+        
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #10b981;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-label {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .check-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .example-box {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .example-box h4 {
+            color: #065f46;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .bad-example-box {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .bad-example-box h4 {
+            color: #991b1b;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .template-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .template-box h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 12px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        .log-example {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        
+        .critical-box {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 16px;
+            border-radius: 4px;
+            margin: 16px 0;
+        }
+        
+        .critical-box strong {
+            color: #991b1b;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .critical-box ul {
+            margin-left: 20px;
+            color: #7f1d1d;
+            font-size: 0.875rem;
+        }
+        
+        .critical-box li {
+            margin-bottom: 4px;
+        }
+        
+        .tip-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+        
+        .tip-box strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .tip-box p, .tip-box ul {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+        
+        .tip-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .tip-box li {
+            margin-bottom: 4px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .progress-note {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .footer-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 4px;
+        }
+        
+        .footer-info p:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+        
+        .footer-info p:last-child {
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Tier 2 to Tier 3 Escalation Guide</h1>
+            
+            <div class="meta-info">
+                <strong>Created by:</strong> John Gallivan | <strong>Last Updated by:</strong> Dave Herron | <strong>Date:</strong> Jul 23, 2025 | <strong>Read Time:</strong> 3 minutes
+            </div>
+            
+            <div class="alert">
+                <div class="alert-title">⚠️ Getting to the Root Cause</div>
+                <div class="alert-text">
+                    When escalating a case, your clear and precise documentation is vital. This template ensures the next team has all the necessary information to quickly pick up where you left off, leading to faster resolutions for our customers.
+                </div>
+            </div>
+            
+            <div class="checklist-intro">
+                <h3>🛑 Before Escalating - Have You Completed These Steps?</h3>
+                
+                <div class="pre-escalation-steps">
+                    <div class="pre-step">
+                        <div class="pre-step-number">0</div>
+                        <div class="pre-step-content">
+                            <h4>Master the Basics First!</h4>
+                            <p>Understand how our products work correctly. This foundational knowledge is your superpower and helps you quickly spot when something isn't right.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pre-step">
+                        <div class="pre-step-number">1</div>
+                        <div class="pre-step-content">
+                            <h4>Hear the Customer's Story</h4>
+                            <p>Actively listen to your customer. What's their core problem? Get the initial issue clear in your mind.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pre-step">
+                        <div class="pre-step-number">2</div>
+                        <div class="pre-step-content">
+                            <h4>Ask Smart Questions</h4>
+                            <p>Put on your detective hat and ask clarifying questions. Is it "call disconnected" or "loss of audio on hard phone in single location, consistently"? The more precise you are, the faster you'll find the solution.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pre-step">
+                        <div class="pre-step-number">3</div>
+                        <div class="pre-step-content">
+                            <h4>Check the Settings, Like a Pro</h4>
+                            <p>Check standard product settings AND customer-specific settings. Look for anything contributing to the problem and ensure everything is configured correctly.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pre-step">
+                        <div class="pre-step-number">4</div>
+                        <div class="pre-step-content">
+                            <h4>Document Everything (Your Future Self Will Thank You!)</h4>
+                            <p>ALWAYS document every example of the problem and all associated logs. Even if the issue resolves itself, this data is invaluable if it resurfaces.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pre-step">
+                        <div class="pre-step-number">5</div>
+                        <div class="pre-step-content">
+                            <h4>Fix It or Escalate It</h4>
+                            <p>Determine if the issue can be resolved with a configuration change or if something is genuinely broken. Then either fix it yourself or escalate with all your detailed findings.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-note">
+            ✨ Every escalation to Tier 3 MUST include the complete template below. Expand each section for examples and requirements.
+        </div>
+
+        <div class="section red">
+            <input type="checkbox" id="field1" class="section-toggle">
+            <label for="field1" class="section-header">
+                <span>1. Problem/Issue Description (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>A concise, technical statement of the actual underlying problem, stripped of customer-specific language. Think of it as the core technical malfunction you've identified.</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Why It's Important:</h4>
+                        <p>This helps Tier 3 immediately grasp the technical issue without sifting through conversational details. This should be your "one-liner" diagnosis.</p>
+                    </div>
+
+                    <div class="comparison-grid">
+                        <div class="bad-example-box">
+                            <h4>❌ Bad Examples:</h4>
+                            <div class="code-block" style="background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;">
+• "Customer is complaining about disconnected calls"<br>
+• "Loss of audio"<br>
+• "Phone not working"<br>
+• "Customer upset about calls"<br>
+• "Issues with phone system"
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>✅ Good Examples:</h4>
+                            <div class="code-block" style="background: #f0fdf4; color: #065f46; border: 1px solid #86efac;">
+• "Sporadic call disconnections occurring during outbound PSTN calls"<br>
+• "One-way audio observed on hard phones after 5 minutes of call time"<br>
+• "SIP registration failures on Polycom VVX 500 phones using TLS"<br>
+• "Inbound calls to DID +1-555-123-4567 receive fast busy (SIP 503)"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Problem Description is Technical and Specific</div>
+                                <div class="check-details">Describes the ACTUAL technical issue, not customer emotion or vague symptoms</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Stripped of Customer-Specific Language</div>
+                                <div class="check-details">Focus on technical facts: "One-way audio on desk phones" NOT "Customer angry about audio"</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Includes Platform/Device Type When Relevant</div>
+                                <div class="check-details">Specify: hard phones, desktop app, mobile app, web, specific model if known</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section blue">
+            <input type="checkbox" id="field2" class="section-toggle">
+            <label for="field2" class="section-header">
+                <span>2. Background (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>Essential context that frames the problem. This includes what the customer is experiencing, when it started, and any relevant environmental factors.</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Why It's Important:</h4>
+                        <p>It connects the technical problem back to the customer's real-world impact and provides crucial environmental context.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Background Example:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+Customer is reporting frequent call disconnections. This issue began approximately 3 days ago after a new network firewall was implemented at their main office. Affects users on both hard phones (Polycom VVX 500) and soft clients (RC Desktop App v21.3.20). 
+
+Impact: 15 users in Denver office, approximately 30-40% of outbound calls affected. Inbound calls work normally. No changes to RC account settings during this timeframe.
+
+Customer initially thought it was carrier issue but testing shows calls disconnect at exactly 5-minute mark consistently.
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">When Did It Start?</div>
+                                <div class="check-details">Include approximate date/time when issue began and if it's intermittent or constant</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">What Changed Recently?</div>
+                                <div class="check-details">New firewall, ISP change, firmware update, account config change, etc.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Who/What is Affected?</div>
+                                <div class="check-details">Specific users, locations, device types? All users or just some?</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Customer Impact Scope</div>
+                                <div class="check-details">How many users? What percentage of calls? Business impact severity?</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>💡 Things to Include in Background:</strong>
+                        <ul>
+                            <li>Timeline: When started, duration, frequency</li>
+                            <li>Scope: Number of users, locations, devices affected</li>
+                            <li>Recent changes: Network, firmware, configuration, ISP</li>
+                            <li>Patterns: Time of day, specific destinations, call types</li>
+                            <li>Customer environment: Office/remote, network type, VLAN setup</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section green">
+            <input type="checkbox" id="field3" class="section-toggle">
+            <label for="field3" class="section-header">
+                <span>3. Steps to Reproduce (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>Precise, repeatable instructions that allow anyone to consistently trigger the problem. Include all necessary details like login credentials, specific settings, and sequences of actions.</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Why It's Important:</h4>
+                        <p>Reproducing the issue is often the fastest way to diagnose it. This saves countless hours for Tier 3.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Steps to Reproduce - Call Issue:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+A. Using Polycom VVX 500 (firmware 5.9.7.3480) registered to extension 101
+B. From Denver office network (IP: 203.0.113.45)
+C. Dial outbound to +1-720-555-1234 (external PSTN number)
+D. Wait for call to connect and answer
+E. Establish conversation for 5 minutes
+F. At approximately 4:58-5:02 minute mark, call disconnects
+G. Phone displays "Call Ended" - no error code
+H. Reproduces on 8 out of 10 test calls
+                        </div>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Steps to Reproduce - Web/Config Issue:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+A. Login to RingCentral Admin Portal as admin@company.com
+B. Navigate to Phone System → Auto-Receptionist → Main Number → IVR Menu
+C. Click "Upload Custom Prompt"
+D. Select file: greeting_update.wav (attached - 2.1MB, 16-bit, 8kHz mono WAV)
+E. Click "Upload" button
+F. Error appears: "Upload failed: Invalid file format (Error Code: 403-B)"
+G. File does not appear in prompt list
+H. Tested with both WAV and MP3 formats - same error
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Steps Are Numbered/Lettered Sequentially</div>
+                                <div class="check-details">Use A, B, C or 1, 2, 3 format for clear sequential steps</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Include Specific Device/Platform Details</div>
+                                <div class="check-details">Phone model, firmware version, app version, browser type, OS version</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Include Account/User Information</div>
+                                <div class="check-details">Extension numbers, usernames, DIDs - whatever is needed to replicate</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">State Reproducibility Rate</div>
+                                <div class="check-details">"Happens every time" or "8 out of 10 attempts" or "Intermittent - 30% of calls"</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="critical-box">
+                        <strong>🚨 Steps to Reproduce Must Include:</strong>
+                        <ul>
+                            <li>Exact sequence of actions (A, B, C format)</li>
+                            <li>Specific devices, extensions, numbers involved</li>
+                            <li>Network location (if relevant)</li>
+                            <li>Time/duration factors (e.g., "after 5 minutes")</li>
+                            <li>Consistency (every time vs intermittent)</li>
+                            <li>Any required file attachments referenced</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section orange">
+            <input type="checkbox" id="field4" class="section-toggle">
+            <label for="field4" class="section-header">
+                <span>4. Expected Behavior (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>Clearly state what SHOULD happen if the system were working correctly when you follow the steps.</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Why It's Important:</h4>
+                        <p>This provides a baseline for comparison and confirms your understanding of the product's intended functionality.</p>
+                    </div>
+
+                    <div class="comparison-grid">
+                        <div class="example-box">
+                            <h4>✅ Good Expected Behavior - Call:</h4>
+                            <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+Call should remain connected for the duration of the conversation until either party hangs up. No automatic disconnection should occur at any time interval. NAT timeout should be maintained by SIP keepalive packets.
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>✅ Good Expected Behavior - Upload:</h4>
+                            <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+The audio prompt greeting_update.wav should successfully upload, appear in the IVR prompt list with filename and duration displayed, and be immediately selectable for use in the IVR menu.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Expected Behavior - Registration:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+Phone should send SIP REGISTER to sip.ringcentral.com, receive 401 Unauthorized with nonce, respond with MD5 hash, and receive 200 OK registration confirmation. Phone status should display "Registered" or extension number on screen. Phone should maintain registration with periodic re-registration every 3600 seconds.
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Describes Correct System Behavior</div>
+                                <div class="check-details">What should happen in a properly functioning system</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Technical and Specific</div>
+                                <div class="check-details">Not just "it should work" but specifically what success looks like</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Matches Product Documentation</div>
+                                <div class="check-details">Confirms your understanding is correct based on official documentation</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section purple">
+            <input type="checkbox" id="field5" class="section-toggle">
+            <label for="field5" class="section-header">
+                <span>5. Actual Behavior (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>An exact description of what ACTUALLY happened when you followed the "Steps to Reproduce." Include any error messages, specific symptoms, or unexpected outcomes.</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Why It's Important:</h4>
+                        <p>This confirms the problem is observable and provides key data points for diagnosis.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Actual Behavior - Call Issue:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+Call connects successfully and audio is bidirectional for approximately 4 minutes 58 seconds. At 5:00 mark (±2 seconds), call abruptly disconnects. Phone displays "Call Ended" with no error code. No audio degradation prior to disconnect - immediate silence.
+
+Tested 10 times:
+- 8 calls disconnected at 4:58-5:02 mark
+- 2 calls completed normally (30+ minutes)
+- Pattern consistent across 3 different phones
+- Only affects outbound calls, inbound calls normal
+                        </div>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Actual Behavior - Error Message:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+After clicking "Upload" button, system displays error message within 2-3 seconds:
+
+"Upload failed: Invalid file format (Error Code: 403-B)"
+
+The file does not appear in the prompt list. Browser console shows HTTP 403 Forbidden response from provisioning server. Attempted with:
+- WAV file (16-bit, 8kHz, mono) - same error
+- MP3 file (128kbps) - same error  
+- Different file sizes (500KB to 3MB) - same error
+
+Same behavior in Chrome, Firefox, and Edge browsers.
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Include Exact Error Messages</div>
+                                <div class="check-details">Copy/paste error text exactly, including error codes</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Include Timing/Duration Information</div>
+                                <div class="check-details">When does it happen? How long does it last? Patterns?</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Document Variations Tested</div>
+                                <div class="check-details">Different file types, browsers, networks, devices - show you tested variations</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Include Test Results/Statistics</div>
+                                <div class="check-details">"8 out of 10 failed" gives Tier 3 much more info than "sometimes fails"</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section teal">
+            <input type="checkbox" id="field6" class="section-toggle">
+            <label for="field6" class="section-header">
+                <span>6. Logs & Evidence (REQUIRED) - Organized by Issue Type</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="alert">
+                        <div class="alert-title">📂 Select Your Issue Type Below</div>
+                        <div class="alert-text">
+                            Expand the section that matches your issue type to see specific log and evidence requirements. Each issue type has different requirements.
+                        </div>
+                    </div>
+
+                    <!-- CALL ISSUES -->
+                    <div class="section red" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-calls" class="section-toggle">
+                        <label for="logs-calls" class="section-header" style="padding: 16px;">
+                            <span>📞 Call-Related Issues (Inbound/Outbound/Quality)</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for All Call Issues:</strong>
+                                    <ul>
+                                        <li><strong>Minimum 3-5 Call Samples</strong> in standard format (see template below)</li>
+                                        <li><strong>Session IDs</strong> from Media Processor session logs</li>
+                                        <li><strong>Access Leg IDs</strong> (HBC side)</li>
+                                        <li><strong>PSTN Leg IDs</strong> (SBX side)</li>
+                                        <li><strong>Type of Call:</strong> Inbound, Outbound, Internal, Conference, Forward</li>
+                                        <li><strong>Device Type:</strong> Hard phone, Desktop app, Mobile app</li>
+                                    </ul>
+                                </div>
+
+                                <div class="template-box">
+                                    <h4>📋 Standard Call Sample Format:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Call Sample 1:</strong>
+Calling Number: +1-303-555-1234 (Customer extension 101)
+Called Number: +1-720-555-9876 (External PSTN)
+Date/Time: 07/23/25 14:35:22 MDT
+Duration: 5:01 (disconnected unexpectedly)
+Result: Call disconnected after 5:01, no error displayed on phone
+Device: Polycom VVX 500, Firmware 5.9.7.3480
+Session ID: 12345-abcde-67890-fghij
+Access Leg ID: Access_Leg_12345
+PSTN Leg ID: PSTN_Leg_67890
+Call Direction: Outbound
+Customer IP: 203.0.113.45
+
+<strong>Call Sample 2:</strong>
+Calling Number: +1-213-555-4321 (External PSTN)
+Called Number: +1-303-555-1234 (Customer DID → Ext 105)
+Date/Time: 07/23/25 15:12:48 MDT
+Duration: 0:00 (never connected)
+Result: Fast busy heard by caller, phone never rang
+Device: Yealink T46S, Firmware 66.85.0.35
+Session ID: 23456-bcdef-78901-klmno
+Access Leg ID: Access_Leg_23456
+PSTN Leg ID: PSTN_Leg_78901
+Call Direction: Inbound
+Customer IP: 203.0.113.46
+
+<strong>Call Sample 3:</strong>
+Calling Number: +1-303-555-5678 (Customer extension 102)
+Called Number: +1-720-555-9876 (External PSTN)
+Date/Time: 07/23/25 15:45:11 MDT
+Duration: 4:58 (disconnected unexpectedly)
+Result: Call disconnected after 4:58, no error
+Device: RC Desktop App v21.3.20 on Windows 10
+Session ID: 34567-cdefg-89012-pqrst
+Access Leg ID: Access_Leg_34567
+PSTN Leg ID: PSTN_Leg_89012
+Call Direction: Outbound
+Customer IP: 203.0.113.47
+                                    </div>
+                                </div>
+
+                                <div class="critical-box">
+                                    <strong>🚨 Additional Requirements for Specific Call Issues:</strong>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>For Audio Quality Issues - Also Include:</h4>
+                                    <ul style="margin-left: 20px; font-size: 0.875rem; color: #065f46;">
+                                        <li>QoS Analytics screenshots from Service Web</li>
+                                        <li>Packet loss, jitter, latency, MOS scores</li>
+                                        <li>Speed test results (upload/download)</li>
+                                        <li>Traceroute to sip.ringcentral.com</li>
+                                        <li>PCAP capture (if possible)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>For Call Failures/Fast Busy - Also Include:</h4>
+                                    <ul style="margin-left: 20px; font-size: 0.875rem; color: #065f46;">
+                                        <li>Exact error message heard/seen</li>
+                                        <li>SIP response codes from HBC/SBX Kibana</li>
+                                        <li>Carrier/Trunk information from SBX CDR</li>
+                                        <li>Q.850 cause codes</li>
+                                        <li>Phone syslogs showing failure</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>For One-Way Audio - Also Include:</h4>
+                                    <ul style="margin-left: 20px; font-size: 0.875rem; color: #065f46;">
+                                        <li>Which direction has audio (customer → PSTN or PSTN → customer)</li>
+                                        <li>NAT timeout settings from router</li>
+                                        <li>SIP ALG status (enabled/disabled)</li>
+                                        <li>STUN server accessibility test</li>
+                                        <li>Media IP addresses from CDR</li>
+                                    </ul>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Minimum 3-5 Call Samples Provided</div>
+                                            <div class="check-details">Include successful AND failed calls for comparison</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">All Session IDs and Leg IDs Documented</div>
+                                            <div class="check-details">Required for tracing through HBC and SBX systems</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Device Information Complete</div>
+                                            <div class="check-details">Model, firmware/software version, IP address</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WEB/BROWSER ISSUES -->
+                    <div class="section blue" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-web" class="section-toggle">
+                        <label for="logs-web" class="section-header" style="padding: 16px;">
+                            <span>🌐 Web/Browser Issues (Service Web, Admin Portal, Analytics)</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for All Web/Browser Issues:</strong>
+                                    <ul>
+                                        <li><strong>HAR File:</strong> Network capture from browser DevTools</li>
+                                        <li><strong>Console Logs:</strong> All errors/warnings from browser console (F12)</li>
+                                        <li><strong>Screenshot:</strong> Full browser window WITH URL visible in address bar</li>
+                                        <li><strong>Browser Information:</strong> Browser name, version, OS</li>
+                                        <li><strong>Extensions:</strong> List of all browser extensions (may cause conflicts)</li>
+                                        <li><strong>Time of Issue:</strong> Exact timestamp when error occurred (with timezone)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Capture HAR File:</strong>
+                                    <ul>
+                                        <li>1. Open browser DevTools (Press F12 or Ctrl+Shift+I / Cmd+Option+I)</li>
+                                        <li>2. Click on the <strong>Network</strong> tab</li>
+                                        <li>3. Check the box for <strong>"Preserve log"</strong></li>
+                                        <li>4. Refresh the page and reproduce the issue</li>
+                                        <li>5. Right-click anywhere in Network tab → <strong>"Save all as HAR with content"</strong></li>
+                                        <li>6. Save the .har file and attach to case</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Capture Console Logs:</strong>
+                                    <ul>
+                                        <li>1. Open browser DevTools (F12)</li>
+                                        <li>2. Click on the <strong>Console</strong> tab</li>
+                                        <li>3. Check "Preserve log" if available</li>
+                                        <li>4. Reproduce the issue</li>
+                                        <li>5. Right-click in console → <strong>"Save as..."</strong> or take screenshot</li>
+                                        <li>6. Include ALL red errors and yellow warnings</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>Example Browser Information Block:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Browser Details:</strong>
+Browser: Google Chrome
+Version: 120.0.6099.129 (64-bit)
+Operating System: Windows 11 Pro (Version 22H2)
+Extensions Enabled:
+  - LastPass (password manager)
+  - Grammarly
+  - Adblock Plus
+  - React Developer Tools
+
+<strong>Issue Details:</strong>
+URL: https://service.ringcentral.com/admin/user-settings
+Time: 07/23/25 14:22:15 MDT
+Error: "Failed to load user settings - HTTP 403 Forbidden"
+
+<strong>Attachments:</strong>
+- service-web-error.har (HAR file)
+- console-errors.txt (Console log export)
+- screenshot-with-url.png (Full browser window)
+                                    </div>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">HAR File Attached</div>
+                                            <div class="check-details">Complete network capture including the error</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Console Logs Captured</div>
+                                            <div class="check-details">All errors (red) and warnings (yellow) from console</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Screenshot Includes URL</div>
+                                            <div class="check-details">Full browser window with address bar visible showing exact URL</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Tested in Incognito/Private Mode</div>
+                                            <div class="check-details">Document if issue persists without extensions</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESKTOP/MOBILE APP ISSUES -->
+                    <div class="section purple" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-apps" class="section-toggle">
+                        <label for="logs-apps" class="section-header" style="padding: 16px;">
+                            <span>💻📱 Desktop/Mobile App Issues</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for All App Issues:</strong>
+                                    <ul>
+                                        <li><strong>App Logs:</strong> Covering time period of issue (NOT encrypted)</li>
+                                        <li><strong>Exact App Version:</strong> Full version number (e.g., 21.3.20.5049)</li>
+                                        <li><strong>Operating System:</strong> Full OS version (Windows 10/11, macOS 13.4, iOS 16.5, Android 13)</li>
+                                        <li><strong>Device Information:</strong> Computer model or mobile device model</li>
+                                        <li><strong>Screenshots:</strong> Showing error messages or unexpected behavior</li>
+                                        <li><strong>Time of Issue:</strong> Exact timestamp (with timezone)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 Where to Find Desktop App Logs:</strong>
+                                    <ul>
+                                        <li><strong>Windows:</strong> %AppData%\RingCentral\Logs</li>
+                                        <li>Full path: C:\Users\[Username]\AppData\Roaming\RingCentral\Logs</li>
+                                        <li>Look for files dated during issue timeframe</li>
+                                        <li><br></li>
+                                        <li><strong>Mac:</strong> ~/Library/Application Support/RingCentral/Logs</li>
+                                        <li>Full path: /Users/[Username]/Library/Application Support/RingCentral/Logs</li>
+                                        <li>To access Library folder: Finder → Go → Hold Option → Library</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Export Mobile App Logs:</strong>
+                                    <ul>
+                                        <li><strong>iOS:</strong> RingCentral App → Me → Settings → Advanced → Export Logs</li>
+                                        <li><strong>Android:</strong> RingCentral App → Menu → Settings → Advanced → Export Debug Logs</li>
+                                        <li>Logs will be emailed or saved to device - attach to case</li>
+                                    </ul>
+                                </div>
+
+                                <div class="critical-box">
+                                    <strong>🚨 CRITICAL: Logs Must NOT Be Encrypted!</strong>
+                                    <ul>
+                                        <li>Tier 3 cannot read encrypted logs</li>
+                                        <li>If possible, disable log encryption before reproducing issue</li>
+                                        <li>Windows: Settings → Advanced → Disable "Encrypt local data"</li>
+                                        <li>Mac: Preferences → Advanced → Disable "Encrypt local data"</li>
+                                        <li>If logs are encrypted, note this in escalation</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>Example App Information Block:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Desktop App (Windows):</strong>
+App Version: 21.3.20.5049
+OS: Windows 11 Pro (Build 22621.1992)
+Device: Dell Latitude 7420
+RAM: 16GB
+Issue Time: 07/23/25 10:15:22 MDT
+Symptom: App crashes when clicking "New Message"
+
+<strong>Logs Attached:</strong>
+- RingCentral-2025-07-23-10-00.log (covering 10:00-10:30 MDT)
+- RingCentral-2025-07-23-10-15-crash.dmp (crash dump file)
+
+<strong>Screenshots:</strong>
+- error-message-screenshot.png
+- app-version-about-screen.png
+
+--------------------
+
+<strong>Mobile App (iOS):</strong>
+App Version: 21.4.0 (Build 21.4.0.6789)
+iOS Version: 16.5.1
+Device: iPhone 13 Pro
+Issue Time: 07/23/25 14:30:11 MDT
+Symptom: Push notifications not received for incoming calls
+
+<strong>Logs Attached:</strong>
+- RingCentral-iOS-logs-07-23-2025.txt (exported via Settings → Export Logs)
+
+<strong>Screenshots:</strong>
+- notification-settings.png
+- app-permissions.png
+                                    </div>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">App Logs Attached (Unencrypted)</div>
+                                            <div class="check-details">Logs covering time period when issue occurred</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Full Version Information Documented</div>
+                                            <div class="check-details">App version, OS version, device model</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Screenshots Show Full Application Window</div>
+                                            <div class="check-details">Include version number visible if possible</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHONE HARDWARE ISSUES -->
+                    <div class="section green" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-phones" class="section-toggle">
+                        <label for="logs-phones" class="section-header" style="padding: 16px;">
+                            <span>📞 Phone Hardware Issues (Provisioning/Registration/Boot)</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for Phone Hardware Issues:</strong>
+                                    <ul>
+                                        <li><strong>Phone Model:</strong> Exact model (Polycom VVX 500, Yealink T46S, Cisco 8841, etc.)</li>
+                                        <li><strong>Firmware Version:</strong> Exact firmware (e.g., 5.9.7.3480)</li>
+                                        <li><strong>Phone MAC Address:</strong> Required for provisioning lookup (00:04:F2:12:34:56)</li>
+                                        <li><strong>Phone Serial Number:</strong> From phone label or settings</li>
+                                        <li><strong>Network Information:</strong> IP address, subnet, gateway, DNS servers, VLAN ID</li>
+                                        <li><strong>Phone Syslogs:</strong> Boot logs or registration attempt logs</li>
+                                        <li><strong>DHCP Information:</strong> What phone received from DHCP (Options 66/160)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Capture Phone Syslogs:</strong>
+                                    <ul>
+                                        <li><strong>Polycom:</strong> Settings → Advanced → Admin Settings → Network → Syslog Server</li>
+                                        <li>Configure syslog server IP, reboot phone, collect logs from syslog server</li>
+                                        <li>Guide: <em>Syslog and Debug Captures on Polycom phones</em></li>
+                                        <li><br></li>
+                                        <li><strong>Cisco:</strong> Enable debugging via web UI or CLI</li>
+                                        <li>Web UI: Admin → Network → Syslog Server Settings</li>
+                                        <li>Guide: <em>Syslog and Debug Captures on Cisco Phones</em></li>
+                                        <li><br></li>
+                                        <li><strong>Yealink:</strong> Settings → Features → System Log</li>
+                                        <li>Enable remote syslog, configure server, collect logs</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Capture PCAP (Packet Capture):</strong>
+                                    <ul>
+                                        <li>Use Wireshark on a PC connected to mirror/span port</li>
+                                        <li>OR use router/switch packet capture if available</li>
+                                        <li>Filter: udp port 5060 or tcp port 5060 (SIP signaling)</li>
+                                        <li>Capture during phone boot/registration</li>
+                                        <li>Save as .pcapng or .pcap file</li>
+                                        <li>Guide: <em>Training Classes - Instructor Led - Wireshark</em></li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>Example Phone Information Block:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Phone Details:</strong>
+Manufacturer: Polycom
+Model: VVX 500
+Firmware Version: 5.9.7.3480
+MAC Address: 00:04:F2:AB:CD:EF
+Serial Number: 64167F12AB45
+Physical Location: Denver Office, Desk 15
+
+<strong>Network Configuration:</strong>
+IP Address: 10.50.100.45
+Subnet Mask: 255.255.255.0
+Default Gateway: 10.50.100.1
+DNS Servers: 8.8.8.8, 8.8.4.4
+VLAN: 20 (Voice VLAN)
+PoE: 802.3af (15.4W)
+
+<strong>DHCP Information:</strong>
+Option 66: pp.ringcentral.com
+Option 160: https://pp.ringcentral.com/provision
+Lease Time: 86400 seconds
+
+<strong>Issue Description:</strong>
+Phone boots successfully, obtains IP via DHCP, but fails at SIP registration step.
+Display shows: "Registration Failed - Auth Error"
+
+<strong>Logs Attached:</strong>
+- polycom-vvx500-syslog-boot.txt (covering boot sequence)
+- polycom-vvx500-syslog-registration.txt (covering registration attempts)
+- sip-registration-capture.pcapng (Wireshark capture)
+- phone-screenshot-error.jpg (photo of phone screen)
+                                    </div>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Phone Model and Firmware Documented</div>
+                                            <div class="check-details">Exact model and full firmware version number</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">MAC Address Provided</div>
+                                            <div class="check-details">Required for provisioning server lookup</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Network Details Complete</div>
+                                            <div class="check-details">IP, gateway, DNS, VLAN, DHCP options</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Phone Logs/PCAP Attached</div>
+                                            <div class="check-details">Syslogs or packet capture covering the issue</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EMAIL ISSUES -->
+                    <div class="section orange" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-email" class="section-toggle">
+                        <label for="logs-email" class="section-header" style="padding: 16px;">
+                            <span>📧 Email-Related Issues (Voicemail, Fax, Notifications)</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for Email Issues:</strong>
+                                    <ul>
+                                        <li><strong>Original Email:</strong> Forward as attachment (NOT inline) to preserve headers</li>
+                                        <li><strong>Full Email Headers:</strong> Shows routing, timestamps, SMTP servers, SPF/DKIM</li>
+                                        <li><strong>Message-ID:</strong> Unique identifier from headers</li>
+                                        <li><strong>Sender/Recipient:</strong> From and To addresses</li>
+                                        <li><strong>Timestamp:</strong> When email was sent/received (with timezone)</li>
+                                        <li><strong>Email Client:</strong> Outlook, Gmail, Apple Mail, etc.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to Forward Email as Attachment (Preserving Headers):</strong>
+                                    <ul>
+                                        <li><strong>Outlook:</strong></li>
+                                        <li>1. Open the email</li>
+                                        <li>2. Click "More" (three dots) → <strong>"Forward as Attachment"</strong></li>
+                                        <li>3. Email yourself or save the .msg file</li>
+                                        <li><br></li>
+                                        <li><strong>Gmail:</strong></li>
+                                        <li>1. Open the email</li>
+                                        <li>2. Click three dots menu → <strong>"Download message"</strong></li>
+                                        <li>3. Save the .eml file</li>
+                                        <li><br></li>
+                                        <li><strong>Apple Mail:</strong></li>
+                                        <li>1. Select the email</li>
+                                        <li>2. File → <strong>"Save As..."</strong> → Save as .eml</li>
+                                        <li>3. OR drag email to desktop to create .eml file</li>
+                                    </ul>
+                                </div>
+
+                                <div class="tip-box">
+                                    <strong>💡 How to View Full Email Headers:</strong>
+                                    <ul>
+                                        <li><strong>Outlook:</strong> Open email → File → Properties → Internet headers</li>
+                                        <li><strong>Gmail:</strong> Open email → Three dots → "Show original"</li>
+                                        <li><strong>Apple Mail:</strong> View → Message → All Headers</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>Example Email Issue Documentation:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Email Issue Details:</strong>
+Issue Type: Voicemail notification not received
+Expected: Email notification when voicemail received
+Actual: No email received, voicemail shows in app/phone
+
+<strong>Email Details:</strong>
+From: noreply@ringcentral.com
+To: john.doe@company.com
+Subject: New Voicemail from +1-555-123-4567
+Date: 07/23/25 14:22:15 MDT
+Message-ID: <abc123def456@ringcentral.com>
+
+<strong>Voicemail Details:</strong>
+Extension: 101 (John Doe)
+Caller: +1-555-123-4567
+Date/Time: 07/23/25 14:22:10 MDT
+Duration: 0:45 seconds
+
+<strong>Email Client:</strong>
+Client: Microsoft Outlook 365
+Version: 16.0.15225.20288
+OS: Windows 11
+
+<strong>Attachments:</strong>
+- voicemail-notification-missing.eml (original email if found in spam)
+- email-headers.txt (full headers)
+- spam-folder-screenshot.png (checked spam, not there)
+- outlook-rules-screenshot.png (no rules blocking RingCentral)
+
+<strong>Testing:</strong>
+- Checked spam/junk folder: Not there
+- Checked Outlook rules: No blocking rules
+- Other emails from RingCentral: Received normally (account alerts, etc.)
+- Test voicemail: Left test VM at 15:00 MDT, no email received
+                                    </div>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Original Email Saved as Attachment</div>
+                                            <div class="check-details">Forwarded as .eml or .msg file with full headers preserved</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Full Headers Extracted</div>
+                                            <div class="check-details">Complete email headers showing routing path</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Message-ID Documented</div>
+                                            <div class="check-details">Unique identifier for tracking through email systems</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Checked Spam/Junk Folders</div>
+                                            <div class="check-details">Document whether email was found in spam</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ENGAGE VOICE ISSUES -->
+                    <div class="section yellow" style="margin: 16px 0;">
+                        <input type="checkbox" id="logs-ev" class="section-toggle">
+                        <label for="logs-ev" class="section-header" style="padding: 16px;">
+                            <span>📊 Engage Voice Issues (Contact Center)</span>
+                            <span class="chevron">›</span>
+                        </label>
+                        <div class="section-content">
+                            <div class="section-content-inner">
+                                <div class="critical-box">
+                                    <strong>🚨 REQUIRED for Engage Voice Issues:</strong>
+                                    <ul>
+                                        <li><strong>Account ID and Account Name</strong></li>
+                                        <li><strong>Platform and Shard Information</strong></li>
+                                        <li><strong>Agent Names and IDs</strong> (if applicable)</li>
+                                        <li><strong>Call Examples with UIIs</strong> (Unique Interaction Identifiers)</li>
+                                        <li><strong>Report Parameters</strong> (for reporting issues)</li>
+                                        <li><strong>Logs:</strong> Agent debug logs, SIP logs, Kibana logs, call logs</li>
+                                    </ul>
+                                </div>
+
+                                <div class="example-box">
+                                    <h4>Example Engage Voice Issue Documentation:</h4>
+                                    <div class="code-block" style="background: white; color: #374151;">
+<strong>Account Information:</strong>
+Account ID: EV-12345678
+Account Name: Acme Corporation Contact Center
+Platform: Engage Voice
+Shard: US-EAST-1
+
+<strong>Issue Type:</strong> Call disconnections / Reporting issue / Agent login failure
+
+<strong>Impact:</strong>
+- Number of agents affected: 25 agents
+- Time period: 07/23/25 10:00 - 12:00 MDT
+- Business impact: Unable to handle customer calls
+
+<strong>Call Examples (for call issues):</strong>
+Call 1:
+- UII: 202507231234567890ABCDEF
+- Agent: Jane Smith (ID: 98765)
+- Date/Time: 07/23/25 10:15:22 MDT
+- Issue: Call disconnected after 2 minutes
+
+Call 2:
+- UII: 202507231234567890GHIJKL
+- Agent: John Doe (ID: 98766)
+- Date/Time: 07/23/25 10:22:45 MDT
+- Issue: Call disconnected after 3 minutes
+
+<strong>Report Parameters (for reporting issues):</strong>
+- Report Name: Agent Performance Summary
+- Date Range: 07/01/25 - 07/23/25
+- Filters: Queue = "Sales", Disposition = "Completed"
+- Run Type: Scheduled (daily at 8:00 AM)
+- Expected: CSV with all agent metrics
+- Actual: Report shows no data / partial data / error message
+
+<strong>Logs Attached:</strong>
+- agent-debug-logs-jane-smith.txt
+- sip-logs-07-23-2025.txt
+- kibana-query-results.txt
+- call-detail-records.csv
+                                    </div>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Account ID and Shard Documented</div>
+                                            <div class="check-details">Required for Tier 3 to access the correct environment</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Call UIIs Provided (if call-related)</div>
+                                            <div class="check-details">Minimum 3-5 call examples with UIIs</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="check-item">
+                                    <label>
+                                        <input type="checkbox">
+                                        <div class="check-content">
+                                            <div class="check-label">Report Parameters Complete (if reporting issue)</div>
+                                            <div class="check-details">All filters, date ranges, and settings documented</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GENERAL LOG REQUIREMENTS -->
+                    <div class="critical-box" style="margin-top: 24px;">
+                        <strong>🚨 General Requirements for ALL Logs:</strong>
+                        <ul>
+                            <li><strong>Time Coverage:</strong> Logs MUST cover the time period when issue occurred</li>
+                            <li><strong>Timezone:</strong> Always specify timezone (MDT, PST, EST, UTC, etc.)</li>
+                            <li><strong>No Encryption:</strong> Logs must be readable (not encrypted)</li>
+                            <li><strong>Complete Files:</strong> Don't truncate or edit logs - attach complete files</li>
+                            <li><strong>File Names:</strong> Use descriptive names (not "log.txt" - use "polycom-syslog-07-23-2025.txt")</li>
+                            <li><strong>Screenshots:</strong> Must show full context (URL bar for web, version for apps)</li>
+                        </ul>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">All Logs Cover Time Period of Issue</div>
+                                <div class="check-details">Verify timestamps in logs match when problem occurred</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Logs Are Readable (Not Encrypted)</div>
+                                <div class="check-details">Tier 3 cannot analyze encrypted logs</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">All Attachments Have Descriptive Names</div>
+                                <div class="check-details">Use meaningful filenames, not generic names like "log.txt"</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section indigo">
+            <input type="checkbox" id="field7" class="section-toggle">
+            <label for="field7" class="section-header">
+                <span>7. Troubleshooting Already Performed (REQUIRED)</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>ALL troubleshooting steps you've already performed and their results. This prevents Tier 3 from repeating your work.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Troubleshooting Documentation:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+<strong>Troubleshooting Performed:</strong>
+
+1. Verified firewall ports open per documentation:
+   - UDP 5060-5090: OPEN (confirmed with telnet test)
+   - UDP 16384-16482: OPEN (confirmed with telnet test)
+   - TCP 443: OPEN
+   Result: All required ports accessible
+
+2. Checked NAT timeout settings on customer firewall:
+   - Current setting: 300 seconds (5 minutes)
+   - Recommendation: Increased to 600 seconds
+   Result: Issue persists after change
+
+3. Disabled SIP ALG on router:
+   - Was enabled, now disabled
+   - Rebooted router after change
+   Result: No improvement
+
+4. Tested from different network:
+   - Moved phone to guest WiFi (different subnet/gateway)
+   Result: Issue still occurs
+
+5. Tested different phone:
+   - Tried Polycom VVX 411 (different model)
+   Result: Same behavior - disconnects at 5 minute mark
+
+6. Checked call quality during call:
+   - Ran speed test: 100/100 Mbps
+   - Ping to sip.ringcentral.com: 15ms, 0% packet loss
+   - No jitter/latency warnings on phone
+   Result: Network quality appears good
+
+7. Reviewed Service Web QoS Analytics:
+   - Calls show good metrics until disconnect
+   - MOS score 4.2, packet loss <0.5%
+   - No quality degradation before disconnect
+   Result: Not a quality issue
+
+8. Checked account settings:
+   - No call duration limits configured
+   - No call recording that would timeout
+   - No unusual firewall/security settings on account
+   Result: Account config appears normal
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Listed ALL Steps Attempted</div>
+                                <div class="check-details">Include everything tried, even if it didn't help</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Included Result of Each Step</div>
+                                <div class="check-details">Did it help? Make it worse? No change? Be specific.</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Documented Tests/Measurements</div>
+                                <div class="check-details">Speed tests, ping results, error codes, settings checked</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Tested Across Variables</div>
+                                <div class="check-details">Different devices, networks, times, users - show isolation testing</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>💡 Good Troubleshooting Shows:</strong>
+                        <ul>
+                            <li>Methodical approach (tested one variable at a time)</li>
+                            <li>Specific results (not just "tried X")</li>
+                            <li>Isolation testing (different devices/networks)</li>
+                            <li>Configuration verification (checked settings)</li>
+                            <li>Data gathering (measurements, tests, logs)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section yellow">
+            <input type="checkbox" id="field8" class="section-toggle">
+            <label for="field8" class="section-header">
+                <span>8. Additional Information & Notes</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="info-box">
+                        <h4>What It Is:</h4>
+                        <p>Any additional relevant context not covered above. This is your catch-all section for important details.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>✅ Good Additional Information:</h4>
+                        <div class="code-block" style="background: #f0fdf4; color: #065f46;">
+<strong>Additional Information:</strong>
+
+<strong>Customer Environment:</strong>
+- Location: Denver, CO office (15 users)
+- Network: Business fiber, 500/500 Mbps from Comcast
+- Firewall: Cisco ASA 5506-X, version 9.16
+- Voice VLAN: VLAN 20 (phones), VLAN 10 (data)
+- PoE Switch: Cisco Catalyst 2960-X
+
+<strong>Account Details:</strong>
+- Account ID: 12345678
+- POD: SJC01
+- Phone System: MVP
+- Users affected: 15 of 15 in Denver office
+- Remote users: Not affected (home networks)
+
+<strong>Timeline:</strong>
+- Issue started: July 20, 2025 around 2:00 PM MDT
+- Change event: New Cisco ASA firewall installed July 20 at 1:30 PM MDT
+- Previous firewall: SonicWall TZ400 (no issues)
+
+<strong>Patterns Observed:</strong>
+- Only affects outbound calls
+- Inbound calls work normally
+- Disconnects at exactly 5:00 mark (±2 seconds)
+- Reproducible 80% of the time
+- No specific destinations more affected
+- Time of day doesn't matter
+
+<strong>Attachments:</strong>
+- Firewall config export: cisco-asa-config.txt
+- Phone syslogs: polycom-vvx500-syslog.txt
+- PCAP capture: call-disconnect-capture.pcapng
+- Screenshots: firewall-nat-settings.png
+
+<strong>Customer Impact:</strong>
+- Business critical - sales team can't complete calls
+- Workaround: Calling back after disconnect works
+- Customer patience: Medium - understanding but needs resolution
+                        </div>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Customer Environment Details</div>
+                                <div class="check-details">Network equipment, ISP, bandwidth, topology</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Account-Specific Information</div>
+                                <div class="check-details">Account ID, POD, product type, user count</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Patterns and Observations</div>
+                                <div class="check-details">Any patterns noticed about when/how issue occurs</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">Business Impact Assessment</div>
+                                <div class="check-details">How severe? How many users? Critical to business?</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="check-item">
+                        <label>
+                            <input type="checkbox">
+                            <div class="check-content">
+                                <div class="check-label">All Attachments Listed</div>
+                                <div class="check-details">List all attached files with descriptions</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section red">
+            <input type="checkbox" id="after-hours" class="section-toggle">
+            <label for="after-hours" class="section-header">
+                <span>After-Hours Escalation Requirements</span>
+                <span class="chevron">›</span>
+            </label>
+            <div class="section-content">
+                <div class="section-content-inner">
+                    <div class="critical-box">
+                        <strong>🚨 Before Engaging After-Hours On-Call:</strong>
+                        <ul>
+                            <li>Case MUST be created with correct customer contact information</li>
+                            <li>Case comments MUST include complete escalation template (all 8 sections above)</li>
+                            <li>All troubleshooting must be documented</li>
+                            <li>All required logs must be attached</li>
+                            <li>Business impact must be clearly stated</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>When to Engage After-Hours Support:</h4>
+                        <ul style="margin-left: 20px; margin-top: 8px; font-size: 0.875rem;">
+                            <li>Complete service outage affecting all users</li>
+                            <li>Critical business function down (can't make/receive calls)</li>
+                            <li>Security incident</li>
+                            <li>Data loss imminent</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>NOT Appropriate for After-Hours:</h4>
+                        <ul style="margin-left: 20px; margin-top: 8px; font-size: 0.875rem;">
+                            <li>Single user issues</li>
+                            <li>Intermittent quality problems</li>
+                            <li>Feature requests or configuration changes</li>
+                            <li>Issues that can wait until business hours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            <p>ℹ️ Questions About This Guide?</p>
+            <p>Contact Tier 3 Leadership or Dave Herron (Global Director of Tier 3 Technical Support) for clarification or training on escalation procedures.</p>
+        </div>
+    </div>
+</body>
+</html>
