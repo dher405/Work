@@ -46,16 +46,16 @@
       "night": {
         "name": "Rushikesh Sawant",
         "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "22:30-07:30",
+          "sun": "OFF",
           "mon": "22:30-07:30",
           "tue": "22:30-07:30",
           "wed": "22:30-07:30",
           "thu": "22:30-07:30",
-          "fri": "OFF",
+          "fri": "22:30-07:30",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2025-11-19": {
@@ -118,6 +118,268 @@
     },
     "2025-11-20": {
       "early": {
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-21": {
+      "early": {
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-22": {
+      "day": {
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-11-23": {
+      "day": {
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "schedule": {
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-11-24": {
+      "early": {
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-25": {
+      "early": {
         "name": "Marina Stambaugh",
         "email": "marina.stambaugh@ringcentral.com",
         "schedule": {
@@ -174,7 +436,443 @@
         }
       }
     },
-    "2025-11-21": {
+    "2025-11-26": {
+      "early": {
+        "name": "Marina Stambaugh",
+        "email": "marina.stambaugh@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Santosh Sahoo",
+        "email": "santosh.sahoo@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-27": {
+      "early": {
+        "name": "Marina Stambaugh",
+        "email": "marina.stambaugh@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Santosh Sahoo",
+        "email": "santosh.sahoo@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-28": {
+      "early": {
+        "name": "Marina Stambaugh",
+        "email": "marina.stambaugh@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Santosh Sahoo",
+        "email": "santosh.sahoo@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-11-29": {
+      "day": {
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-11-30": {
+      "day": {
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "schedule": {
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-01": {
+      "early": {
+        "name": "Marina Stambaugh",
+        "email": "marina.stambaugh@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Santosh Sahoo",
+        "email": "santosh.sahoo@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-02": {
+      "early": {
+        "name": "Jenny Deasy",
+        "email": "jenny.deasy@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-15:30",
+          "tue": "07:00-15:30",
+          "wed": "07:00-15:30",
+          "thu": "07:00-15:30",
+          "fri": "07:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Jeremy Rodriguez",
+        "email": "jeremyr@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Srikanth Reddy",
+        "email": "srikanth.v@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-03": {
+      "early": {
+        "name": "Jenny Deasy",
+        "email": "jenny.deasy@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-15:30",
+          "tue": "07:00-15:30",
+          "wed": "07:00-15:30",
+          "thu": "07:00-15:30",
+          "fri": "07:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Jeremy Rodriguez",
+        "email": "jeremyr@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Srikanth Reddy",
+        "email": "srikanth.v@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-04": {
       "early": {
         "name": "Jenny Deasy",
         "email": "jenny.deasy@ringcentral.com",
@@ -232,732 +930,6 @@
         }
       }
     },
-    "2025-11-22": {
-      "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Ryan Hawkins",
-        "email": "ryan.hawkins@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "01:00-07:00",
-          "sat": "OFF"
-        }
-      },
-      "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      }
-    },
-    "2025-11-23": {
-      "day": {
-        "name": "Eryll Azucena",
-        "email": "eryll.azucena@ringcentral.com",
-        "shift": "day",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "08:00-15:30"
-        }
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-11-24": {
-      "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Jobon Chinel",
-        "email": "jobon.chinel@ringcentral.com",
-        "schedule": {
-          "sun": "01:00-10:00",
-          "mon": "01:00-10:00",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-11-25": {
-      "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Robert Carter",
-        "email": "robert.carter@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-17:00",
-          "tue": "09:00-17:00",
-          "wed": "09:00-17:00",
-          "thu": "09:00-17:00",
-          "fri": "09:00-17:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-11-26": {
-      "early": {
-        "name": "Nate Malone",
-        "email": "nate.malone@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "John Tran",
-        "email": "john.tran@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "10:00-18:00",
-          "tue": "10:00-18:00",
-          "wed": "10:00-18:00",
-          "thu": "10:00-18:00",
-          "fri": "10:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-11-27": {
-      "early": {
-        "name": "Peter Czarnecki",
-        "email": "peter.czarnecki@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Jared Cooper",
-        "email": "jared.cooper@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-18:00",
-          "tue": "09:00-18:00",
-          "wed": "09:00-18:00",
-          "thu": "09:00-18:00",
-          "fri": "09:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Andrew Neill",
-        "email": "andrew.neill@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-11-28": {
-      "early": {
-        "name": "Cindy Hubert",
-        "email": "cindy.hubert@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Eryll Azucena",
-        "email": "eryll.azucena@ringcentral.com",
-        "shift": "day",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "08:00-15:30"
-        }
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Andy Connolly",
-        "email": "andy.connolly@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-11-29": {
-      "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Deepthi Chandran",
-        "email": "deepthi.chandran@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      },
-      "early": {
-        "name": "Abby Bearden",
-        "email": "abby.bearden@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      }
-    },
-    "2025-11-30": {
-      "day": {
-        "name": "Eryll Azucena",
-        "email": "eryll.azucena@ringcentral.com",
-        "shift": "day",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "08:00-15:30"
-        }
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-01": {
-      "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Jobon Chinel",
-        "email": "jobon.chinel@ringcentral.com",
-        "schedule": {
-          "sun": "01:00-10:00",
-          "mon": "01:00-10:00",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-02": {
-      "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Tomislav Vranjes",
-        "email": "tomislav.vranjes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-03": {
-      "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Tomislav Vranjes",
-        "email": "tomislav.vranjes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-04": {
-      "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Rochelle Gobis",
-        "email": "rochelle.gobis@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Rushikesh Sawant",
-        "email": "rushikesh.sawant@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "22:30-07:30",
-          "tue": "22:30-07:30",
-          "wed": "22:30-07:30",
-          "thu": "22:30-07:30",
-          "fri": "22:30-07:30",
-          "sat": "OFF"
-        }
-      }
-    },
     "2025-12-05": {
       "early": {
         "name": "Jenny Deasy",
@@ -974,8 +946,8 @@
         "shift": "early"
       },
       "day": {
-        "name": "Sarah Heriford",
-        "email": "sarah.heriford@ringcentral.com",
+        "name": "Jeremy Rodriguez",
+        "email": "jeremyr@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "08:00-16:30",
@@ -1002,8 +974,8 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Santosh Sahoo",
-        "email": "santosh.sahoo@ringcentral.com",
+        "name": "Srikanth Reddy",
+        "email": "srikanth.v@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
@@ -1017,64 +989,6 @@
       }
     },
     "2025-12-06": {
-      "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Ryan Hawkins",
-        "email": "ryan.hawkins@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "01:00-07:00",
-          "sat": "OFF"
-        }
-      },
-      "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      }
-    },
-    "2025-12-07": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
@@ -1118,21 +1032,385 @@
         "shift": "night"
       }
     },
+    "2025-12-07": {
+      "day": {
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "schedule": {
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
     "2025-12-08": {
       "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
+        "name": "Jenny Deasy",
+        "email": "jenny.deasy@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
+          "mon": "07:00-15:30",
+          "tue": "07:00-15:30",
+          "wed": "07:00-15:30",
+          "thu": "07:00-15:30",
+          "fri": "07:00-15:30",
           "sat": "OFF"
         },
         "shift": "early"
       },
+      "day": {
+        "name": "Jeremy Rodriguez",
+        "email": "jeremyr@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Srikanth Reddy",
+        "email": "srikanth.v@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-09": {
+      "early": {
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Edwin Reveley",
+        "email": "edwin.reveley@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:30-18:00",
+          "tue": "09:30-18:00",
+          "wed": "09:30-18:00",
+          "thu": "09:30-18:00",
+          "fri": "09:30-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-10": {
+      "early": {
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Edwin Reveley",
+        "email": "edwin.reveley@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:30-18:00",
+          "tue": "09:30-18:00",
+          "wed": "09:30-18:00",
+          "thu": "09:30-18:00",
+          "fri": "09:30-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-11": {
+      "early": {
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Edwin Reveley",
+        "email": "edwin.reveley@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:30-18:00",
+          "tue": "09:30-18:00",
+          "wed": "09:30-18:00",
+          "thu": "09:30-18:00",
+          "fri": "09:30-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
+        "schedule": {
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-12": {
+      "early": {
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Edwin Reveley",
+        "email": "edwin.reveley@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:30-18:00",
+          "tue": "09:30-18:00",
+          "wed": "09:30-18:00",
+          "thu": "09:30-18:00",
+          "fri": "09:30-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Ryan Hawkins",
+        "email": "ryan.hawkins@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-13": {
+      "day": {
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-14": {
       "day": {
         "name": "Edward Salvador",
         "email": "edward.salvador@ringcentral.com",
@@ -1176,126 +1454,10 @@
         "shift": "night"
       }
     },
-    "2025-12-09": {
+    "2025-12-15": {
       "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Robert Carter",
-        "email": "robert.carter@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-17:00",
-          "tue": "09:00-17:00",
-          "wed": "09:00-17:00",
-          "thu": "09:00-17:00",
-          "fri": "09:00-17:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-10": {
-      "early": {
-        "name": "Nate Malone",
-        "email": "nate.malone@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Robert Carter",
-        "email": "robert.carter@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-17:00",
-          "tue": "09:00-17:00",
-          "wed": "09:00-17:00",
-          "thu": "09:00-17:00",
-          "fri": "09:00-17:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Pearce Hamblin",
-        "email": "pearce.hamblin@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "01:00-07:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-11": {
-      "early": {
-        "name": "Peter Czarnecki",
-        "email": "peter.czarnecki@ringcentral.com",
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "06:00-14:30",
@@ -1308,117 +1470,15 @@
         "shift": "early"
       },
       "day": {
-        "name": "John Tran",
-        "email": "john.tran@ringcentral.com",
+        "name": "Edwin Reveley",
+        "email": "edwin.reveley@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "10:00-18:00",
-          "tue": "10:00-18:00",
-          "wed": "10:00-18:00",
-          "thu": "10:00-18:00",
-          "fri": "10:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-12": {
-      "early": {
-        "name": "Cindy Hubert",
-        "email": "cindy.hubert@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Jared Cooper",
-        "email": "jared.cooper@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-18:00",
-          "tue": "09:00-18:00",
-          "wed": "09:00-18:00",
-          "thu": "09:00-18:00",
-          "fri": "09:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Andrew Neill",
-        "email": "andrew.neill@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-13": {
-      "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "09:30-18:00",
+          "tue": "09:30-18:00",
+          "wed": "09:30-18:00",
+          "thu": "09:30-18:00",
+          "fri": "09:30-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -1434,122 +1494,6 @@
           "thu": "15:00-00:00",
           "fri": "15:00-00:00",
           "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Deepthi Chandran",
-        "email": "deepthi.chandran@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "00:00-06:00",
-          "sat": "OFF"
-        }
-      },
-      "early": {
-        "name": "Abby Bearden",
-        "email": "abby.bearden@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      }
-    },
-    "2025-12-14": {
-      "day": {
-        "name": "Eryll Azucena",
-        "email": "eryll.azucena@ringcentral.com",
-        "shift": "day",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "08:00-15:30"
-        }
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-15": {
-      "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
@@ -1570,87 +1514,29 @@
     },
     "2025-12-16": {
       "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
+        "name": "Dan Baker",
+        "email": "dan.baker1@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
+          "mon": "07:00-15:00",
+          "tue": "07:00-15:00",
+          "wed": "07:00-15:00",
+          "thu": "07:00-15:00",
+          "fri": "07:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Tomislav Vranjes",
-        "email": "tomislav.vranjes@ringcentral.com",
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
         "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
-        "shift": "night",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
-          "sat": "OFF"
-        }
-      }
-    },
-    "2025-12-17": {
-      "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Roscoe Bryant",
-        "email": "roscoe.bryant@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:30-17:00",
-          "tue": "08:30-17:00",
-          "wed": "08:30-17:00",
-          "thu": "08:30-17:00",
-          "fri": "08:30-17:00",
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
           "sat": "OFF"
         },
         "shift": "day"
@@ -1670,96 +1556,154 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Ryan Hawkins",
+        "email": "ryan.hawkins@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "02:00-08:00",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-17": {
+      "early": {
+        "name": "Dan Baker",
+        "email": "dan.baker1@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-15:00",
+          "tue": "07:00-15:00",
+          "wed": "07:00-15:00",
+          "thu": "07:00-15:00",
+          "fri": "07:00-15:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "schedule": {
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Ryan Hawkins",
+        "email": "ryan.hawkins@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
         }
       }
     },
     "2025-12-18": {
       "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
+        "name": "Dan Baker",
+        "email": "dan.baker1@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
+          "mon": "07:00-15:00",
+          "tue": "07:00-15:00",
+          "wed": "07:00-15:00",
+          "thu": "07:00-15:00",
+          "fri": "07:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Tomislav Vranjes",
-        "email": "tomislav.vranjes@ringcentral.com",
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
         "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
           "sat": "OFF"
         },
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
         "schedule": {
-          "sun": "15:00-00:00",
+          "sun": "OFF",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
           "thu": "15:00-00:00",
-          "fri": "OFF",
+          "fri": "15:00-00:00",
           "sat": "OFF"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Ryan Hawkins",
+        "email": "ryan.hawkins@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
         }
       }
     },
     "2025-12-19": {
       "early": {
-        "name": "Jenny Deasy",
-        "email": "jenny.deasy@ringcentral.com",
+        "name": "Dan Baker",
+        "email": "dan.baker1@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:30",
-          "tue": "07:00-15:30",
-          "wed": "07:00-15:30",
-          "thu": "07:00-15:30",
-          "fri": "07:00-15:30",
+          "mon": "07:00-15:00",
+          "tue": "07:00-15:00",
+          "wed": "07:00-15:00",
+          "thu": "07:00-15:00",
+          "fri": "07:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Rochelle Gobis",
-        "email": "rochelle.gobis@ringcentral.com",
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "08:00-15:30",
@@ -1786,34 +1730,34 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Rushikesh Sawant",
-        "email": "rushikesh.sawant@ringcentral.com",
-        "shift": "night",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "22:30-07:30",
-          "tue": "22:30-07:30",
-          "wed": "22:30-07:30",
-          "thu": "22:30-07:30",
-          "fri": "22:30-07:30",
-          "sat": "OFF"
-        }
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
       }
     },
     "2025-12-20": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -1860,28 +1804,28 @@
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Pearce Hamblin",
-        "email": "pearce.hamblin@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
           "fri": "OFF",
           "sat": "OFF"
         },
@@ -1932,18 +1876,18 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
+        "name": "Ryan Hawkins",
+        "email": "ryan.hawkins@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2025-12-23": {
@@ -2006,15 +1950,131 @@
     },
     "2025-12-24": {
       "early": {
-        "name": "Peter Czarnecki",
-        "email": "peter.czarnecki@ringcentral.com",
+        "name": "Nate Malone",
+        "email": "nate.malone@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-25": {
+      "early": {
+        "name": "Nate Malone",
+        "email": "nate.malone@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
+      }
+    },
+    "2025-12-26": {
+      "early": {
+        "name": "Nate Malone",
+        "email": "nate.malone@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
@@ -2050,148 +2110,32 @@
       "night": {
         "name": "Pearce Hamblin",
         "email": "pearce.hamblin@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "01:00-07:00",
+          "sun": "OFF",
           "mon": "01:00-07:00",
           "tue": "01:00-07:00",
           "wed": "01:00-07:00",
           "thu": "01:00-07:00",
-          "fri": "OFF",
+          "fri": "01:00-07:00",
           "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-25": {
-      "early": {
-        "name": "Cindy Hubert",
-        "email": "cindy.hubert@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "John Tran",
-        "email": "john.tran@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "10:00-18:00",
-          "tue": "10:00-18:00",
-          "wed": "10:00-18:00",
-          "thu": "10:00-18:00",
-          "fri": "10:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-26": {
-      "early": {
-        "name": "Abby Bearden",
-        "email": "abby.bearden@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+        }
       }
     },
     "2025-12-27": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -2238,28 +2182,28 @@
         "shift": "day"
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
+          "thu": "15:00-00:00",
           "fri": "OFF",
-          "sat": "15:00-00:00"
+          "sat": "OFF"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "schedule": {
-          "sun": "02:00-08:00",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
           "fri": "OFF",
           "sat": "OFF"
         },
@@ -2268,29 +2212,29 @@
     },
     "2025-12-29": {
       "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
+        "name": "Nate Malone",
+        "email": "nate.malone@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2310,198 +2254,24 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "02:00-10:00",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2025-12-30": {
       "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Mark Peirce",
-        "email": "mark.peirce@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:00-18:00",
-          "tue": "09:00-18:00",
-          "wed": "09:00-18:00",
-          "thu": "09:00-18:00",
-          "fri": "09:00-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Derek Walker",
-        "email": "derek.walker@ringcentral.com",
-        "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2025-12-31": {
-      "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Roscoe Bryant",
-        "email": "roscoe.bryant@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:30-17:00",
-          "tue": "08:30-17:00",
-          "wed": "08:30-17:00",
-          "thu": "08:30-17:00",
-          "fri": "08:30-17:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
-        "schedule": {
-          "sun": "02:00-08:00",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-01": {
-      "early": {
-        "name": "Jenny Deasy",
-        "email": "jenny.deasy@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-15:30",
-          "tue": "07:00-15:30",
-          "wed": "07:00-15:30",
-          "thu": "07:00-15:30",
-          "fri": "07:00-15:30",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Tomislav Vranjes",
-        "email": "tomislav.vranjes@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
-        "schedule": {
-          "sun": "02:00-10:00",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-02": {
-      "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
+        "name": "Peter Czarnecki",
+        "email": "peter.czarnecki@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "06:00-14:30",
@@ -2514,15 +2284,15 @@
         "shift": "early"
       },
       "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
+        "name": "Robert Carter",
+        "email": "robert.carter@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
+          "mon": "09:00-17:00",
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2542,34 +2312,208 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2025-12-31": {
+      "early": {
+        "name": "Peter Czarnecki",
+        "email": "peter.czarnecki@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
         },
-        "shift": "night"
+        "shift": "early"
+      },
+      "day": {
+        "name": "Robert Carter",
+        "email": "robert.carter@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:00-17:00",
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-01": {
+      "early": {
+        "name": "Peter Czarnecki",
+        "email": "peter.czarnecki@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Robert Carter",
+        "email": "robert.carter@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:00-17:00",
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-02": {
+      "early": {
+        "name": "Peter Czarnecki",
+        "email": "peter.czarnecki@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "John Tran",
+        "email": "john.tran@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "10:00-18:00",
+          "tue": "10:00-18:00",
+          "wed": "10:00-18:00",
+          "thu": "10:00-18:00",
+          "fri": "10:00-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-03": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -2616,28 +2560,28 @@
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Pearce Hamblin",
-        "email": "pearce.hamblin@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
           "fri": "OFF",
           "sat": "OFF"
         },
@@ -2646,29 +2590,29 @@
     },
     "2026-01-05": {
       "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
+        "name": "Peter Czarnecki",
+        "email": "peter.czarnecki@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
+        "name": "Robert Carter",
+        "email": "robert.carter@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
+          "mon": "09:00-17:00",
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2690,22 +2634,22 @@
       "night": {
         "name": "Amine Dahel",
         "email": "amine.dahel@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "00:00-06:00",
+          "sun": "OFF",
           "mon": "00:00-06:00",
           "tue": "00:00-06:00",
           "wed": "00:00-06:00",
           "thu": "00:00-06:00",
-          "fri": "OFF",
+          "fri": "00:00-06:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-06": {
       "early": {
-        "name": "Nate Malone",
-        "email": "nate.malone@ringcentral.com",
+        "name": "Cindy Hubert",
+        "email": "cindy.hubert@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "07:00-16:00",
@@ -2718,15 +2662,15 @@
         "shift": "early"
       },
       "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
+        "name": "John Tran",
+        "email": "john.tran@ringcentral.com",
         "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "10:00-18:00",
+          "tue": "10:00-18:00",
+          "wed": "10:00-18:00",
+          "thu": "10:00-18:00",
+          "fri": "10:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2746,76 +2690,76 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Ryan Hawkins",
-        "email": "ryan.hawkins@ringcentral.com",
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-07": {
       "early": {
-        "name": "Peter Czarnecki",
-        "email": "peter.czarnecki@ringcentral.com",
+        "name": "Cindy Hubert",
+        "email": "cindy.hubert@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "John Glenn Bayron",
-        "email": "john.bayron@ringcentral.com",
+        "name": "John Tran",
+        "email": "john.tran@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
+          "mon": "10:00-18:00",
+          "tue": "10:00-18:00",
+          "wed": "10:00-18:00",
+          "thu": "10:00-18:00",
+          "fri": "10:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-08": {
@@ -2834,15 +2778,15 @@
         "shift": "early"
       },
       "day": {
-        "name": "Robert Carter",
-        "email": "robert.carter@ringcentral.com",
+        "name": "John Tran",
+        "email": "john.tran@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:00-17:00",
-          "tue": "09:00-17:00",
-          "wed": "09:00-17:00",
-          "thu": "09:00-17:00",
-          "fri": "09:00-17:00",
+          "mon": "10:00-18:00",
+          "tue": "10:00-18:00",
+          "wed": "10:00-18:00",
+          "thu": "10:00-18:00",
+          "fri": "10:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2862,45 +2806,45 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Pearce Hamblin",
-        "email": "pearce.hamblin@ringcentral.com",
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-09": {
       "early": {
-        "name": "Abby Bearden",
-        "email": "abby.bearden@ringcentral.com",
+        "name": "Cindy Hubert",
+        "email": "cindy.hubert@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
+        "name": "Jared Cooper",
+        "email": "jared.cooper@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -2920,34 +2864,34 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-10": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -2994,28 +2938,28 @@
         "shift": "day"
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
+          "thu": "15:00-00:00",
           "fri": "OFF",
-          "sat": "15:00-00:00"
+          "sat": "OFF"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "schedule": {
-          "sun": "02:00-08:00",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
           "fri": "OFF",
           "sat": "OFF"
         },
@@ -3024,29 +2968,29 @@
     },
     "2026-01-12": {
       "early": {
-        "name": "Tim Arnott",
-        "email": "tim.arnott@ringcentral.com",
+        "name": "Cindy Hubert",
+        "email": "cindy.hubert@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-15:00",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Mare Snyder",
-        "email": "mare.snyder@ringcentral.com",
+        "name": "John Tran",
+        "email": "john.tran@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:00-18:00",
-          "tue": "09:00-18:00",
-          "wed": "09:00-18:00",
-          "thu": "09:00-18:00",
-          "fri": "09:00-18:00",
+          "mon": "10:00-18:00",
+          "tue": "10:00-18:00",
+          "wed": "10:00-18:00",
+          "thu": "10:00-18:00",
+          "fri": "10:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -3066,45 +3010,45 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "02:00-10:00",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-13": {
       "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
+        "name": "Abby Bearden",
+        "email": "abby.bearden@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
+        "name": "Jared Cooper",
+        "email": "jared.cooper@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -3124,38 +3068,96 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Deepthi Chandran",
-        "email": "deepthi.chandran@ringcentral.com",
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-14": {
       "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
+        "name": "Abby Bearden",
+        "email": "abby.bearden@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Mark Peirce",
-        "email": "mark.peirce@ringcentral.com",
+        "name": "Jared Cooper",
+        "email": "jared.cooper@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
+          "sat": "OFF"
+        },
+        "shift": "day"
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-15": {
+      "early": {
+        "name": "Abby Bearden",
+        "email": "abby.bearden@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Jared Cooper",
+        "email": "jared.cooper@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "09:00-18:00",
@@ -3182,106 +3184,48 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Derek Walker",
-        "email": "derek.walker@ringcentral.com",
-        "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-15": {
-      "early": {
-        "name": "Jenny Deasy",
-        "email": "jenny.deasy@ringcentral.com",
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:30",
-          "tue": "07:00-15:30",
-          "wed": "07:00-15:30",
-          "thu": "07:00-15:30",
-          "fri": "07:00-15:30",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
           "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Roscoe Bryant",
-        "email": "roscoe.bryant@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:30-17:00",
-          "tue": "08:30-17:00",
-          "wed": "08:30-17:00",
-          "thu": "08:30-17:00",
-          "fri": "08:30-17:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
-        "schedule": {
-          "sun": "02:00-08:00",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-16": {
       "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
+        "name": "Abby Bearden",
+        "email": "abby.bearden@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
@@ -3298,34 +3242,34 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-17": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -3372,132 +3316,16 @@
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Pearce Hamblin",
-        "email": "pearce.hamblin@ringcentral.com",
-        "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-19": {
-      "early": {
-        "name": "Dan Baker",
-        "email": "dan.baker1@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-15:00",
-          "tue": "07:00-15:00",
-          "wed": "07:00-15:00",
-          "thu": "07:00-15:00",
-          "fri": "07:00-15:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Jeremy Rodriguez",
-        "email": "jeremyr@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Amine Dahel",
-        "email": "amine.dahel@ringcentral.com",
-        "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-20": {
-      "early": {
-        "name": "Nate Malone",
-        "email": "nate.malone@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
@@ -3516,89 +3344,31 @@
         "shift": "night"
       }
     },
-    "2026-01-21": {
+    "2026-01-19": {
       "early": {
-        "name": "Peter Czarnecki",
-        "email": "peter.czarnecki@ringcentral.com",
+        "name": "Abby Bearden",
+        "email": "abby.bearden@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
-      "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        },
-        "shift": "evening"
-      },
-      "night": {
-        "name": "Ryan Hawkins",
-        "email": "ryan.hawkins@ringcentral.com",
-        "schedule": {
-          "sun": "01:00-07:00",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "night"
-      }
-    },
-    "2026-01-22": {
-      "early": {
-        "name": "Cindy Hubert",
-        "email": "cindy.hubert@ringcentral.com",
+        "name": "Jared Cooper",
+        "email": "jared.cooper@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
-      },
-      "day": {
-        "name": "John Glenn Bayron",
-        "email": "john.bayron@ringcentral.com",
-        "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -3618,24 +3388,24 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
       }
     },
-    "2026-01-23": {
+    "2026-01-20": {
       "early": {
-        "name": "Abby Bearden",
-        "email": "abby.bearden@ringcentral.com",
+        "name": "Tim Arnott",
+        "email": "tim.arnott@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "06:00-15:00",
@@ -3648,15 +3418,189 @@
         "shift": "early"
       },
       "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-21": {
+      "early": {
+        "name": "Tim Arnott",
+        "email": "tim.arnott@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-22": {
+      "early": {
+        "name": "Tim Arnott",
+        "email": "tim.arnott@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Eryll Azucena",
+        "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
+          "sat": "08:00-15:30"
+        }
+      },
+      "evening": {
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "15:00-00:00",
+          "fri": "OFF",
+          "sat": "OFF"
+        },
+        "shift": "evening"
+      },
+      "night": {
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
+        "shift": "night",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
+          "sat": "OFF"
+        }
+      }
+    },
+    "2026-01-23": {
+      "early": {
+        "name": "Tim Arnott",
+        "email": "tim.arnott@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "06:00-15:00",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "OFF"
+        },
+        "shift": "early"
+      },
+      "day": {
+        "name": "Mare Snyder",
+        "email": "mare.snyder@ringcentral.com",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
@@ -3676,34 +3620,34 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Colin Finn",
+        "email": "colin.finn@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "02:00-08:00",
+          "tue": "02:00-08:00",
+          "wed": "02:00-08:00",
+          "thu": "02:00-08:00",
+          "fri": "02:00-08:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-24": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
@@ -3750,28 +3694,28 @@
         "shift": "day"
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
+          "thu": "15:00-00:00",
           "fri": "OFF",
-          "sat": "15:00-00:00"
+          "sat": "OFF"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "schedule": {
-          "sun": "02:00-08:00",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
+          "sun": "01:00-10:00",
+          "mon": "01:00-10:00",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
           "fri": "OFF",
           "sat": "OFF"
         },
@@ -3794,16 +3738,16 @@
         "shift": "early"
       },
       "day": {
-        "name": "Eryll Azucena",
-        "email": "eryll.azucena@ringcentral.com",
+        "name": "Mare Snyder",
+        "email": "mare.snyder@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "08:00-15:30"
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
+          "sat": "OFF"
         },
         "shift": "day"
       },
@@ -3822,18 +3766,18 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Colin Finn",
+        "email": "colin.finn@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "02:00-10:00",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "02:00-08:00",
+          "tue": "02:00-08:00",
+          "wed": "02:00-08:00",
+          "thu": "02:00-08:00",
+          "fri": "02:00-08:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-27": {
@@ -3882,94 +3826,94 @@
       "night": {
         "name": "Colin Finn",
         "email": "colin.finn@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "02:00-08:00",
+          "sun": "OFF",
           "mon": "02:00-08:00",
           "tue": "02:00-08:00",
           "wed": "02:00-08:00",
           "thu": "02:00-08:00",
-          "fri": "OFF",
+          "fri": "02:00-08:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-28": {
       "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Colby Jestes",
-        "email": "colby.jestes@ringcentral.com",
+        "name": "Mare Snyder",
+        "email": "mare.snyder@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "09:00-18:00",
+          "tue": "09:00-18:00",
+          "wed": "09:00-18:00",
+          "thu": "09:00-18:00",
+          "fri": "09:00-18:00",
           "sat": "OFF"
         },
         "shift": "day"
       },
       "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
         },
         "shift": "evening"
       },
       "night": {
-        "name": "Deepthi Chandran",
-        "email": "deepthi.chandran@ringcentral.com",
+        "name": "Colin Finn",
+        "email": "colin.finn@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "02:00-08:00",
+          "tue": "02:00-08:00",
+          "wed": "02:00-08:00",
+          "thu": "02:00-08:00",
+          "fri": "02:00-08:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-29": {
       "early": {
-        "name": "Jenny Deasy",
-        "email": "jenny.deasy@ringcentral.com",
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:30",
-          "tue": "07:00-15:30",
-          "wed": "07:00-15:30",
-          "thu": "07:00-15:30",
-          "fri": "07:00-15:30",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Mark Peirce",
-        "email": "mark.peirce@ringcentral.com",
+        "name": "Mare Snyder",
+        "email": "mare.snyder@ringcentral.com",
         "schedule": {
           "sun": "OFF",
           "mon": "09:00-18:00",
@@ -3996,45 +3940,45 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Derek Walker",
-        "email": "derek.walker@ringcentral.com",
+        "name": "Colin Finn",
+        "email": "colin.finn@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "00:00-06:00",
-          "mon": "00:00-06:00",
-          "tue": "00:00-06:00",
-          "wed": "00:00-06:00",
-          "thu": "00:00-06:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "02:00-08:00",
+          "tue": "02:00-08:00",
+          "wed": "02:00-08:00",
+          "thu": "02:00-08:00",
+          "fri": "02:00-08:00",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
       }
     },
     "2026-01-30": {
       "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
           "sat": "OFF"
         },
         "shift": "early"
       },
       "day": {
-        "name": "Edwin Reveley",
-        "email": "edwin.reveley@ringcentral.com",
+        "name": "Colby Jestes",
+        "email": "colby.jestes@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "09:30-18:00",
-          "tue": "09:30-18:00",
-          "wed": "09:30-18:00",
-          "thu": "09:30-18:00",
-          "fri": "09:30-18:00",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
           "sat": "OFF"
         },
         "shift": "day"
@@ -4054,34 +3998,34 @@
         "shift": "evening"
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Deepthi Chandran",
+        "email": "deepthi.chandran@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
+          "sat": "OFF"
+        }
       }
     },
     "2026-01-31": {
       "day": {
         "name": "Eryll Azucena",
         "email": "eryll.azucena@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
+          "mon": "OFF",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "08:00-15:30"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
