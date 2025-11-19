@@ -3,109 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC Incident Rotation Calendar - Management System</title>
+    <title>NOC Incident Rotation Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .calendar-cell {
-            min-height: 96px;
-        }
-        .calendar-cell:hover {
-            background-color: #dbeafe;
-        }
-        .selected-cell {
-            ring: 2px solid #3b82f6;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 50;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
+        .calendar-cell { min-height: 96px; }
+        .calendar-cell:hover { background-color: #dbeafe; }
+        .selected-cell { ring: 2px solid #3b82f6; }
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .page { display: none; }
+        .page.active { display: block; }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
     <div class="bg-blue-600 text-white shadow-lg">
         <div class="max-w-6xl mx-auto px-6 py-4">
             <div class="flex gap-4">
-                <button onclick="showPage('calendar')" id="navCalendar" class="px-4 py-2 rounded-lg font-semibold transition-colors bg-blue-700">
-                    📅 Calendar
-                </button>
-                <button onclick="showPage('engineers')" id="navEngineers" class="px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-blue-700">
-                    👥 Manage Engineers
-                </button>
+                <button onclick="showPage('calendar')" id="navCalendar" class="px-4 py-2 rounded-lg font-semibold transition-colors bg-blue-700">📅 Calendar</button>
+                <button onclick="showPage('engineers')" id="navEngineers" class="px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-blue-700">👥 Manage Engineers</button>
             </div>
         </div>
     </div>
 
-    <!-- Calendar Page -->
     <div id="calendarPage" class="page active">
         <div class="max-w-6xl mx-auto p-6">
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
+                        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         NOC Incident Watch Rotation
                     </h1>
                     <div class="flex items-center gap-4">
-                        <button onclick="changeMonth(-1)" id="prevBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
+                        <button onclick="changeMonth(-1)" id="prevBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
                         <span id="monthDisplay" class="text-xl font-semibold text-gray-700 min-w-48 text-center"></span>
-                        <button onclick="changeMonth(1)" id="nextBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
+                        <button onclick="changeMonth(1)" id="nextBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
                     </div>
                 </div>
-
                 <div class="mb-4 flex gap-4 text-xs flex-wrap items-center">
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-indigo-100 border border-indigo-300 rounded"></div>
-                        <span>🌙 Night (00:00-06:00)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-amber-100 border border-amber-300 rounded"></div>
-                        <span>🌅 Early (06:00-09:00)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
-                        <span>☀️ Day (09:00-15:00)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded"></div>
-                        <span>🌆 Evening (15:00-18:00)</span>
-                    </div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-indigo-100 border border-indigo-300 rounded"></div><span>🌙 Night (00:00-06:00)</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-amber-100 border border-amber-300 rounded"></div><span>🌅 Early (06:00-09:00)</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-green-100 border border-green-300 rounded"></div><span>☀️ Day (09:00-15:00)</span></div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded"></div><span>🌆 Evening (15:00-18:00)</span></div>
                     <div class="ml-auto flex gap-2">
-                        <button onclick="showRedistributeModal()" class="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-                            🔄 Redistribute Shifts
-                        </button>
-                        <button onclick="resetRotation()" class="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
-                            Reset to Default
-                        </button>
+                        <button onclick="showRedistributeModal()" class="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">🔄 Redistribute Shifts</button>
+                        <button onclick="resetRotation()" class="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Reset to Default</button>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-7 gap-0 border border-gray-300 rounded-lg overflow-hidden">
                     <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Sunday</div>
                     <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Monday</div>
@@ -116,9 +59,7 @@
                     <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Saturday</div>
                     <div id="calendarGrid"></div>
                 </div>
-
-                <div id="selectedDetails" class="mt-6 hidden bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg"></div>
-
+                <div id="selectedDetails" class="mt-6 hidden"></div>
                 <div class="mt-6 text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
                     <p class="font-semibold mb-2">📋 Calendar Features:</p>
                     <ul class="list-disc list-inside space-y-1 ml-2">
@@ -133,709 +74,89 @@
         </div>
     </div>
 
-    <!-- Engineers Management Page -->
     <div id="engineersPage" class="page">
         <div class="max-w-6xl mx-auto p-6">
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h1 class="text-2xl font-bold text-gray-800">Manage Engineers</h1>
-                    <button onclick="addEngineer()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                        + Add Engineer
-                    </button>
+                    <button onclick="addEngineer()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">+ Add Engineer</button>
                 </div>
-
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse border border-gray-300">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Name</th>
-                                <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Email</th>
-                                <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Shift Type</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Sun</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Mon</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Tue</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Wed</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Thu</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Fri</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Sat</th>
-                                <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="engineersTable">
-                        </tbody>
+                        <thead><tr class="bg-gray-100">
+                            <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Name</th>
+                            <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Email</th>
+                            <th class="border border-gray-300 p-2 text-left text-sm font-semibold">Shift Type</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Sun</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Mon</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Tue</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Wed</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Thu</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Fri</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Sat</th>
+                            <th class="border border-gray-300 p-2 text-center text-sm font-semibold">Actions</th>
+                        </tr></thead>
+                        <tbody id="engineersTable"></tbody>
                     </table>
-                </div>
-
-                <div class="mt-6 text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
-                    <p class="font-semibold mb-2">💡 Engineer Management Tips:</p>
-                    <ul class="list-disc list-inside space-y-1 ml-2">
-                        <li><strong>Edit</strong> any engineer's information by clicking the edit button</li>
-                        <li><strong>Delete</strong> engineers who are no longer on the team</li>
-                        <li><strong>Add new engineers</strong> using the "+ Add Engineer" button</li>
-                        <li><strong>Shift Types:</strong> night, early, day, or evening</li>
-                        <li><strong>Schedule format:</strong> HH:MM-HH:MM or "OFF" for days off</li>
-                        <li>Changes automatically update the calendar rotation</li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit Assignment Modal -->
     <div id="editModal" class="modal">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Edit Shift Assignment</h3>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Date:</label>
-                <div id="modalDate" class="text-sm text-gray-600"></div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Shift:</label>
-                <div id="modalShift" class="text-sm text-gray-600"></div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Current Assignment:</label>
-                <div id="modalCurrent" class="text-sm text-gray-600 mb-3"></div>
-            </div>
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">New Assignment:</label>
-                <select id="engineerSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </select>
-            </div>
+            <div class="mb-4"><label class="block text-sm font-semibold text-gray-700 mb-2">Date:</label><div id="modalDate" class="text-sm text-gray-600"></div></div>
+            <div class="mb-4"><label class="block text-sm font-semibold text-gray-700 mb-2">Shift:</label><div id="modalShift" class="text-sm text-gray-600"></div></div>
+            <div class="mb-4"><label class="block text-sm font-semibold text-gray-700 mb-2">Current Assignment:</label><div id="modalCurrent" class="text-sm text-gray-600 mb-3"></div></div>
+            <div class="mb-6"><label class="block text-sm font-semibold text-gray-700 mb-2">New Assignment:</label><select id="engineerSelect" class="w-full p-2 border border-gray-300 rounded-lg"></select></div>
             <div class="flex gap-3">
-                <button onclick="saveEdit()" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    Save Changes
-                </button>
-                <button onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                    Cancel
-                </button>
+                <button onclick="saveEdit()" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save Changes</button>
+                <button onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Edit Engineer Modal -->
     <div id="editEngineerModal" class="modal">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Edit Engineer</h3>
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Name:</label>
-                    <input type="text" id="editEngName" class="w-full p-2 border border-gray-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email:</label>
-                    <input type="email" id="editEngEmail" class="w-full p-2 border border-gray-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Shift Type:</label>
-                    <select id="editEngShift" class="w-full p-2 border border-gray-300 rounded-lg">
-                        <option value="night">Night (00:00-06:00)</option>
-                        <option value="early">Early (06:00-09:00)</option>
-                        <option value="day">Day (09:00-15:00)</option>
-                        <option value="evening">Evening (15:00-18:00)</option>
-                    </select>
-                </div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Name:</label><input type="text" id="editEngName" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Email:</label><input type="email" id="editEngEmail" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                <div><label class="block text-sm font-semibold text-gray-700 mb-2">Shift Type:</label><select id="editEngShift" class="w-full p-2 border border-gray-300 rounded-lg"><option value="night">Night</option><option value="early">Early</option><option value="day">Day</option><option value="evening">Evening</option></select></div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Sunday:</label>
-                        <input type="text" id="editEngSun" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Monday:</label>
-                        <input type="text" id="editEngMon" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Tuesday:</label>
-                        <input type="text" id="editEngTue" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Wednesday:</label>
-                        <input type="text" id="editEngWed" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Thursday:</label>
-                        <input type="text" id="editEngThu" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Friday:</label>
-                        <input type="text" id="editEngFri" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Saturday:</label>
-                        <input type="text" id="editEngSat" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                    </div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Sun:</label><input type="text" id="editEngSun" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Mon:</label><input type="text" id="editEngMon" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Tue:</label><input type="text" id="editEngTue" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Wed:</label><input type="text" id="editEngWed" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Thu:</label><input type="text" id="editEngThu" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Fri:</label><input type="text" id="editEngFri" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-sm font-semibold text-gray-700 mb-1">Sat:</label><input type="text" id="editEngSat" placeholder="OFF or HH:MM-HH:MM" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></div>
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
-                <button onclick="saveEngineer()" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    Save Engineer
-                </button>
-                <button onclick="closeEngineerModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                    Cancel
-                </button>
+                <button onclick="saveEngineer()" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save Engineer</button>
+                <button onclick="closeEngineerModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Redistribute Modal -->
     <div id="redistributeModal" class="modal">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Redistribute Shifts</h3>
-            <p class="text-sm text-gray-600 mb-4">This will automatically redistribute shifts based on the current engineer roster and their availability.</p>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date:</label>
-                <input type="date" id="redistributeStart" class="w-full p-2 border border-gray-300 rounded-lg">
-            </div>
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">End Date:</label>
-                <input type="date" id="redistributeEnd" class="w-full p-2 border border-gray-300 rounded-lg">
-            </div>
+            <p class="text-sm text-gray-600 mb-4">This will automatically redistribute shifts based on the current engineer roster.</p>
+            <div class="mb-4"><label class="block text-sm font-semibold text-gray-700 mb-2">Start Date:</label><input type="date" id="redistributeStart" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+            <div class="mb-6"><label class="block text-sm font-semibold text-gray-700 mb-2">End Date:</label><input type="date" id="redistributeEnd" class="w-full p-2 border border-gray-300 rounded-lg"></div>
             <div class="flex gap-3">
-                <button onclick="redistributeShifts()" class="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                    Redistribute
-                </button>
-                <button onclick="closeRedistributeModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                    Cancel
-                </button>
+                <button onclick="redistributeShifts()" class="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Redistribute</button>
+                <button onclick="closeRedistributeModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
-        let engineers = [
-            { name: "Alexandra Hock", email: "alexandra.hock@ringcentral.com", schedule: { sun: "OFF", mon: "05:00-14:00", tue: "05:00-14:00", wed: "05:00-14:00", thu: "05:00-14:00", fri: "05:00-14:00", sat: "OFF" }, shift: "early" },
-            { name: "Marina Stambaugh", email: "marina.stambaugh@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
-            { name: "Rochelle Gobis", email: "rochelle.gobis@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "OFF" }, shift: "day" },
-            { name: "Sarah Heriford", email: "sarah.heriford@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
-            { name: "Karla Talamantes", email: "karla.talamantes@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Jeremy Rodriguez", email: "jeremyr@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
-            { name: "Jenny Deasy", email: "jenny.deasy@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-15:30", tue: "07:00-15:30", wed: "07:00-15:30", thu: "07:00-15:30", fri: "07:00-15:30", sat: "OFF" }, shift: "early" },
-            { name: "Bo Lemecha", email: "Bo.Lemecha@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-14:30", tue: "06:00-14:30", wed: "06:00-14:30", thu: "06:00-14:30", fri: "06:00-14:30", sat: "OFF" }, shift: "early" },
-            { name: "Edwin Reveley", email: "edwin.reveley@ringcentral.com", schedule: { sun: "OFF", mon: "09:30-18:00", tue: "09:30-18:00", wed: "09:30-18:00", thu: "09:30-18:00", fri: "09:30-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Edward Salvador", email: "edward.salvador@ringcentral.com", schedule: { sun: "08:00-15:30", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "OFF", sat: "OFF" }, shift: "day" },
-            { name: "John Glenn Bayron", email: "john.bayron@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "OFF" }, shift: "day" },
-            { name: "Robert Carter", email: "robert.carter@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-17:00", tue: "09:00-17:00", wed: "09:00-17:00", thu: "09:00-17:00", fri: "09:00-17:00", sat: "OFF" }, shift: "day" },
-            { name: "Dan Baker", email: "dan.baker1@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-15:00", tue: "07:00-15:00", wed: "07:00-15:00", thu: "07:00-15:00", fri: "07:00-15:00", sat: "OFF" }, shift: "early" },
-            { name: "John Tran", email: "john.tran@ringcentral.com", schedule: { sun: "OFF", mon: "10:00-18:00", tue: "10:00-18:00", wed: "10:00-18:00", thu: "10:00-18:00", fri: "10:00-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Jared Cooper", email: "jared.cooper@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Lara Mae Dela Cruz", email: "lara.delacruz@ringcentral.com", schedule: { sun: "OFF", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "15:00-00:00", fri: "15:00-00:00", sat: "OFF" }, shift: "evening" },
-            { name: "Love Lyn Cano", email: "love.cano@ringcentral.com", schedule: { sun: "15:00-00:00", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "OFF", fri: "OFF", sat: "15:00-00:00" }, shift: "evening" },
-            { name: "James Belleza", email: "james.belleza@ringcentral.com", schedule: { sun: "15:00-00:00", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "15:00-00:00", fri: "OFF", sat: "OFF" }, shift: "evening" },
-            { name: "Rushikesh Sawant", email: "rushikesh.sawant@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Santosh Sahoo", email: "santosh.sahoo@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Srikanth Reddy", email: "srikanth.v@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Jobon Chinel", email: "jobon.chinel@ringcentral.com", schedule: { sun: "01:00-10:00", mon: "01:00-10:00", tue: "01:00-10:00", wed: "01:00-10:00", thu: "01:00-10:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Ryan Hawkins", email: "ryan.hawkins@ringcentral.com", schedule: { sun: "01:00-07:00", mon: "01:00-07:00", tue: "01:00-07:00", wed: "01:00-07:00", thu: "01:00-07:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Joseph Bendecio", email: "joseph.bendecio@ringcentral.com", schedule: { sun: "OFF", mon: "OFF", tue: "01:00-10:00", wed: "01:00-10:00", thu: "01:00-10:00", fri: "01:00-10:00", sat: "01:00-10:00" }, shift: "night" },
-            { name: "Pearce Hamblin", email: "pearce.hamblin@ringcentral.com", schedule: { sun: "01:00-07:00", mon: "01:00-07:00", tue: "01:00-07:00", wed: "01:00-07:00", thu: "01:00-07:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Amine Dahel", email: "amine.dahel@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Andrew Neill", email: "andrew.neill@ringcentral.com", schedule: { sun: "03:00-09:00", mon: "03:00-09:00", tue: "03:00-09:00", wed: "03:00-09:00", thu: "03:00-09:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Andy Connolly", email: "andy.connolly@ringcentral.com", schedule: { sun: "03:00-09:00", mon: "03:00-09:00", tue: "03:00-09:00", wed: "03:00-09:00", thu: "03:00-09:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Colin Finn", email: "colin.finn@ringcentral.com", schedule: { sun: "02:00-08:00", mon: "02:00-08:00", tue: "02:00-08:00", wed: "02:00-08:00", thu: "02:00-08:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Deepthi Chandran", email: "deepthi.chandran@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Derek Walker", email: "derek.walker@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Hugo Nickal-Thibeaud", email: "hugo.thibeaud@ringcentral.com", schedule: { sun: "02:00-08:00", mon: "02:00-08:00", tue: "02:00-08:00", wed: "02:00-08:00", thu: "02:00-08:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Baranee Selvendran", email: "baranee.selvendran@ringcentral.com", schedule: { sun: "02:00-10:00", mon: "02:00-10:00", tue: "02:00-10:00", wed: "02:00-10:00", thu: "02:00-10:00", fri: "OFF", sat: "OFF" }, shift: "night" },
-            { name: "Eryll Azucena", email: "eryll.azucena@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "08:00-15:30" }, shift: "day" },
-            { name: "Mare Snyder", email: "mare.snyder@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Nate Malone", email: "nate.malone@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
-            { name: "Peter Czarnecki", email: "peter.czarnecki@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-14:30", tue: "06:00-14:30", wed: "06:00-14:30", thu: "06:00-14:30", fri: "06:00-14:30", sat: "OFF" }, shift: "early" },
-            { name: "Colby Jestes", email: "colby.jestes@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
-            { name: "Mark Peirce", email: "mark.peirce@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
-            { name: "Roscoe Bryant", email: "roscoe.bryant@ringcentral.com", schedule: { sun: "OFF", mon: "08:30-17:00", tue: "08:30-17:00", wed: "08:30-17:00", thu: "08:30-17:00", fri: "08:30-17:00", sat: "OFF" }, shift: "day" },
-            { name: "Cindy Hubert", email: "cindy.hubert@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
-            { name: "Abby Bearden", email: "abby.bearden@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-15:00", tue: "06:00-15:00", wed: "06:00-15:00", thu: "06:00-15:00", fri: "06:00-15:00", sat: "OFF" }, shift: "early" },
-            { name: "Tim Arnott", email: "tim.arnott@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-15:00", tue: "06:00-15:00", wed: "06:00-15:00", thu: "06:00-15:00", fri: "06:00-15:00", sat: "OFF" }, shift: "early" },
-            { name: "Tomislav Vranjes", email: "tomislav.vranjes@ringcentral.com", schedule: { sun: "OFF", mon: "09:30-18:00", tue: "09:30-18:00", wed: "09:30-18:00", thu: "09:30-18:00", fri: "09:30-18:00", sat: "OFF" }, shift: "day" }
-        ];
-
-        let currentMonth = 0;
-        let selectedDate = null;
-        let rotation = {};
-        let editingDate = null;
-        let editingShift = null;
-        let editingEngineerIndex = null;
-
-        function showPage(pageName) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('[id^="nav"]').forEach(b => {
-                b.classList.remove('bg-blue-700');
-                b.classList.add('hover:bg-blue-700');
-            });
-            
-            if (pageName === 'calendar') {
-                document.getElementById('calendarPage').classList.add('active');
-                document.getElementById('navCalendar').classList.add('bg-blue-700');
-            } else if (pageName === 'engineers') {
-                document.getElementById('engineersPage').classList.add('active');
-                document.getElementById('navEngineers').classList.add('bg-blue-700');
-                renderEngineersTable();
-            }
-        }
-
-        function renderEngineersTable() {
-            const tbody = document.getElementById('engineersTable');
-            tbody.innerHTML = '';
-            
-            engineers.forEach((eng, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="border border-gray-300 p-2 text-sm">${eng.name}</td>
-                    <td class="border border-gray-300 p-2 text-sm">${eng.email}</td>
-                    <td class="border border-gray-300 p-2 text-sm">${eng.shift}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.sun}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.mon}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.tue}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.wed}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.thu}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.fri}</td>
-                    <td class="border border-gray-300 p-2 text-xs text-center">${eng.schedule.sat}</td>
-                    <td class="border border-gray-300 p-2 text-center">
-                        <button onclick="editEngineer(${index})" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 mr-1">Edit</button>
-                        <button onclick="deleteEngineer(${index})" class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function addEngineer() {
-            editingEngineerIndex = -1;
-            document.getElementById('editEngName').value = '';
-            document.getElementById('editEngEmail').value = '';
-            document.getElementById('editEngShift').value = 'day';
-            document.getElementById('editEngSun').value = 'OFF';
-            document.getElementById('editEngMon').value = '08:00-17:00';
-            document.getElementById('editEngTue').value = '08:00-17:00';
-            document.getElementById('editEngWed').value = '08:00-17:00';
-            document.getElementById('editEngThu').value = '08:00-17:00';
-            document.getElementById('editEngFri').value = '08:00-17:00';
-            document.getElementById('editEngSat').value = 'OFF';
-            document.getElementById('editEngineerModal').classList.add('show');
-        }
-
-        function editEngineer(index) {
-            editingEngineerIndex = index;
-            const eng = engineers[index];
-            document.getElementById('editEngName').value = eng.name;
-            document.getElementById('editEngEmail').value = eng.email;
-            document.getElementById('editEngShift').value = eng.shift;
-            document.getElementById('editEngSun').value = eng.schedule.sun;
-            document.getElementById('editEngMon').value = eng.schedule.mon;
-            document.getElementById('editEngTue').value = eng.schedule.tue;
-            document.getElementById('editEngWed').value = eng.schedule.wed;
-            document.getElementById('editEngThu').value = eng.schedule.thu;
-            document.getElementById('editEngFri').value = eng.schedule.fri;
-            document.getElementById('editEngSat').value = eng.schedule.sat;
-            document.getElementById('editEngineerModal').classList.add('show');
-        }
-
-        function saveEngineer() {
-            const engData = {
-                name: document.getElementById('editEngName').value.trim(),
-                email: document.getElementById('editEngEmail').value.trim(),
-                shift: document.getElementById('editEngShift').value,
-                schedule: {
-                    sun: document.getElementById('editEngSun').value.trim(),
-                    mon: document.getElementById('editEngMon').value.trim(),
-                    tue: document.getElementById('editEngTue').value.trim(),
-                    wed: document.getElementById('editEngWed').value.trim(),
-                    thu: document.getElementById('editEngThu').value.trim(),
-                    fri: document.getElementById('editEngFri').value.trim(),
-                    sat: document.getElementById('editEngSat').value.trim()
-                }
-            };
-
-            if (!engData.name || !engData.email) {
-                alert('Name and email are required');
-                return;
-            }
-
-            if (editingEngineerIndex === -1) {
-                engineers.push(engData);
-            } else {
-                engineers[editingEngineerIndex] = engData;
-            }
-
-            saveEngineers();
-            closeEngineerModal();
-            renderEngineersTable();
-        }
-
-        function deleteEngineer(index) {
-            if (confirm(`Are you sure you want to delete ${engineers[index].name}?`)) {
-                engineers.splice(index, 1);
-                saveEngineers();
-                renderEngineersTable();
-            }
-        }
-
-        function closeEngineerModal() {
-            document.getElementById('editEngineerModal').classList.remove('show');
-            editingEngineerIndex = null;
-        }
-
-        function saveEngineers() {
-            localStorage.setItem('nocEngineers', JSON.stringify(engineers));
-        }
-
-        function loadEngineers() {
-            const saved = localStorage.getItem('nocEngineers');
-            if (saved) {
-                engineers = JSON.parse(saved);
-                return true;
-            }
-            return false;
-        }
-
-        function showRedistributeModal() {
-            const today = new Date();
-            document.getElementById('redistributeStart').value = today.toISOString().split('T')[0];
-            const endDate = new Date(today);
-            endDate.setDate(endDate.getDate() + 30);
-            document.getElementById('redistributeEnd').value = endDate.toISOString().split('T')[0];
-            document.getElementById('redistributeModal').classList.add('show');
-        }
-
-        function closeRedistributeModal() {
-            document.getElementById('redistributeModal').classList.remove('show');
-        }
-
-        function redistributeShifts() {
-            const startDateStr = document.getElementById('redistributeStart').value;
-            const endDateStr = document.getElementById('redistributeEnd').value;
-            
-            if (!startDateStr || !endDateStr) {
-                alert('Please select both start and end dates');
-                return;
-            }
-
-            const startDate = new Date(startDateStr);
-            const endDate = new Date(endDateStr);
-
-            if (startDate > endDate) {
-                alert('Start date must be before end date');
-                return;
-            }
-
-            if (confirm('This will redistribute all shifts in the selected date range. Continue?')) {
-                const shiftPools = {
-                    early: engineers.filter(e => e.shift === 'early'),
-                    day: engineers.filter(e => e.shift === 'day'),
-                    evening: engineers.filter(e => e.shift === 'evening'),
-                    night: engineers.filter(e => e.shift === 'night')
-                };
-                const rotationIndex = { early: 0, day: 0, evening: 0, night: 0 };
-
-                let currentDate = new Date(startDate);
-                while (currentDate <= endDate) {
-                    const dayOfWeek = currentDate.getDay();
-                    const dateKey = currentDate.toISOString().split('T')[0];
-
-                    if (!rotation[dateKey]) {
-                        rotation[dateKey] = {};
-                    }
-
-                    Object.keys(shiftPools).forEach(shift => {
-                        const pool = shiftPools[shift];
-                        const availableEngineers = pool.filter(eng => isWorking(eng, dayOfWeek));
-                        
-                        if (availableEngineers.length > 0) {
-                            const assignedEngineer = availableEngineers[rotationIndex[shift] % availableEngineers.length];
-                            rotation[dateKey][shift] = assignedEngineer;
-                            rotationIndex[shift]++;
-                        }
-                    });
-
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-
-                saveRotation();
-                closeRedistributeModal();
-                renderCalendar();
-                alert('Shifts redistributed successfully!');
-            }
-        }
-
-        function isWorking(engineer, dayOfWeek) {
-            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-            return engineer.schedule[days[dayOfWeek]] !== "OFF";
-        }
-
-        function generateRotation() {
-            const startDate = new Date(2025, 10, 18);
-            const shiftPools = {
-                early: engineers.filter(e => e.shift === 'early'),
-                day: engineers.filter(e => e.shift === 'day'),
-                evening: engineers.filter(e => e.shift === 'evening'),
-                night: engineers.filter(e => e.shift === 'night')
-            };
-            const rotationIndex = { early: 0, day: 0, evening: 0, night: 0 };
-
-            for (let i = 0; i < 75; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + i);
-                const dayOfWeek = date.getDay();
-                const dateKey = date.toISOString().split('T')[0];
-
-                rotation[dateKey] = {};
-
-                Object.keys(shiftPools).forEach(shift => {
-                    const pool = shiftPools[shift];
-                    const availableEngineers = pool.filter(eng => isWorking(eng, dayOfWeek));
-                    
-                    if (availableEngineers.length > 0) {
-                        const assignedEngineer = availableEngineers[rotationIndex[shift] % availableEngineers.length];
-                        rotation[dateKey][shift] = assignedEngineer;
-                        rotationIndex[shift]++;
-                    }
-                });
-            }
-        }
-
-        function saveRotation() {
-            localStorage.setItem('nocRotation', JSON.stringify(rotation));
-        }
-
-        function loadRotation() {
-            const saved = localStorage.getItem('nocRotation');
-            if (saved) {
-                rotation = JSON.parse(saved);
-                return true;
-            }
-            return false;
-        }
-
-        function resetRotation() {
-            if (confirm('Are you sure you want to reset the rotation to default? All changes will be lost.')) {
-                localStorage.removeItem('nocRotation');
-                generateRotation();
-                saveRotation();
-                renderCalendar();
-                if (selectedDate) {
-                    showDateDetails(selectedDate);
-                }
-            }
-        }
-
-        function getCalendarData() {
-            const baseDate = new Date(2025, 10, 1);
-            baseDate.setMonth(baseDate.getMonth() + currentMonth);
-            
-            const year = baseDate.getFullYear();
-            const month = baseDate.getMonth();
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startingDayOfWeek = firstDay.getDay();
-
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
-
-            return {
-                monthName: monthNames[month],
-                year,
-                daysInMonth,
-                startingDayOfWeek,
-                month
-            };
-        }
-
-        function renderCalendar() {
-            const calendarData = getCalendarData();
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
-            grid.className = 'col-span-7 grid grid-cols-7';
-
-            for (let i = 0; i < calendarData.startingDayOfWeek; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'p-2 border border-gray-100';
-                grid.appendChild(emptyCell);
-            }
-
-            for (let day = 1; day <= calendarData.daysInMonth; day++) {
-                const date = new Date(calendarData.year, calendarData.month, day);
-                const dateKey = date.toISOString().split('T')[0];
-                const assignments = rotation[dateKey] || {};
-                const isToday = dateKey === new Date(2025, 10, 18).toISOString().split('T')[0];
-
-                const cell = document.createElement('div');
-                cell.className = `calendar-cell p-2 border border-gray-200 cursor-pointer transition-colors ${
-                    isToday ? 'bg-blue-100 border-blue-400' : ''
-                } ${selectedDate === dateKey ? 'selected-cell' : ''}`;
-                cell.onclick = () => selectDate(dateKey);
-
-                let html = `<div class="font-semibold text-sm mb-1 ${isToday ? 'text-blue-700' : 'text-gray-700'}">${day}</div>`;
-                html += '<div class="text-xs space-y-1">';
-
-                if (assignments.night) {
-                    html += `<div class="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate" title="Night: ${assignments.night.name}">🌙 ${assignments.night.name.split(' ')[0]}</div>`;
-                }
-                if (assignments.early) {
-                    html += `<div class="bg-amber-100 text-amber-800 px-1 py-0.5 rounded truncate" title="Early: ${assignments.early.name}">🌅 ${assignments.early.name.split(' ')[0]}</div>`;
-                }
-                if (assignments.day) {
-                    html += `<div class="bg-green-100 text-green-800 px-1 py-0.5 rounded truncate" title="Day: ${assignments.day.name}">☀️ ${assignments.day.name.split(' ')[0]}</div>`;
-                }
-                if (assignments.evening) {
-                    html += `<div class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded truncate" title="Evening: ${assignments.evening.name}">🌆 ${assignments.evening.name.split(' ')[0]}</div>`;
-                }
-
-                html += '</div>';
-                cell.innerHTML = html;
-                grid.appendChild(cell);
-            }
-
-            document.getElementById('monthDisplay').textContent = `${calendarData.monthName} ${calendarData.year}`;
-            updateButtons();
-        }
-
-        function selectDate(dateKey) {
-            selectedDate = dateKey;
-            renderCalendar();
-            showDateDetails(dateKey);
-        }
-
-        function showDateDetails(dateKey) {
-            const assignments = rotation[dateKey] || {};
-            const date = new Date(dateKey);
-            const dateString = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const dayOfWeek = date.getDay();
-            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
-            const detailsDiv = document.getElementById('selectedDetails');
-            detailsDiv.className = 'mt-6 bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg';
-            
-            let html = `<h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                ${dateString}
-            </h3>
-            <div class="space-y-3">`;
-
-            if (assignments.night) {
-                const eng = assignments.night;
-                html += `<div class="border-l-4 border-indigo-500 pl-3 py-2 bg-indigo-50 rounded">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="font-semibold text-indigo-900">🌙 Night Shift (00:00-06:00)</div>
-                            <div class="text-sm text-indigo-800">${eng.name}</div>
-                            <div class="text-xs text-indigo-600">${eng.email}</div>
-                            <div class="text-xs text-indigo-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
-                        </div>
-                        <button onclick="editAssignment('${dateKey}', 'night')" class="ml-2 px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600">
-                            Edit
-                        </button>
-                    </div>
-                </div>`;
-            }
-
-            if (assignments.early) {
-                const eng = assignments.early;
-                html += `<div class="border-l-4 border-amber-500 pl-3 py-2 bg-amber-50 rounded">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="font-semibold text-amber-900">🌅 Early Shift (06:00-09:00)</div>
-                            <div class="text-sm text-amber-800">${eng.name}</div>
-                            <div class="text-xs text-amber-600">${eng.email}</div>
-                            <div class="text-xs text-amber-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
-                        </div>
-                        <button onclick="editAssignment('${dateKey}', 'early')" class="ml-2 px-2 py-1 text-xs bg-amber-500 text-white rounded hover:bg-amber-600">
-                            Edit
-                        </button>
-                    </div>
-                </div>`;
-            }
-
-            if (assignments.day) {
-                const eng = assignments.day;
-                html += `<div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="font-semibold text-green-900">☀️ Day Shift (09:00-15:00)</div>
-                            <div class="text-sm text-green-800">${eng.name}</div>
-                            <div class="text-xs text-green-600">${eng.email}</div>
-                            <div class="text-xs text-green-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
-                        </div>
-                        <button onclick="editAssignment('${dateKey}', 'day')" class="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">
-                            Edit
-                        </button>
-                    </div>
-                </div>`;
-            }
-
-            if (assignments.evening) {
-                const eng = assignments.evening;
-                html += `<div class="border-l-4 border-purple-500 pl-3 py-2 bg-purple-50 rounded">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="font-semibold text-purple-900">🌆 Evening Shift (15:00-18:00)</div>
-                            <div class="text-sm text-purple-800">${eng.name}</div>
-                            <div class="text-xs text-purple-600">${eng.email}</div>
-                            <div class="text-xs text-purple-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
-                        </div>
-                        <button onclick="editAssignment('${dateKey}', 'evening')" class="ml-2 px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600">
-                            Edit
-                        </button>
-                    </div>
-                </div>`;
-            }
-
-            html += '</div>';
-            detailsDiv.innerHTML = html;
-        }
-
-        function editAssignment(dateKey, shift) {
-            editingDate = dateKey;
-            editingShift = shift;
-
-            const date = new Date(dateKey);
-            const dateString = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const dayOfWeek = date.getDay();
-            const currentEngineer = rotation[dateKey][shift];
-
-            const shiftNames = {
-                night: '🌙 Night Shift (00:00-06:00)',
-                early: '🌅 Early Shift (06:00-09:00)',
-                day: '☀️ Day Shift (09:00-15:00)',
-                evening: '🌆 Evening Shift (15:00-18:00)'
-            };
-
-            document.getElementById('modalDate').textContent = dateString;
-            document.getElementById('modalShift').textContent = shiftNames[shift];
-            document.getElementById('modalCurrent').textContent = `${currentEngineer.name} (${currentEngineer.email})`;
-
-            const availableEngineers = engineers.filter(e => e.shift === shift && isWorking(e, dayOfWeek));
-            const select = document.getElementById('engineerSelect');
-            select.innerHTML = '';
-            
-            availableEngineers.forEach(eng => {
-                const option = document.createElement('option');
-                option.value = eng.email;
-                option.textContent = `${eng.name} (${eng.email})`;
-                if (eng.email === currentEngineer.email) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
-
-            document.getElementById('editModal').classList.add('show');
-        }
-
-        function closeModal() {
-            document.getElementById('editModal').classList.remove('show');
-            editingDate = null;
-            editingShift = null;
-        }
-
-        function saveEdit() {
-            const selectedEmail = document.getElementById('engineerSelect').value;
-            const selectedEngineer = engineers.find(e => e.email === selectedEmail);
-            
-            if (selectedEngineer && editingDate && editingShift) {
-                rotation[editingDate][editingShift] = selectedEngineer;
-                saveRotation();
-                closeModal();
-                renderCalendar();
-                show
+let engineers=[{name:"Alexandra Hock",email:"alexandra.hock@ringcentral.com",schedule:{sun:"OFF",mon:"05:00-14:00",tue:"05:00-14:00",wed:"05:00-14:00",thu:"05:00-14:00",fri:"05:00-14:00",sat:"OFF"},shift:"early"},{name:"Marina Stambaugh",email:"marina.stambaugh@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Rochelle Gobis",email:"rochelle.gobis@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"OFF"},shift:"day"},{name:"Sarah Heriford",email:"sarah.heriford@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Karla Talamantes",email:"karla.talamantes@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Jeremy Rodriguez",email:"jeremyr@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Jenny Deasy",email:"jenny.deasy@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-15:30",tue:"07:00-15:30",wed:"07:00-15:30",thu:"07:00-15:30",fri:"07:00-15:30",sat:"OFF"},shift:"early"},{name:"Bo Lemecha",email:"Bo.Lemecha@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-14:30",tue:"06:00-14:30",wed:"06:00-14:30",thu:"06:00-14:30",fri:"06:00-14:30",sat:"OFF"},shift:"early"},{name:"Edwin Reveley",email:"edwin.reveley@ringcentral.com",schedule:{sun:"OFF",mon:"09:30-18:00",tue:"09:30-18:00",wed:"09:30-18:00",thu:"09:30-18:00",fri:"09:30-18:00",sat:"OFF"},shift:"day"},{name:"Edward Salvador",email:"edward.salvador@ringcentral.com",schedule:{sun:"08:00-15:30",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"OFF",sat:"OFF"},shift:"day"},{name:"John Glenn Bayron",email:"john.bayron@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"OFF"},shift:"day"},{name:"Robert Carter",email:"robert.carter@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-17:00",tue:"09:00-17:00",wed:"09:00-17:00",thu:"09:00-17:00",fri:"09:00-17:00",sat:"OFF"},shift:"day"},{name:"Dan Baker",email:"dan.baker1@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-15:00",tue:"07:00-15:00",wed:"07:00-15:00",thu:"07:00-15:00",fri:"07:00-15:00",sat:"OFF"},shift:"early"},{name:"John Tran",email:"john.tran@ringcentral.com",schedule:{sun:"OFF",mon:"10:00-18:00",tue:"10:00-18:00",wed:"10:00-18:00",thu:"10:00-18:00",fri:"10:00-18:00",sat:"OFF"},shift:"day"},{name:"Jared Cooper",email:"jared.cooper@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Lara Mae Dela Cruz",email:"lara.delacruz@ringcentral.com",schedule:{sun:"OFF",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"15:00-00:00",fri:"15:00-00:00",sat:"OFF"},shift:"evening"},{name:"Love Lyn Cano",email:"love.cano@ringcentral.com",schedule:{sun:"15:00-00:00",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"OFF",fri:"OFF",sat:"15:00-00:00"},shift:"evening"},{name:"James Belleza",email:"james.belleza@ringcentral.com",schedule:{sun:"15:00-00:00",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"15:00-00:00",fri:"OFF",sat:"OFF"},shift:"evening"},{name:"Rushikesh Sawant",email:"rushikesh.sawant@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Santosh Sahoo",email:"santosh.sahoo@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Srikanth Reddy",email:"srikanth.v@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Jobon Chinel",email:"jobon.chinel@ringcentral.com",schedule:{sun:"01:00-10:00",mon:"01:00-10:00",tue:"01:00-10:00",wed:"01:00-10:00",thu:"01:00-10:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Ryan Hawkins",email:"ryan.hawkins@ringcentral.com",schedule:{sun:"01:00-07:00",mon:"01:00-07:00",tue:"01:00-07:00",wed:"01:00-07:00",thu:"01:00-07:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Joseph Bendecio",email:"joseph.bendecio@ringcentral.com",schedule:{sun:"OFF",mon:"OFF",tue:"01:00-10:00",wed:"01:00-10:00",thu:"01:00-10:00",fri:"01:00-10:00",sat:"01:00-10:00"},shift:"night"},{name:"Pearce Hamblin",email:"pearce.hamblin@ringcentral.com",schedule:{sun:"01:00-07:00",mon:"01:00-07:00",tue:"01:00-07:00",wed:"01:00-07:00",thu:"01:00-07:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Amine Dahel",email:"amine.dahel@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Andrew Neill",email:"andrew.neill@ringcentral.com",schedule:{sun:"03:00-09:00",mon:"03:00-09:00",tue:"03:00-09:00",wed:"03:00-09:00",thu:"03:00-09:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Andy Connolly",email:"andy.connolly@ringcentral.com",schedule:{sun:"03:00-09:00",mon:"03:00-09:00",tue:"03:00-09:00",wed:"03:00-09:00",thu:"03:00-09:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Colin Finn",email:"colin.finn@ringcentral.com",schedule:{sun:"02:00-08:00",mon:"02:00-08:00",tue:"02:00-08:00",wed:"02:00-08:00",thu:"02:00-08:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Deepthi Chandran",email:"deepthi.chandran@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Derek Walker",email:"derek.walker@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Hugo Nickal-Thibeaud",email:"hugo.thibeaud@ringcentral.com",schedule:{sun:"02:00-08:00",mon:"02:00-08:00",tue:"02:00-08:00",wed:"02:00-08:00",thu:"02:00-08:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Baranee Selvendran",email:"baranee.selvendran@ringcentral.com",schedule:{sun:"02:00-10:00",mon:"02:00-10:00",tue:"02:00-10:00",wed:"02:00-10:00",thu:"02:00-10:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Eryll Azucena",email:"eryll.azucena@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"08:00-15:30"},shift:"day"},{name:"Mare Snyder",email:"mare.snyder@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Nate Malone",email:"nate.malone@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Peter Czarnecki",email:"peter.czarnecki@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-14:30",tue:"06:00-14:30",wed:"06:00-14:30",thu:"06:00-14:30",fri:"06:00-14:30",sat:"OFF"},shift:"early"},{name:"Colby Jestes",email:"colby.jestes@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Mark Peirce",email:"mark.peirce@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Roscoe Bryant",email:"roscoe.bryant@ringcentral.com",schedule:{sun:"OFF",mon:"08:30-17:00",tue:"08:30-17:00",wed:"08:30-17:00",thu:"08:30-17:00",fri:"08:30-17:00",sat:"OFF"},shift:"day"},{name:"Cindy Hubert",email:"cindy.hubert@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Abby Bearden",email:"abby.bearden@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-15:00",tue:"06:00-15:00",wed:"06:00-15:00",thu:"06:00-15:00",fri:"06:00-15:00",sat:"OFF"},shift:"early"},{name:"Tim Arnott",email:"tim.arnott@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-15:00",tue:"06:00-15:00",wed:"06:00-15:00",thu:"06:00-15:00",fri:"06:00-15:00",sat:"OFF"},shift:"early"},{name:"Tomislav Vranjes",email:"tomislav.vranjes@ringcentral.com",schedule:{sun:"OFF",mon:"09:30-18:00",tue:"09:30-18:00",wed:"09:30-18:00",thu:"09:30-18:00",fri:"09:30-18:00",sat:"OFF"},shift:"day"}];let currentMonth=0,selectedDate=null,rotation={},editingDate=null,editingShift=null,editingEngineerIndex=null;function showPage(e){document.querySelectorAll(".page").forEach(e=>e.classList.remove("active")),document.querySelectorAll("[id^=nav]").forEach(e=>{e.classList.remove("bg-blue-700"),e.classList.add("hover:bg-blue-700")}),"calendar"===e?(document.getElementById("calendarPage").classList.add("active"),document.getElementById("navCalendar").classList.add("bg-blue-700")):"engineers"===e&&(document.getElementById("engineersPage").classList.add("active"),document.getElementById("navEngineers").classList.add("bg-blue-700"),renderEngineersTable())}function renderEngineersTable(){const e=document.getElementById("engineersTable");e.innerHTML="",engineers.forEach((t,a)=>{const n=document.createElement("tr");n.innerHTML=`<td class="border border-gray-300 p-2 text-sm">${t.name}</td><td class="border border-gray-300 p-2 text-sm">${t.email}</td><td class="border border-gray-300 p-2 text-sm">${t.shift}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.sun}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.mon}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.tue}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.wed}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.thu}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.fri}</td><td class="border border-gray-300 p-2 text-xs text-center">${t.schedule.sat}</td><td class="border border-gray-300 p-2 text-center"><button onclick="editEngineer(${a})" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 mr-1">Edit</button><button onclick="deleteEngineer(${a})" class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Delete</button></td>`,e.appendChild(n)})}function addEngineer(){editingEngineerIndex=-1,document.getElementById("editEngName").value="",document.getElementById("editEngEmail").value="",document.getElementById("editEngShift").value="day",document.getElementById("editEngSun").value="OFF",document.getElementById("editEngMon").value="08:00-17:00",document.getElementById("editEngTue").value="08:00-17:00",document.getElementById("editEngWed").value="08:00-17:00",document.getElementById("editEngThu").value="08:00-17:00",document.getElementById("editEngFri").value="08:00-17:00",document.getElementById("editEngSat").value="OFF",document.getElementById("editEngineerModal").classList.add("show")}function editEngineer(e){editingEngineerIndex=e;const t=engineers[e];document.getElementById("editEngName").value=t.name,document.getElementById("editEngEmail").value=t.email,document.getElementById("editEngShift").value=t.shift,document.getElementById("editEngSun").value=t.schedule.sun,document.getElementById("editEngMon").value=t.schedule.mon,document.getElementById("editEngTue").value=t.schedule.tue,document.getElementById("editEngWed").value=t.schedule.wed,document.getElementById("editEngThu").value=t.schedule.thu,document.getElementById("editEngFri").value=t.schedule.fri,document.getElementById("editEngSat").value=t.schedule.sat,document.getElementById("editEngineerModal").classList.add("show")}function saveEngineer(){const e={name:document.getElementById("editEngName").value.trim(),email:document.getElementById("editEngEmail").value.trim(),shift:document.getElementById("editEngShift").value,schedule:{sun:document.getElementById("editEngSun").value.trim(),mon:document.getElementById("editEngMon").value.trim(),tue:document.getElementById("editEngTue").value.trim(),wed:document.getElementById("editEngWed").value.trim(),thu:document.getElementById("editEngThu").value.trim(),fri:document.getElementById("editEngFri").value.trim(),sat:document.getElementById("editEngSat").value.trim()}};e.name&&e.email?(-1===editingEngineerIndex?engineers.push(e):engineers[editingEngineerIndex]=e,saveEngineers(),closeEngineerModal(),renderEngineersTable()):alert("Name and email are required")}function deleteEngineer(e){confirm(`Are you sure you want to delete ${engineers[e].name}?`)&&(engineers.splice(e,1),saveEngineers(),renderEngineersTable())}function closeEngineerModal(){document.getElementById("editEngineerModal").classList.remove("show"),editingEngineerIndex=null}function saveEngineers(){localStorage.setItem("nocEngineers",JSON.stringify(engineers))}function loadEngineers(){const e=localStorage.getItem("nocEngineers");return!!e&&(engineers=JSON.parse(e),!0)}function showRedistributeModal(){const e=new Date;document.getElementById("redistributeStart").value=e.toISOString().split("T")[0];const t=new Date(e);t.setDate(t.getDate()+30),document.getElementById("redistributeEnd").value=t.toISOString().split("T")[0],document.getElementById("redistributeModal").classList.add("show")}function closeRedistributeModal(){document.getElementById("redistributeModal").classList.remove("show")}function redistributeShifts(){const e=document.getElementById("redistributeStart").value,t=document.getElementById("redistributeEnd").value;if(!e||!t)return void alert("Please select both start and end dates");const a=new Date(e),n=new Date(t);if(a>n)return void alert("Start date must be before end date");if(confirm("This will redistribute all shifts in the selected date range. Continue?")){const e={early:engineers.filter(e=>"early"===e.shift),day:engineers.filter(e=>"day"===e.shift),evening:engineers.filter(e=>"evening"===e.shift),night:engineers.filter(e=>"night"===e.shift)},t={early:0,day:0,evening:0,night:0};let r=new Date(a);for(;r<=n;){const a=r.getDay(),n=r.toISOString().split("T")[0];rotation[n]||(rotation[n]={}),Object.keys(e).forEach(s=>{const i=e[s].filter(e=>isWorking(e,a));if(i.length>0){const e=i[t[s]%i.length];rotation[n][s]=e,t[s]++}}),r.setDate(r.getDate()+1)}saveRotation(),closeRedistributeModal(),renderCalendar(),alert("Shifts redistributed successfully!")}}function isWorking(e,t){return"OFF"!==e.schedule[["sun","mon","tue","wed","thu","fri","sat"][t]]}function generateRotation(){const e=new Date(2025,10,18),t={early:engineers.filter(e=>"early"===e.shift),day:engineers.filter(e=>"day"===e.shift),evening:engineers.filter(e=>"evening"===e.shift),night:engineers.filter(e=>"night"===e.shift)},a={early:0,day:0,evening:0,night:0};for(let n=0;n<75;n++){const n=new Date(e);n.setDate(n.getDate()+n);const r=n.getDay(),s=n.toISOString().split("T")[0];rotation[s]={},Object.keys(t).forEach(e=>{const n=t[e].filter(e=>isWorking(e,r));if(n.length>0){const t=n[a[e]%n.length];rotation[s][e]=t,a[e]++}})}}function saveRotation(){localStorage.setItem("nocRotation",JSON.stringify(rotation))}function loadRotation(){const e=localStorage.getItem("nocRotation");return!!e&&(rotation=JSON.parse(e),!0)}function resetRotation(){confirm("Are you sure you want to reset the rotation to default? All changes will be lost.")&&(localStorage.removeItem("nocRotation"),generateRotation(),saveRotation(),renderCalendar(),selectedDate&&showDateDetails(selectedDate))}function getCalendarData(){const e=new Date(2025,10,1);e.setMonth(e.getMonth()+currentMonth);const t=e.getFullYear(),a=e.getMonth(),n=new Date(t,a,1),r=(new Date(t,a+1,0).getDate(),n.getDay());return{monthName:["January","February","March","April","May","June","July","August","September","October","November","December"][a],year:t,daysInMonth:new Date(t,a+1,0).getDate(),startingDayOfWeek:r,month:a}}function renderCalendar(){const e=getCalendarData(),t=document.getElementById("calendarGrid");t.innerHTML="",t.className="col-span-7 grid grid-cols-7";for(let a=0;a<e.startingDayOfWeek;a++){const e=document.createElement("div");e.className="p-2 border border-gray-100",t.appendChild(e)}for(let a=1;a<=e.daysInMonth;a++){const n=new Date(e.year,e.month,a),r=n.toISOString().split("T")[0],s=rotation[r]||{},i="2025-11-18"===r,o=document.createElement("div");o.className=`calendar-cell p-2 border border-gray-200 cursor-pointer transition-colors ${i?"bg-blue-100 border-blue-400":""} ${selectedDate===r?"selected-cell":""}`,o.onclick=()=>selectDate(r);let l=`<div class="font-semibold text-sm mb-1 ${i?"text-blue-700":"text-gray-700"}">${a}</div>`;l+='<div class="text-xs space-y-1">',s.night&&(l+=`<div class="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate" title="Night: ${s.night.name}">🌙 ${s.night.name.split(" ")[0]}</div>`),s.early&&(l+=`<div class="bg-amber-100 text-amber-800 px-1 py-0.5 rounded truncate" title="Early: ${s.early.name}">🌅 ${s.early.name.split(" ")[0]}</div>`),s.day&&(l+=`<div class="bg-green-100 text-green-800 px-1 py-0.5 rounded truncate" title="Day: ${s.day.name}">☀️ ${s.day.name.split(" ")[0]}</div>`),s.evening&&(l+=`<div class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded truncate" title="Evening: ${s.evening.name}">🌆 ${s.evening.name.split(" ")[0]}</div>`),l+="</div>",o.innerHTML=l,t.appendChild(o)}document.getElementById("monthDisplay").textContent=`${e.monthName} ${e.year}`,updateButtons()}function selectDate(e){selectedDate=e,renderCalendar(),showDateDetails(e)}function showDateDetails(e){const t=rotation[e]||{},a=new Date(e),n=a.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}),r=a.getDay(),s=["sun","mon","tue","wed","thu","fri","sat"],i=document.getElementById("selectedDetails");i.className="mt-6 bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg";let o='<h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'+n+'</h3><div class="space-y-3">';t.night&&(o+=`<div class="border-l-4 border-indigo-500 pl-3 py-2 bg-indigo-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-indigo-900">🌙 Night Shift (00:00-06:00)</div><div class="text-sm text-indigo-800">${t.night.name}</div><div class="text-xs text-indigo-600">${t.night.email}</div><div class="text-xs text-indigo-700 mt-1">Hours: ${t.night.schedule[s[r]]}</div></div><button onclick="editAssignment('${e}','night')" class="ml-2 px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600">Edit</button></div></div>`),t.early&&(o+=`<div class="border-l-4 border-amber-500 pl-3 py-2 bg-amber-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-amber-900">🌅 Early Shift (06:00-09:00)</div><div class="text-sm text-amber-800">${t.early.name}</div><div class="text-xs text-amber-600">${t.early.email}</div><div class="text-xs text-amber-700 mt-1">Hours: ${t.early.schedule[s[r]]}</div></div><button onclick="editAssignment('${e}','early')" class="ml-2 px-2 py-1 text-xs bg-amber-500 text-white rounded hover:bg-amber-600">Edit</button></div></div>`),t.day&&(o+=`<div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-green-900">☀️ Day Shift (09:00-15:00)</div><div class="text-sm text-green-800">${t.day.name}</div><div class="text-xs text-green-600">${t.day.email}</div><div class="text-xs text-green-700 mt-1">Hours: ${t.day.schedule[s[r]]}</div></div><button onclick="editAssignment('${e}','day')" class="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">Edit</button></div></div>`),t.evening&&(o+=`<div class="border-l-4 border-purple-500 pl-3 py-2 bg-purple-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-purple-900">🌆 Evening Shift (15:00-18:00)</div><div class="text-sm text-purple-800">${t.evening.name}</div><div class="text-xs text-purple-600">${t.evening.email}</div><div class="text-xs text-purple-700 mt-1">Hours: ${t.evening.schedule[s[r]]}</div></div><button onclick="editAssignment('${e}','evening')" class="ml-2 px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600">Edit</button></div></div>`),o+="</div>",i.innerHTML=o}function editAssignment(e,t){editingDate=e,editingShift=t;const a=new Date(e),n=a.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}),r=a.getDay(),s=rotation[e][t],i={night:"🌙 Night Shift (00:00-06:00)",early:"🌅 Early Shift (06:00-09:00)",day:"☀️ Day Shift (09:00-15:00)",evening:"🌆 Evening Shift (15:00-18:00)"};document.getElementById("modalDate").textContent=n,document.getElementById("modalShift").textContent=i[t],document.getElementById("modalCurrent").textContent=`${s.name} (${s.email})`;const o=engineers.filter(e=>e.shift===t&&isWorking(e,r)),l=document.getElementById("engineerSelect");l.innerHTML="",o.forEach(e=>{const t=document.createElement("option");t.value=e.email,t.textContent=`${e.name} (${e.email})`,e.email===s.email&&(t.selected=!0),l.appendChild(t)}),document.getElementById("editModal").classList.add("show")}function closeModal(){document.getElementById("editModal").classList.remove("show"),editingDate=null,editingShift=null}function saveEdit(){const e=document.getElementById("engineerSelect").value,t=engineers.find(t=>t.email===e);t&&editingDate&&editingShift&&(rotation[editingDate][editingShift]=t,saveRotation(),closeModal(),renderCalendar(),showDateDetails(editingDate))}function changeMonth(e){const t=currentMonth+e;t>=0&&t<=2&&(currentMonth=t,selectedDate=null,document.getElementById("selectedDetails").className="mt-6 hidden",renderCalendar())}function updateButtons(){document.getElementById("prevBtn").disabled=0===currentMonth,document.getElementById("nextBtn").disabled=2===currentMonth,0===currentMonth?document.getElementById("prevBtn").className="p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":document.getElementById("prevBtn").className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors",2===currentMonth?document.getElementById("nextBtn").className="p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":document.getElementById("nextBtn").className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"}loadEngineers(),loadRotation()||generateRotation(),saveRotation(),renderCalendar();
+    </script>
+</body>
+</html>
