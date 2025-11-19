@@ -4453,16 +4453,16 @@
     {
       "name": "Deepthi Chandran",
       "email": "deepthi.chandran@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "00:00-06:00",
+        "sun": "",
         "mon": "00:00-06:00",
         "tue": "00:00-06:00",
         "wed": "00:00-06:00",
         "thu": "00:00-06:00",
-        "fri": "OFF",
+        "fri": "00:00-06:00",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Derek Walker",
