@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Incident Rotation Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calendar-cell {
+            min-height: 96px;
+        }
+        .calendar-cell:hover {
+            background-color: #dbeafe;
+        }
+        .selected-cell {
+            ring: 2px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-6xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+                <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    NOC Incident Watch Rotation
+                </h1>
+                <div class="flex items-center gap-4">
+                    <button onclick="changeMonth(-1)" id="prevBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <span id="monthDisplay" class="text-xl font-semibold text-gray-700 min-w-48 text-center"></span>
+                    <button onclick="changeMonth(1)" id="nextBtn" class="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4 flex gap-4 text-xs flex-wrap">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-indigo-100 border border-indigo-300 rounded"></div>
+                    <span>🌙 Night (00:00-10:00)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-amber-100 border border-amber-300 rounded"></div>
+                    <span>🌅 Early (05:00-09:00)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+                    <span>☀️ Day (08:00-18:00)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded"></div>
+                    <span>🌆 Evening (15:00-00:00)</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-7 gap-0 border border-gray-300 rounded-lg overflow-hidden">
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Sunday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Monday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Tuesday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Wednesday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Thursday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Friday</div>
+                <div class="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-300">Saturday</div>
+                <div id="calendarGrid"></div>
+            </div>
+
+            <div id="selectedDetails" class="mt-6 hidden bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg"></div>
+
+            <div class="mt-6 text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
+                <p class="font-semibold mb-2">📋 Rotation Logic:</p>
+                <ul class="list-disc list-inside space-y-1 ml-2">
+                    <li>Engineers are automatically rotated within their assigned shift</li>
+                    <li>Only available engineers (not on OFF days) are assigned</li>
+                    <li>Single-threaded shifts (weekends) automatically assign the only available engineer</li>
+                    <li>Click any date to see full assignment details including contact info and exact hours</li>
+                    <li>Rotation ensures fair distribution across all available team members</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const engineers = [
+            { name: "Alexandra Hock", email: "alexandra.hock@ringcentral.com", schedule: { sun: "OFF", mon: "05:00-14:00", tue: "05:00-14:00", wed: "05:00-14:00", thu: "05:00-14:00", fri: "05:00-14:00", sat: "OFF" }, shift: "early" },
+            { name: "Marina Stambaugh", email: "marina.stambaugh@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
+            { name: "Rochelle Gobis", email: "rochelle.gobis@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "OFF" }, shift: "day" },
+            { name: "Sarah Heriford", email: "sarah.heriford@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
+            { name: "Karla Talamantes", email: "karla.talamantes@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Jeremy Rodriguez", email: "jeremyr@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
+            { name: "Jenny Deasy", email: "jenny.deasy@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-15:30", tue: "07:00-15:30", wed: "07:00-15:30", thu: "07:00-15:30", fri: "07:00-15:30", sat: "OFF" }, shift: "early" },
+            { name: "Bo Lemecha", email: "Bo.Lemecha@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-14:30", tue: "06:00-14:30", wed: "06:00-14:30", thu: "06:00-14:30", fri: "06:00-14:30", sat: "OFF" }, shift: "early" },
+            { name: "Edwin Reveley", email: "edwin.reveley@ringcentral.com", schedule: { sun: "OFF", mon: "09:30-18:00", tue: "09:30-18:00", wed: "09:30-18:00", thu: "09:30-18:00", fri: "09:30-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Edward Salvador", email: "edward.salvador@ringcentral.com", schedule: { sun: "08:00-15:30", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "OFF", sat: "OFF" }, shift: "day" },
+            { name: "John Glenn Bayron", email: "john.bayron@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "OFF" }, shift: "day" },
+            { name: "Robert Carter", email: "robert.carter@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-17:00", tue: "09:00-17:00", wed: "09:00-17:00", thu: "09:00-17:00", fri: "09:00-17:00", sat: "OFF" }, shift: "day" },
+            { name: "Dan Baker", email: "dan.baker1@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-15:00", tue: "07:00-15:00", wed: "07:00-15:00", thu: "07:00-15:00", fri: "07:00-15:00", sat: "OFF" }, shift: "early" },
+            { name: "John Tran", email: "john.tran@ringcentral.com", schedule: { sun: "OFF", mon: "10:00-18:00", tue: "10:00-18:00", wed: "10:00-18:00", thu: "10:00-18:00", fri: "10:00-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Jared Cooper", email: "jared.cooper@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Lara Mae Dela Cruz", email: "lara.delacruz@ringcentral.com", schedule: { sun: "OFF", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "15:00-00:00", fri: "15:00-00:00", sat: "OFF" }, shift: "evening" },
+            { name: "Love Lyn Cano", email: "love.cano@ringcentral.com", schedule: { sun: "15:00-00:00", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "OFF", fri: "OFF", sat: "15:00-00:00" }, shift: "evening" },
+            { name: "James Belleza", email: "james.belleza@ringcentral.com", schedule: { sun: "15:00-00:00", mon: "15:00-00:00", tue: "15:00-00:00", wed: "15:00-00:00", thu: "15:00-00:00", fri: "OFF", sat: "OFF" }, shift: "evening" },
+            { name: "Rushikesh Sawant", email: "rushikesh.sawant@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Santosh Sahoo", email: "santosh.sahoo@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Srikanth Reddy", email: "srikanth.v@ringcentral.com", schedule: { sun: "22:30-07:30", mon: "22:30-07:30", tue: "22:30-07:30", wed: "22:30-07:30", thu: "22:30-07:30", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Jobon Chinel", email: "jobon.chinel@ringcentral.com", schedule: { sun: "01:00-10:00", mon: "01:00-10:00", tue: "01:00-10:00", wed: "01:00-10:00", thu: "01:00-10:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Ryan Hawkins", email: "ryan.hawkins@ringcentral.com", schedule: { sun: "01:00-07:00", mon: "01:00-07:00", tue: "01:00-07:00", wed: "01:00-07:00", thu: "01:00-07:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Joseph Bendecio", email: "joseph.bendecio@ringcentral.com", schedule: { sun: "OFF", mon: "OFF", tue: "01:00-10:00", wed: "01:00-10:00", thu: "01:00-10:00", fri: "01:00-10:00", sat: "01:00-10:00" }, shift: "night" },
+            { name: "Pearce Hamblin", email: "pearce.hamblin@ringcentral.com", schedule: { sun: "01:00-07:00", mon: "01:00-07:00", tue: "01:00-07:00", wed: "01:00-07:00", thu: "01:00-07:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Amine Dahel", email: "amine.dahel@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Andrew Neill", email: "andrew.neill@ringcentral.com", schedule: { sun: "03:00-09:00", mon: "03:00-09:00", tue: "03:00-09:00", wed: "03:00-09:00", thu: "03:00-09:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Andy Connolly", email: "andy.connolly@ringcentral.com", schedule: { sun: "03:00-09:00", mon: "03:00-09:00", tue: "03:00-09:00", wed: "03:00-09:00", thu: "03:00-09:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Colin Finn", email: "colin.finn@ringcentral.com", schedule: { sun: "02:00-08:00", mon: "02:00-08:00", tue: "02:00-08:00", wed: "02:00-08:00", thu: "02:00-08:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Deepthi Chandran", email: "deepthi.chandran@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Derek Walker", email: "derek.walker@ringcentral.com", schedule: { sun: "00:00-06:00", mon: "00:00-06:00", tue: "00:00-06:00", wed: "00:00-06:00", thu: "00:00-06:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Hugo Nickal-Thibeaud", email: "hugo.thibeaud@ringcentral.com", schedule: { sun: "02:00-08:00", mon: "02:00-08:00", tue: "02:00-08:00", wed: "02:00-08:00", thu: "02:00-08:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Baranee Selvendran", email: "baranee.selvendran@ringcentral.com", schedule: { sun: "02:00-10:00", mon: "02:00-10:00", tue: "02:00-10:00", wed: "02:00-10:00", thu: "02:00-10:00", fri: "OFF", sat: "OFF" }, shift: "night" },
+            { name: "Eryll Azucena", email: "eryll.azucena@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-15:30", tue: "08:00-15:30", wed: "08:00-15:30", thu: "08:00-15:30", fri: "08:00-15:30", sat: "08:00-15:30" }, shift: "day" },
+            { name: "Mare Snyder", email: "mare.snyder@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Nate Malone", email: "nate.malone@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
+            { name: "Peter Czarnecki", email: "peter.czarnecki@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-14:30", tue: "06:00-14:30", wed: "06:00-14:30", thu: "06:00-14:30", fri: "06:00-14:30", sat: "OFF" }, shift: "early" },
+            { name: "Colby Jestes", email: "colby.jestes@ringcentral.com", schedule: { sun: "OFF", mon: "08:00-16:30", tue: "08:00-16:30", wed: "08:00-16:30", thu: "08:00-16:30", fri: "08:00-16:30", sat: "OFF" }, shift: "day" },
+            { name: "Mark Peirce", email: "mark.peirce@ringcentral.com", schedule: { sun: "OFF", mon: "09:00-18:00", tue: "09:00-18:00", wed: "09:00-18:00", thu: "09:00-18:00", fri: "09:00-18:00", sat: "OFF" }, shift: "day" },
+            { name: "Roscoe Bryant", email: "roscoe.bryant@ringcentral.com", schedule: { sun: "OFF", mon: "08:30-17:00", tue: "08:30-17:00", wed: "08:30-17:00", thu: "08:30-17:00", fri: "08:30-17:00", sat: "OFF" }, shift: "day" },
+            { name: "Cindy Hubert", email: "cindy.hubert@ringcentral.com", schedule: { sun: "OFF", mon: "07:00-16:00", tue: "07:00-16:00", wed: "07:00-16:00", thu: "07:00-16:00", fri: "07:00-16:00", sat: "OFF" }, shift: "early" },
+            { name: "Abby Bearden", email: "abby.bearden@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-15:00", tue: "06:00-15:00", wed: "06:00-15:00", thu: "06:00-15:00", fri: "06:00-15:00", sat: "OFF" }, shift: "early" },
+            { name: "Tim Arnott", email: "tim.arnott@ringcentral.com", schedule: { sun: "OFF", mon: "06:00-15:00", tue: "06:00-15:00", wed: "06:00-15:00", thu: "06:00-15:00", fri: "06:00-15:00", sat: "OFF" }, shift: "early" },
+            { name: "Tomislav Vranjes", email: "tomislav.vranjes@ringcentral.com", schedule: { sun: "OFF", mon: "09:30-18:00", tue: "09:30-18:00", wed: "09:30-18:00", thu: "09:30-18:00", fri: "09:30-18:00", sat: "OFF" }, shift: "day" }
+        ];
+
+        let currentMonth = 0;
+        let selectedDate = null;
+        let rotation = {};
+
+        function isWorking(engineer, dayOfWeek) {
+            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            return engineer.schedule[days[dayOfWeek]] !== "OFF";
+        }
+
+        function generateRotation() {
+            const startDate = new Date(2025, 10, 18);
+            const shiftPools = {
+                early: engineers.filter(e => e.shift === 'early'),
+                day: engineers.filter(e => e.shift === 'day'),
+                evening: engineers.filter(e => e.shift === 'evening'),
+                night: engineers.filter(e => e.shift === 'night')
+            };
+            const rotationIndex = { early: 0, day: 0, evening: 0, night: 0 };
+
+            for (let i = 0; i < 75; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                const dayOfWeek = date.getDay();
+                const dateKey = date.toISOString().split('T')[0];
+
+                rotation[dateKey] = {};
+
+                Object.keys(shiftPools).forEach(shift => {
+                    const pool = shiftPools[shift];
+                    const availableEngineers = pool.filter(eng => isWorking(eng, dayOfWeek));
+                    
+                    if (availableEngineers.length > 0) {
+                        const assignedEngineer = availableEngineers[rotationIndex[shift] % availableEngineers.length];
+                        rotation[dateKey][shift] = assignedEngineer;
+                        rotationIndex[shift]++;
+                    }
+                });
+            }
+        }
+
+        function getCalendarData() {
+            const baseDate = new Date(2025, 10, 1);
+            baseDate.setMonth(baseDate.getMonth() + currentMonth);
+            
+            const year = baseDate.getFullYear();
+            const month = baseDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+            return {
+                monthName: monthNames[month],
+                year,
+                daysInMonth,
+                startingDayOfWeek,
+                month
+            };
+        }
+
+        function renderCalendar() {
+            const calendarData = getCalendarData();
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            grid.className = 'col-span-7 grid grid-cols-7';
+
+            for (let i = 0; i < calendarData.startingDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'p-2 border border-gray-100';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= calendarData.daysInMonth; day++) {
+                const date = new Date(calendarData.year, calendarData.month, day);
+                const dateKey = date.toISOString().split('T')[0];
+                const assignments = rotation[dateKey] || {};
+                const isToday = dateKey === new Date(2025, 10, 18).toISOString().split('T')[0];
+
+                const cell = document.createElement('div');
+                cell.className = `calendar-cell p-2 border border-gray-200 cursor-pointer transition-colors ${
+                    isToday ? 'bg-blue-100 border-blue-400' : ''
+                } ${selectedDate === dateKey ? 'selected-cell' : ''}`;
+                cell.onclick = () => selectDate(dateKey);
+
+                let html = `<div class="font-semibold text-sm mb-1 ${isToday ? 'text-blue-700' : 'text-gray-700'}">${day}</div>`;
+                html += '<div class="text-xs space-y-1">';
+
+                if (assignments.night) {
+                    html += `<div class="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate" title="Night: ${assignments.night.name}">🌙 ${assignments.night.name.split(' ')[0]}</div>`;
+                }
+                if (assignments.early) {
+                    html += `<div class="bg-amber-100 text-amber-800 px-1 py-0.5 rounded truncate" title="Early: ${assignments.early.name}">🌅 ${assignments.early.name.split(' ')[0]}</div>`;
+                }
+                if (assignments.day) {
+                    html += `<div class="bg-green-100 text-green-800 px-1 py-0.5 rounded truncate" title="Day: ${assignments.day.name}">☀️ ${assignments.day.name.split(' ')[0]}</div>`;
+                }
+                if (assignments.evening) {
+                    html += `<div class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded truncate" title="Evening: ${assignments.evening.name}">🌆 ${assignments.evening.name.split(' ')[0]}</div>`;
+                }
+
+                html += '</div>';
+                cell.innerHTML = html;
+                grid.appendChild(cell);
+            }
+
+            document.getElementById('monthDisplay').textContent = `${calendarData.monthName} ${calendarData.year}`;
+            updateButtons();
+        }
+
+        function selectDate(dateKey) {
+            selectedDate = dateKey;
+            renderCalendar();
+            showDateDetails(dateKey);
+        }
+
+        function showDateDetails(dateKey) {
+            const assignments = rotation[dateKey] || {};
+            const date = new Date(dateKey);
+            const dateString = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const dayOfWeek = date.getDay();
+            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+            const detailsDiv = document.getElementById('selectedDetails');
+            detailsDiv.className = 'mt-6 bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg';
+            
+            let html = `<h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                ${dateString}
+            </h3>
+            <div class="space-y-3">`;
+
+            if (assignments.night) {
+                const eng = assignments.night;
+                html += `<div class="border-l-4 border-indigo-500 pl-3 py-2 bg-indigo-50 rounded">
+                    <div class="font-semibold text-indigo-900">🌙 Night Shift (00:00-10:00)</div>
+                    <div class="text-sm text-indigo-800">${eng.name}</div>
+                    <div class="text-xs text-indigo-600">${eng.email}</div>
+                    <div class="text-xs text-indigo-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
+                </div>`;
+            }
+
+            if (assignments.early) {
+                const eng = assignments.early;
+                html += `<div class="border-l-4 border-amber-500 pl-3 py-2 bg-amber-50 rounded">
+                    <div class="font-semibold text-amber-900">🌅 Early Shift (05:00-09:00)</div>
+                    <div class="text-sm text-amber-800">${eng.name}</div>
+                    <div class="text-xs text-amber-600">${eng.email}</div>
+                    <div class="text-xs text-amber-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
+                </div>`;
+            }
+
+            if (assignments.day) {
+                const eng = assignments.day;
+                html += `<div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded">
+                    <div class="font-semibold text-green-900">☀️ Day Shift (08:00-18:00)</div>
+                    <div class="text-sm text-green-800">${eng.name}</div>
+                    <div class="text-xs text-green-600">${eng.email}</div>
+                    <div class="text-xs text-green-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
+                </div>`;
+            }
+
+            if (assignments.evening) {
+                const eng = assignments.evening;
+                html += `<div class="border-l-4 border-purple-500 pl-3 py-2 bg-purple-50 rounded">
+                    <div class="font-semibold text-purple-900">🌆 Evening Shift (15:00-00:00)</div>
+                    <div class="text-sm text-purple-800">${eng.name}</div>
+                    <div class="text-xs text-purple-600">${eng.email}</div>
+                    <div class="text-xs text-purple-700 mt-1">Hours: ${eng.schedule[days[dayOfWeek]]}</div>
+                </div>`;
+            }
+
+            html += '</div>';
+            detailsDiv.innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            const newMonth = currentMonth + delta;
+            if (newMonth >= 0 && newMonth <= 2) {
+                currentMonth = newMonth;
+                selectedDate = null;
+                document.getElementById('selectedDetails').className = 'mt-6 hidden';
+                renderCalendar();
+            }
+        }
+
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = currentMonth === 0;
+            document.getElementById('nextBtn').disabled = currentMonth === 2;
+            
+            if (currentMonth === 0) {
+                document.getElementById('prevBtn').className = 'p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed';
+            } else {
+                document.getElementById('prevBtn').className = 'p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors';
+            }
+            
+            if (currentMonth === 2) {
+                document.getElementById('nextBtn').className = 'p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed';
+            } else {
+                document.getElementById('nextBtn').className = 'p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors';
+            }
+        }
+
+        generateRotation();
+        renderCalendar();
+    </script>
+</body>
+</html>
