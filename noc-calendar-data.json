@@ -4383,16 +4383,16 @@
     {
       "name": "Pearce Hamblin",
       "email": "pearce.hamblin@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "01:00-07:00",
+        "sun": "OFF",
         "mon": "01:00-07:00",
         "tue": "01:00-07:00",
         "wed": "01:00-07:00",
         "thu": "01:00-07:00",
-        "fri": "OFF",
+        "fri": "01:00-07:00",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Amine Dahel",
