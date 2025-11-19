@@ -4327,16 +4327,16 @@
     {
       "name": "Srikanth Reddy",
       "email": "srikanth.v@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "22:30-07:30",
+        "sun": "OFF",
         "mon": "22:30-07:30",
         "tue": "22:30-07:30",
         "wed": "22:30-07:30",
         "thu": "22:30-07:30",
-        "fri": "OFF",
+        "fri": "22:30-07:30",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Jobon Chinel",
