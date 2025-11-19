@@ -4455,7 +4455,7 @@
       "email": "deepthi.chandran@ringcentral.com",
       "shift": "night",
       "schedule": {
-        "sun": "",
+        "sun": "OFF",
         "mon": "00:00-06:00",
         "tue": "00:00-06:00",
         "wed": "00:00-06:00",
