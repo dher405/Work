@@ -4115,20 +4115,6 @@
       "shift": "day"
     },
     {
-      "name": "Karla Talamantes",
-      "email": "karla.talamantes@ringcentral.com",
-      "schedule": {
-        "sun": "OFF",
-        "mon": "09:00-18:00",
-        "tue": "09:00-18:00",
-        "wed": "09:00-18:00",
-        "thu": "09:00-18:00",
-        "fri": "09:00-18:00",
-        "sat": "OFF"
-      },
-      "shift": "day"
-    },
-    {
       "name": "Jeremy Rodriguez",
       "email": "jeremyr@ringcentral.com",
       "schedule": {
