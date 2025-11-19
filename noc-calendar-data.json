@@ -4495,16 +4495,16 @@
     {
       "name": "Baranee Selvendran",
       "email": "baranee.selvendran@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "02:00-10:00",
+        "sun": "OFF",
         "mon": "02:00-10:00",
         "tue": "02:00-10:00",
         "wed": "02:00-10:00",
         "thu": "02:00-10:00",
-        "fri": "OFF",
+        "fri": "02:00-10:00",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Eryll Azucena",
