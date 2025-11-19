@@ -4481,16 +4481,16 @@
     {
       "name": "Hugo Nickal-Thibeaud",
       "email": "hugo.thibeaud@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "02:00-08:00",
+        "sun": "OFF",
         "mon": "02:00-08:00",
         "tue": "02:00-08:00",
         "wed": "02:00-08:00",
         "thu": "02:00-08:00",
-        "fri": "OFF",
+        "fri": "02:00-08:00",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Baranee Selvendran",
