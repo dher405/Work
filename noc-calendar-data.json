@@ -4425,16 +4425,16 @@
     {
       "name": "Andy Connolly",
       "email": "andy.connolly@ringcentral.com",
+      "shift": "night",
       "schedule": {
-        "sun": "03:00-09:00",
+        "sun": "OFF",
         "mon": "03:00-09:00",
         "tue": "03:00-09:00",
         "wed": "03:00-09:00",
         "thu": "03:00-09:00",
-        "fri": "OFF",
+        "fri": "03:00-09:00",
         "sat": "OFF"
-      },
-      "shift": "night"
+      }
     },
     {
       "name": "Colin Finn",
