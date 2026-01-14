@@ -3170,16 +3170,16 @@
         "shift": "day"
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
+          "thu": "15:00-00:00",
           "fri": "OFF",
-          "sat": "15:00-00:00"
+          "sat": "OFF"
         },
         "shift": "evening"
       },
