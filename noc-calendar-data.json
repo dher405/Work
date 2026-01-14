@@ -4451,20 +4451,6 @@
       }
     },
     {
-      "name": "Deepthi Chandran",
-      "email": "deepthi.chandran@ringcentral.com",
-      "shift": "night",
-      "schedule": {
-        "sun": "OFF",
-        "mon": "00:00-06:00",
-        "tue": "00:00-06:00",
-        "wed": "00:00-06:00",
-        "thu": "00:00-06:00",
-        "fri": "00:00-06:00",
-        "sat": "OFF"
-      }
-    },
-    {
       "name": "Derek Walker",
       "email": "derek.walker@ringcentral.com",
       "shift": "night",
