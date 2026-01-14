@@ -4493,20 +4493,6 @@
       }
     },
     {
-      "name": "Eryll Azucena",
-      "email": "eryll.azucena@ringcentral.com",
-      "shift": "day",
-      "schedule": {
-        "sun": "OFF",
-        "mon": "OFF",
-        "tue": "08:00-15:30",
-        "wed": "08:00-15:30",
-        "thu": "08:00-15:30",
-        "fri": "08:00-15:30",
-        "sat": "08:00-15:30"
-      }
-    },
-    {
       "name": "Mare Snyder",
       "email": "mare.snyder@ringcentral.com",
       "schedule": {
