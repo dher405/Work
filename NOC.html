@@ -108,7 +108,7 @@ async function loadData() {
 }
 
 function getCalendarData() {
-    const baseDate = new Date(2025, 10, 1);
+    const baseDate = new Date();
     baseDate.setMonth(baseDate.getMonth() + currentMonth);
     const year = baseDate.getFullYear();
     const month = baseDate.getMonth();
@@ -217,7 +217,7 @@ function showDateDetails(dateKey) {
 
 function changeMonth(delta) {
     const newMonth = currentMonth + delta;
-    if (newMonth >= 0 && newMonth <= 2) {
+    if (newMonth >= -6 && newMonth <= 6) {
         currentMonth = newMonth;
         selectedDate = null;
         document.getElementById('selectedDetails').className = 'mt-6 hidden';
@@ -226,14 +226,14 @@ function changeMonth(delta) {
 }
 
 function updateButtons() {
-    document.getElementById('prevBtn').disabled = currentMonth === 0;
-    document.getElementById('nextBtn').disabled = currentMonth === 2;
-    if (currentMonth === 0) {
+    document.getElementById('prevBtn').disabled = currentMonth === -6;
+    document.getElementById('nextBtn').disabled = currentMonth === 6;
+    if (currentMonth === -6) {
         document.getElementById('prevBtn').className = 'p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed';
     } else {
         document.getElementById('prevBtn').className = 'p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600';
     }
-    if (currentMonth === 2) {
+    if (currentMonth === 6) {
         document.getElementById('nextBtn').className = 'p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed';
     } else {
         document.getElementById('nextBtn').className = 'p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600';
