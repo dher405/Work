@@ -4969,6 +4969,7 @@
     {
       "name": "Lara Mae Dela Cruz",
       "email": "lara.delacruz@ringcentral.com",
+      "shift": "evening",
       "schedule": {
         "sun": "OFF",
         "mon": "15:00-00:00",
@@ -4977,8 +4978,7 @@
         "thu": "15:00-00:00",
         "fri": "15:00-00:00",
         "sat": "OFF"
-      },
-      "shift": "evening"
+      }
     },
     {
       "name": "Love Lyn Cano",
