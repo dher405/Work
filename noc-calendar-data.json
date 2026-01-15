@@ -4997,6 +4997,7 @@
     {
       "name": "James Belleza",
       "email": "james.belleza@ringcentral.com",
+      "shift": "evening",
       "schedule": {
         "sun": "15:00-00:00",
         "mon": "15:00-00:00",
@@ -5005,8 +5006,7 @@
         "thu": "15:00-00:00",
         "fri": "OFF",
         "sat": "OFF"
-      },
-      "shift": "evening"
+      }
     },
     {
       "name": "Rushikesh Sawant",
