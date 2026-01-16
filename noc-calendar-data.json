@@ -162,18 +162,18 @@
         }
       },
       "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
-        "shift": "early",
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
           "sat": "OFF"
-        }
+        },
+        "shift": "day"
       },
       "day": {
         "name": "Jeremy Rodriguez",
