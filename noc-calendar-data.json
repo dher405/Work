@@ -844,18 +844,18 @@
         }
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
-        "shift": "evening",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "schedule": {
-          "sun": "15:00-00:00",
-          "mon": "15:00-00:00",
-          "tue": "15:00-00:00",
-          "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
-        }
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
+        },
+        "shift": "night"
       }
     },
     "2026-02-01": {
