@@ -3258,15 +3258,15 @@
     },
     "2026-01-17": {
       "day": {
-        "name": "Sarah Heriford",
-        "email": "sarah.heriford@ringcentral.com",
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "08:00-15:30",
           "sat": "OFF"
         },
         "shift": "day"
@@ -3286,8 +3286,8 @@
         }
       },
       "night": {
-        "name": "Santosh Sahoo",
-        "email": "santosh.sahoo@ringcentral.com",
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
@@ -3300,15 +3300,15 @@
         }
       },
       "early": {
-        "name": "Marina Stambaugh",
-        "email": "marina.stambaugh@ringcentral.com",
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "07:00-16:00",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
           "sat": "OFF"
         },
         "shift": "early"
