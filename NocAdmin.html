@@ -1,6 +1,3 @@
-Nocadmin fixed · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,7 +185,7 @@ Copy
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <h3 class="text-xl font-bold mb-4">Redistribute Shifts</h3>
             <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
-                <p class="text-sm text-yellow-800"><strong>⚠️ Note:</strong> This will only assign engineers to days they're scheduled to work (based on their days off settings).</p>
+                <p class="text-sm text-yellow-800"><strong>⚠️ Note:</strong> This will create a randomized rotation respecting engineer days off. Click redistribute multiple times to get different distributions!</p>
             </div>
             <div class="mb-4"><label class="block text-sm font-semibold mb-2">Start:</label><input type="date" id="redistributeStart" class="w-full p-2 border rounded-lg"></div>
             <div class="mb-6"><label class="block text-sm font-semibold mb-2">End:</label><input type="date" id="redistributeEnd" class="w-full p-2 border rounded-lg"></div>
@@ -426,9 +423,8 @@ async function redistributeShifts(){
         return;
     }
     
-    if(!confirm("Redistribute shifts? This will respect engineer days off and reassign all shifts in the selected date range."))return;
+    if(!confirm("Redistribute shifts? This will create a randomized rotation respecting engineer days off."))return;
     
-    // Group engineers by shift type
     const shiftEngineers={
         early:calendarData.engineers.filter(eng=>eng.shift==="early"),
         day:calendarData.engineers.filter(eng=>eng.shift==="day"),
@@ -436,12 +432,12 @@ async function redistributeShifts(){
         night:calendarData.engineers.filter(eng=>eng.shift==="night")
     };
     
-    // Separate rotation index for each day of week for each shift
+    // Use RANDOMIZED starting indices for varied distribution
     const rotationIndices={
-        early:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        day:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        evening:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        night:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0}
+        early:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        day:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        evening:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        night:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)}
     };
     
     let currentDate=new Date(start);
@@ -453,18 +449,14 @@ async function redistributeShifts(){
         const dayName=["sun","mon","tue","wed","thu","fri","sat"][dayOfWeek];
         const dateStr=currentDate.toISOString().split("T")[0];
         
-        // Initialize rotation for this date
         if(!calendarData.rotation[dateStr]){
             calendarData.rotation[dateStr]={};
         }
         
-        // Assign each shift type
         ["night","early","day","evening"].forEach(shiftType=>{
-            // Get all engineers for this shift who work on this day of week
             const availableEngineers=shiftEngineers[shiftType].filter(eng=>isWorking(eng,dayOfWeek));
             
             if(availableEngineers.length>0){
-                // Get the next engineer in rotation for this shift and day of week
                 const engineerIndex=rotationIndices[shiftType][dayName]%availableEngineers.length;
                 const selectedEngineer=availableEngineers[engineerIndex];
                 
@@ -472,7 +464,6 @@ async function redistributeShifts(){
                 rotationIndices[shiftType][dayName]++;
                 assignmentsMade++;
             } else {
-                // No engineers available for this shift on this day
                 delete calendarData.rotation[dateStr][shiftType];
                 skippedDays++;
             }
@@ -485,12 +476,13 @@ async function redistributeShifts(){
     closeRedistributeModal();
     renderCalendar();
     
-    let message=`Redistribution complete!\n\n`;
+    let message=`Redistribution complete! (Randomized)\n\n`;
     message+=`✅ ${assignmentsMade} shifts assigned\n`;
     if(skippedDays>0){
         message+=`⚠️ ${skippedDays} shifts skipped (no engineers available)\n`;
     }
     message+=`\nAll assignments respect engineer days off.`;
+    message+=`\n\n💡 Click redistribute again for a different rotation!`;
     
     alert(message);
 }
@@ -507,17 +499,17 @@ function generateRotation(){
     // Group engineers by shift type
     const shiftEngineers={
         early:calendarData.engineers.filter(eng=>eng.shift==="early"),
-        day:calendarData.engineers.filter(eng=>eng.shift==="day"),
+        day:calendarData.engineers.filter(eng=>eng.shift===" day"),
         evening:calendarData.engineers.filter(eng=>eng.shift==="evening"),
         night:calendarData.engineers.filter(eng=>eng.shift==="night")
     };
     
-    // Separate rotation index for each day of week for each shift
+    // Use RANDOMIZED starting indices for better distribution
     const rotationIndices={
-        early:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        day:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        evening:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
-        night:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0}
+        early:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        day:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        evening:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)},
+        night:{sun:Math.floor(Math.random()*100),mon:Math.floor(Math.random()*100),tue:Math.floor(Math.random()*100),wed:Math.floor(Math.random()*100),thu:Math.floor(Math.random()*100),fri:Math.floor(Math.random()*100),sat:Math.floor(Math.random()*100)}
     };
     
     // Generate 75 days of rotation
@@ -550,11 +542,12 @@ function generateRotation(){
 }
 
 async function resetRotation(){
-    if(confirm("Reset rotation? This will regenerate the schedule respecting engineer days off.")){
+    if(confirm("Reset rotation? This will regenerate the entire schedule with randomized distribution respecting engineer days off.")){
         generateRotation();
         await saveData();
         renderCalendar();
-        if(selectedDate)showDateDetails(selectedDate)
+        if(selectedDate)showDateDetails(selectedDate);
+        alert("Calendar reset complete! The rotation has been randomized.")
     }
 }
 
