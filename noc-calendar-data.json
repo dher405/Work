@@ -480,17 +480,17 @@
         "shift": "day"
       },
       "evening": {
-        "name": "Lara Mae Dela Cruz",
-        "email": "lara.delacruz@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "shift": "evening",
         "schedule": {
-          "sun": "OFF",
+          "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
-          "fri": "15:00-00:00",
-          "sat": "OFF"
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
         }
       }
     },
