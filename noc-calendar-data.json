@@ -466,31 +466,31 @@
         "shift": "early"
       },
       "day": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
+          "sat": "OFF"
         },
-        "shift": "night"
+        "shift": "day"
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
         "shift": "evening",
         "schedule": {
-          "sun": "15:00-00:00",
+          "sun": "OFF",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
         }
       }
     },
