@@ -148,45 +148,59 @@
     },
     "2026-01-19": {
       "night": {
-        "name": "Jobon Chinel",
-        "email": "jobon.chinel@ringcentral.com",
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
         "schedule": {
-          "sun": "01:00-10:00",
-          "mon": "01:00-10:00",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "OFF",
+          "sun": "OFF",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
           "sat": "OFF"
-        },
-        "shift": "night"
+        }
+      },
+      "early": {
+        "name": "Alexandra Hock",
+        "email": "alexandra.hock@ringcentral.com",
+        "shift": "early",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "05:00-14:00",
+          "tue": "05:00-14:00",
+          "wed": "05:00-14:00",
+          "thu": "05:00-14:00",
+          "fri": "05:00-14:00",
+          "sat": "OFF"
+        }
       },
       "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
+        "name": "Rochelle Gobis",
+        "email": "rochelle.gobis@ringcentral.com",
+        "shift": "day",
         "schedule": {
-          "sun": "08:00-15:30",
+          "sun": "OFF",
           "mon": "08:00-15:30",
           "tue": "08:00-15:30",
           "wed": "08:00-15:30",
           "thu": "08:00-15:30",
-          "fri": "OFF",
+          "fri": "08:00-15:30",
           "sat": "OFF"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "Lara Mae Dela Cruz",
+        "email": "lara.delacruz@ringcentral.com",
         "shift": "evening",
         "schedule": {
-          "sun": "15:00-00:00",
+          "sun": "OFF",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
-          "fri": "OFF",
-          "sat": "15:00-00:00"
+          "thu": "15:00-00:00",
+          "fri": "15:00-00:00",
+          "sat": "OFF"
         }
       }
     },
@@ -208,6 +222,7 @@
       "early": {
         "name": "Alexandra Hock",
         "email": "alexandra.hock@ringcentral.com",
+        "shift": "early",
         "schedule": {
           "sun": "OFF",
           "mon": "05:00-14:00",
@@ -216,12 +231,12 @@
           "thu": "05:00-14:00",
           "fri": "05:00-14:00",
           "sat": "OFF"
-        },
-        "shift": "early"
+        }
       },
       "day": {
         "name": "Rochelle Gobis",
         "email": "rochelle.gobis@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
           "mon": "08:00-15:30",
@@ -230,8 +245,7 @@
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "OFF"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
@@ -266,6 +280,7 @@
       "early": {
         "name": "Alexandra Hock",
         "email": "alexandra.hock@ringcentral.com",
+        "shift": "early",
         "schedule": {
           "sun": "OFF",
           "mon": "05:00-14:00",
@@ -274,12 +289,12 @@
           "thu": "05:00-14:00",
           "fri": "05:00-14:00",
           "sat": "OFF"
-        },
-        "shift": "early"
+        }
       },
       "day": {
         "name": "Rochelle Gobis",
         "email": "rochelle.gobis@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
           "mon": "08:00-15:30",
@@ -288,8 +303,7 @@
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "OFF"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
@@ -324,6 +338,7 @@
       "early": {
         "name": "Alexandra Hock",
         "email": "alexandra.hock@ringcentral.com",
+        "shift": "early",
         "schedule": {
           "sun": "OFF",
           "mon": "05:00-14:00",
@@ -332,12 +347,12 @@
           "thu": "05:00-14:00",
           "fri": "05:00-14:00",
           "sat": "OFF"
-        },
-        "shift": "early"
+        }
       },
       "day": {
         "name": "Rochelle Gobis",
         "email": "rochelle.gobis@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
           "mon": "08:00-15:30",
@@ -346,8 +361,7 @@
           "thu": "08:00-15:30",
           "fri": "08:00-15:30",
           "sat": "OFF"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
@@ -366,8 +380,8 @@
     },
     "2026-01-23": {
       "night": {
-        "name": "Rushikesh Sawant",
-        "email": "rushikesh.sawant@ringcentral.com",
+        "name": "Santosh Sahoo",
+        "email": "santosh.sahoo@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
@@ -380,32 +394,32 @@
         }
       },
       "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
+        "name": "Marina Stambaugh",
+        "email": "marina.stambaugh@ringcentral.com",
+        "shift": "early",
         "schedule": {
           "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
-        },
-        "shift": "early"
+        }
       },
       "day": {
-        "name": "Rochelle Gobis",
-        "email": "rochelle.gobis@ringcentral.com",
+        "name": "Sarah Heriford",
+        "email": "sarah.heriford@ringcentral.com",
+        "shift": "day",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
+          "mon": "08:00-16:30",
+          "tue": "08:00-16:30",
+          "wed": "08:00-16:30",
+          "thu": "08:00-16:30",
+          "fri": "08:00-16:30",
           "sat": "OFF"
-        },
-        "shift": "day"
+        }
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
