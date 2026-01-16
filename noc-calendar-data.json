@@ -5071,6 +5071,7 @@
     {
       "name": "Love Lyn Cano",
       "email": "love.cano@ringcentral.com",
+      "shift": "evening",
       "schedule": {
         "sun": "15:00-00:00",
         "mon": "15:00-00:00",
@@ -5079,8 +5080,7 @@
         "thu": "OFF",
         "fri": "OFF",
         "sat": "15:00-00:00"
-      },
-      "shift": "evening"
+      }
     },
     {
       "name": "James Belleza",
