@@ -5431,6 +5431,20 @@
         "sat": "OFF"
       },
       "shift": "day"
+    },
+    {
+      "name": "Eryll Azucena",
+      "email": "Eryll Azucena@ringcentral.com",
+      "shift": "day",
+      "schedule": {
+        "sun": "OFF",
+        "mon": "OFF",
+        "tue": "06:00-15:00",
+        "wed": "06:00-15:00",
+        "thu": "06:00-15:00",
+        "fri": "06:00-15:00",
+        "sat": "06:00-15:00"
+      }
     }
   ]
 }
