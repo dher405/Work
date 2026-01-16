@@ -3286,18 +3286,18 @@
         }
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
+        "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "OFF",
-          "tue": "01:00-10:00",
-          "wed": "01:00-10:00",
-          "thu": "01:00-10:00",
-          "fri": "01:00-10:00",
-          "sat": "01:00-10:00"
-        },
-        "shift": "night"
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
+          "sat": "OFF"
+        }
       },
       "early": {
         "name": "Alexandra Hock",
