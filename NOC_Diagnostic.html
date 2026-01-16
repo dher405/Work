@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Diagnostic Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">🔍 NOC Calendar Diagnostic</h1>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <p class="text-sm text-yellow-800"><strong>This tool will:</strong></p>
+                <ul class="list-disc ml-5 mt-2 text-sm text-yellow-700">
+                    <li>Load your calendar data</li>
+                    <li>Find all assignments where the engineer is marked OFF</li>
+                    <li>Show you exactly why they're being flagged</li>
+                    <li>Explain if it's old embedded data vs current engineer data</li>
+                </ul>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">GitHub Username:</label>
+                    <input type="text" id="githubUsername" value="dher405" class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Repository Name:</label>
+                    <input type="text" id="githubRepo" value="Work" class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Personal Access Token:</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx" class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Branch:</label>
+                    <input type="text" id="githubBranch" value="main" class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+            </div>
+
+            <button onclick="diagnose()" class="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 font-semibold mb-4">
+                🔍 Run Diagnostic
+            </button>
+            
+            <div id="results" class="hidden"></div>
+            <div id="status" class="mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+let config = {username: "", repo: "", token: "", branch: "main"};
+let calendarData = null;
+
+function isWorking(engineer, dayOfWeek) {
+    const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const daySchedule = engineer.schedule[dayNames[dayOfWeek]];
+    return daySchedule !== "OFF";
+}
+
+function showStatus(message, type) {
+    const statusDiv = document.getElementById("status");
+    const colors = {
+        success: "bg-green-50 text-green-800 border-green-200",
+        error: "bg-red-50 text-red-800 border-red-200",
+        warning: "bg-yellow-50 text-yellow-800 border-yellow-200",
+        info: "bg-blue-50 text-blue-800 border-blue-200"
+    };
+    statusDiv.className = `p-4 rounded-lg border ${colors[type]}`;
+    statusDiv.textContent = message;
+}
+
+async function diagnose() {
+    config = {
+        username: document.getElementById("githubUsername").value.trim(),
+        repo: document.getElementById("githubRepo").value.trim(),
+        token: document.getElementById("githubToken").value.trim(),
+        branch: document.getElementById("githubBranch").value.trim() || "main"
+    };
+
+    if (!config.username || !config.repo || !config.token) {
+        showStatus("All fields required", "error");
+        return;
+    }
+
+    showStatus("Loading calendar data...", "info");
+
+    try {
+        const response = await fetch(`https://api.github.com/repos/${config.username}/${config.repo}/contents/noc-calendar-data.json?ref=${config.branch}`, {
+            headers: {
+                Authorization: `token ${config.token}`,
+                Accept: "application/vnd.github.v3+json"
+            }
+        });
+
+        if (!response.ok) throw new Error("Failed to load data");
+
+        const data = await response.json();
+        calendarData = JSON.parse(atob(data.content));
+
+        analyzeMismatches();
+    } catch (error) {
+        console.error(error);
+        showStatus("Error: " + error.message, "error");
+    }
+}
+
+function analyzeMismatches() {
+    const issues = [];
+    
+    // Build a map of current engineer schedules
+    const currentEngineers = {};
+    calendarData.engineers.forEach(eng => {
+        currentEngineers[eng.email] = eng;
+    });
+    
+    // Check each rotation assignment
+    for (const dateStr in calendarData.rotation) {
+        const date = new Date(dateStr);
+        const dayOfWeek = date.getDay();
+        const dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][dayOfWeek];
+        const shifts = calendarData.rotation[dateStr];
+        
+        ["night", "early", "day", "evening"].forEach(shiftType => {
+            const assignedEngineer = shifts[shiftType];
+            if (!assignedEngineer) return;
+            
+            // Check if the EMBEDDED schedule shows they're off
+            const embeddedWorking = isWorking(assignedEngineer, dayOfWeek);
+            
+            // Check if the CURRENT engineer data shows they're off
+            const currentEngineer = currentEngineers[assignedEngineer.email];
+            const currentWorking = currentEngineer ? isWorking(currentEngineer, dayOfWeek) : null;
+            
+            if (!embeddedWorking) {
+                issues.push({
+                    date: dateStr,
+                    dayName: dayName,
+                    shift: shiftType,
+                    engineer: assignedEngineer.name,
+                    email: assignedEngineer.email,
+                    embeddedSchedule: assignedEngineer.schedule,
+                    embeddedWorking: false,
+                    currentWorking: currentWorking,
+                    mismatch: embeddedWorking !== currentWorking
+                });
+            }
+        });
+    }
+    
+    displayResults(issues);
+}
+
+function displayResults(issues) {
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.classList.remove("hidden");
+    
+    if (issues.length === 0) {
+        resultsDiv.innerHTML = `
+            <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                <p class="font-bold text-green-800">✅ No Issues Found!</p>
+                <p class="text-sm text-green-700 mt-2">All assignments are correct - no engineers are assigned on their days off.</p>
+            </div>
+        `;
+        showStatus("Diagnostic complete - no issues found!", "success");
+        return;
+    }
+    
+    let html = `
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+            <p class="font-bold text-red-800">⚠️ Found ${issues.length} Incorrect Assignments</p>
+            <p class="text-sm text-red-700 mt-2">These engineers are assigned to shifts on their days off:</p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+                <thead class="bg-gray-100 sticky top-0">
+                    <tr>
+                        <th class="border p-2 text-left">Date</th>
+                        <th class="border p-2 text-left">Day</th>
+                        <th class="border p-2 text-left">Shift</th>
+                        <th class="border p-2 text-left">Engineer</th>
+                        <th class="border p-2 text-left">Problem</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    issues.forEach((issue, index) => {
+        const bgColor = index % 2 === 0 ? "bg-white" : "bg-gray-50";
+        const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+        const dayOfWeek = new Date(issue.date).getDay();
+        const dayKey = dayNames[dayOfWeek];
+        const embeddedSchedule = issue.embeddedSchedule[dayKey];
+        
+        let problemText = "";
+        if (issue.mismatch) {
+            problemText = `<span class="text-orange-600">⚠️ MISMATCH: Embedded schedule shows "${embeddedSchedule}" but current engineer data shows they ${issue.currentWorking ? "WORK" : "are OFF"} this day</span>`;
+        } else {
+            problemText = `<span class="text-red-600">❌ Schedule shows "${embeddedSchedule}" (OFF)</span>`;
+        }
+        
+        html += `
+            <tr class="${bgColor}">
+                <td class="border p-2">${issue.date}</td>
+                <td class="border p-2">${issue.dayName}</td>
+                <td class="border p-2 capitalize">${issue.shift}</td>
+                <td class="border p-2">${issue.engineer}</td>
+                <td class="border p-2 text-xs">${problemText}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+            <p class="font-bold text-blue-800">💡 What This Means:</p>
+            <ul class="list-disc ml-5 mt-2 text-sm text-blue-700 space-y-1">
+                <li><strong>No Mismatch:</strong> The rotation has old data. Engineer schedules may have been updated after the rotation was generated.</li>
+                <li><strong>Mismatch:</strong> The embedded schedule in the rotation doesn't match the current engineer data. This usually means the rotation is from old data.</li>
+            </ul>
+            <p class="text-sm text-blue-700 mt-3"><strong>Solution:</strong> Use the NOC_Complete_Fix.html tool to regenerate the calendar with current engineer data.</p>
+        </div>
+    `;
+    
+    resultsDiv.innerHTML = html;
+    showStatus(`Diagnostic complete - found ${issues.length} issues`, "warning");
+}
+    </script>
+</body>
+</html>
