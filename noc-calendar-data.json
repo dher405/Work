@@ -3707,23 +3707,10 @@
       }
     },
     "2026-01-25": {
-      "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "schedule": {
-          "sun": "08:00-15:30",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "OFF",
-          "sat": "OFF"
-        },
-        "shift": "day"
-      },
       "evening": {
         "name": "Love Lyn Cano",
         "email": "love.cano@ringcentral.com",
+        "shift": "evening",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
@@ -3732,8 +3719,7 @@
           "thu": "OFF",
           "fri": "OFF",
           "sat": "15:00-00:00"
-        },
-        "shift": "evening"
+        }
       },
       "night": {
         "name": "Joseph Bendecio",
@@ -3748,6 +3734,20 @@
           "sat": "01:00-10:00"
         },
         "shift": "night"
+      },
+      "early": {
+        "name": "Eryll Azucena",
+        "email": "Eryll Azucena@ringcentral.com",
+        "shift": "early",
+        "schedule": {
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "06:00-15:00"
+        }
       }
     },
     "2026-01-26": {
