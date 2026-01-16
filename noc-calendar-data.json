@@ -3300,18 +3300,18 @@
         }
       },
       "early": {
-        "name": "Alexandra Hock",
-        "email": "alexandra.hock@ringcentral.com",
+        "name": "Eryll Azucena",
+        "email": "Eryll Azucena@ringcentral.com",
+        "shift": "early",
         "schedule": {
           "sun": "OFF",
-          "mon": "05:00-14:00",
-          "tue": "05:00-14:00",
-          "wed": "05:00-14:00",
-          "thu": "05:00-14:00",
-          "fri": "05:00-14:00",
-          "sat": "OFF"
-        },
-        "shift": "early"
+          "mon": "OFF",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "06:00-15:00"
+        }
       }
     },
     "2026-01-18": {
