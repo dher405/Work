@@ -1,3 +1,6 @@
+Nocadmin fixed · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,7 +147,7 @@
             <div class="mb-4"><label class="block text-sm font-semibold mb-2">Date:</label><div id="modalDate" class="text-sm"></div></div>
             <div class="mb-4"><label class="block text-sm font-semibold mb-2">Shift:</label><div id="modalShift" class="text-sm"></div></div>
             <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
-                <p class="text-xs text-yellow-800"><strong>Note:</strong> Only engineers who are scheduled to work on this day are shown.</p>
+                <p class="text-xs text-yellow-800"><strong>Note:</strong> Engineers in their assigned shift are shown first. You can also manually assign engineers from other shifts who work this day.</p>
             </div>
             <div class="mb-6"><label class="block text-sm font-semibold mb-2">Assign To:</label><select id="engineerSelect" class="w-full p-2 border rounded-lg"></select></div>
             <div class="flex gap-3">
@@ -659,11 +662,16 @@ function editAssignment(e,t){
     document.getElementById("modalDate").textContent=i;
     document.getElementById("modalShift").textContent=l[t];
     
-    const d=calendarData.engineers.filter(e=>e.shift===t&&isWorking(e,o)),
-    c=document.getElementById("engineerSelect");
+    // First, get engineers in this shift type who work this day
+    const matchingShiftEngineers=calendarData.engineers.filter(e=>e.shift===t&&isWorking(e,o));
+    
+    // Then, get ALL other engineers who work this day (for manual override)
+    const otherAvailableEngineers=calendarData.engineers.filter(e=>e.shift!==t&&isWorking(e,o));
+    
+    const c=document.getElementById("engineerSelect");
     c.innerHTML="";
     
-    if(d.length===0){
+    if(matchingShiftEngineers.length===0&&otherAvailableEngineers.length===0){
         const e=document.createElement("option");
         e.value="";
         e.textContent="No engineers available (all are OFF this day)";
@@ -671,12 +679,32 @@ function editAssignment(e,t){
         c.disabled=true
     }else{
         c.disabled=false;
-        d.forEach(e=>{
-            const t=document.createElement("option");
-            t.value=e.email;
-            t.textContent=`${e.name} (${e.email})`;
-            c.appendChild(t)
-        })
+        
+        // Add engineers from correct shift type first
+        if(matchingShiftEngineers.length>0){
+            const optgroup=document.createElement("optgroup");
+            optgroup.label=`✓ ${l[t]} Shift Engineers`;
+            matchingShiftEngineers.forEach(e=>{
+                const t=document.createElement("option");
+                t.value=e.email;
+                t.textContent=`${e.name}`;
+                optgroup.appendChild(t);
+            });
+            c.appendChild(optgroup);
+        }
+        
+        // Add other available engineers with warning
+        if(otherAvailableEngineers.length>0){
+            const optgroup=document.createElement("optgroup");
+            optgroup.label="⚠️ Other Shifts (Manual Override)";
+            otherAvailableEngineers.forEach(e=>{
+                const t=document.createElement("option");
+                t.value=e.email;
+                t.textContent=`${e.name} (${e.shift} shift)`;
+                optgroup.appendChild(t);
+            });
+            c.appendChild(optgroup);
+        }
     }
     
     document.getElementById("editModal").classList.add("show")
@@ -698,15 +726,7 @@ async function saveEdit(){
     const selectedEngineer=calendarData.engineers.find(e=>e.email===engineerEmail);
     
     if(selectedEngineer&&editingDate&&editingShift){
-        const dateObj=new Date(editingDate);
-        const dayOfWeek=dateObj.getDay();
-        
-        // Double-check that engineer is working on this day
-        if(!isWorking(selectedEngineer,dayOfWeek)){
-            alert(`⚠️ ${selectedEngineer.name} is OFF on this day and cannot be assigned.\n\nPlease select a different engineer or update their schedule in the Engineers page.`);
-            return;
-        }
-        
+        // Assign the engineer (manual override allowed)
         calendarData.rotation[editingDate][editingShift]=selectedEngineer;
         await saveData();
         closeModal();
