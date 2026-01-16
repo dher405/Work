@@ -3258,18 +3258,18 @@
     },
     "2026-01-17": {
       "day": {
-        "name": "Rochelle Gobis",
-        "email": "rochelle.gobis@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "shift": "evening",
         "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-15:30",
-          "tue": "08:00-15:30",
-          "wed": "08:00-15:30",
-          "thu": "08:00-15:30",
-          "fri": "08:00-15:30",
-          "sat": "OFF"
-        },
-        "shift": "day"
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
+        }
       },
       "evening": {
         "name": "Love Lyn Cano",
