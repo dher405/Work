@@ -176,18 +176,18 @@
         "shift": "day"
       },
       "day": {
-        "name": "Jeremy Rodriguez",
-        "email": "jeremyr@ringcentral.com",
-        "shift": "day",
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
         "schedule": {
-          "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
+          "sun": "08:00-15:30",
+          "mon": "08:00-15:30",
+          "tue": "08:00-15:30",
+          "wed": "08:00-15:30",
+          "thu": "08:00-15:30",
+          "fri": "OFF",
           "sat": "OFF"
-        }
+        },
+        "shift": "day"
       },
       "evening": {
         "name": "Lara Mae Dela Cruz",
