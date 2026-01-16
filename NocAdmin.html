@@ -407,47 +407,89 @@ function closeRedistributeModal(){
 }
 
 async function redistributeShifts(){
-    const e=document.getElementById("redistributeStart").value,
-    t=document.getElementById("redistributeEnd").value;
-    if(!e||!t){
+    const startDate=document.getElementById("redistributeStart").value;
+    const endDate=document.getElementById("redistributeEnd").value;
+    
+    if(!startDate||!endDate){
         alert("Select both dates");
         return;
     }
-    const a=new Date(e),n=new Date(t);
-    if(a>n){
-        alert("Start before end");
+    
+    const start=new Date(startDate);
+    const end=new Date(endDate);
+    
+    if(start>end){
+        alert("Start date must be before end date");
         return;
     }
-    if(!confirm("Redistribute? This will respect engineer days off."))return;
     
+    if(!confirm("Redistribute shifts? This will respect engineer days off and reassign all shifts in the selected date range."))return;
+    
+    // Group engineers by shift type
     const shiftEngineers={
-        early:calendarData.engineers.filter(e=>"early"===e.shift),
-        day:calendarData.engineers.filter(e=>"day"===e.shift),
-        evening:calendarData.engineers.filter(e=>"evening"===e.shift),
-        night:calendarData.engineers.filter(e=>"night"===e.shift)
+        early:calendarData.engineers.filter(eng=>eng.shift==="early"),
+        day:calendarData.engineers.filter(eng=>eng.shift==="day"),
+        evening:calendarData.engineers.filter(eng=>eng.shift==="evening"),
+        night:calendarData.engineers.filter(eng=>eng.shift==="night")
     };
-    const rotationIndex={early:0,day:0,evening:0,night:0};
     
-    let r=new Date(a);
-    while(r<=n){
-        const a=r.getDay(),
-        n=r.toISOString().split("T")[0];
-        if(!calendarData.rotation[n])calendarData.rotation[n]={};
+    // Separate rotation index for each day of week for each shift
+    const rotationIndices={
+        early:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        day:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        evening:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        night:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0}
+    };
+    
+    let currentDate=new Date(start);
+    let assignmentsMade=0;
+    let skippedDays=0;
+    
+    while(currentDate<=end){
+        const dayOfWeek=currentDate.getDay();
+        const dayName=["sun","mon","tue","wed","thu","fri","sat"][dayOfWeek];
+        const dateStr=currentDate.toISOString().split("T")[0];
         
-        Object.keys(shiftEngineers).forEach(s=>{
-            const availableEngineers=shiftEngineers[s].filter(e=>isWorking(e,a));
+        // Initialize rotation for this date
+        if(!calendarData.rotation[dateStr]){
+            calendarData.rotation[dateStr]={};
+        }
+        
+        // Assign each shift type
+        ["night","early","day","evening"].forEach(shiftType=>{
+            // Get all engineers for this shift who work on this day of week
+            const availableEngineers=shiftEngineers[shiftType].filter(eng=>isWorking(eng,dayOfWeek));
+            
             if(availableEngineers.length>0){
-                const selectedEngineer=availableEngineers[rotationIndex[s]%availableEngineers.length];
-                calendarData.rotation[n][s]=selectedEngineer;
-                rotationIndex[s]++
+                // Get the next engineer in rotation for this shift and day of week
+                const engineerIndex=rotationIndices[shiftType][dayName]%availableEngineers.length;
+                const selectedEngineer=availableEngineers[engineerIndex];
+                
+                calendarData.rotation[dateStr][shiftType]=selectedEngineer;
+                rotationIndices[shiftType][dayName]++;
+                assignmentsMade++;
+            } else {
+                // No engineers available for this shift on this day
+                delete calendarData.rotation[dateStr][shiftType];
+                skippedDays++;
             }
         });
-        r.setDate(r.getDate()+1)
+        
+        currentDate.setDate(currentDate.getDate()+1);
     }
+    
     await saveData();
     closeRedistributeModal();
     renderCalendar();
-    alert("Redistribution complete! Engineers were only assigned to days they work.")
+    
+    let message=`Redistribution complete!\n\n`;
+    message+=`✅ ${assignmentsMade} shifts assigned\n`;
+    if(skippedDays>0){
+        message+=`⚠️ ${skippedDays} shifts skipped (no engineers available)\n`;
+    }
+    message+=`\nAll assignments respect engineer days off.`;
+    
+    alert(message);
 }
 
 function isWorking(engineer,dayOfWeek){
@@ -457,37 +499,50 @@ function isWorking(engineer,dayOfWeek){
 }
 
 function generateRotation(){
-    const e=new Date(),
-    t={
-        early:calendarData.engineers.filter(e=>"early"===e.shift),
-        day:calendarData.engineers.filter(e=>"day"===e.shift),
-        evening:calendarData.engineers.filter(e=>"evening"===e.shift),
-        night:calendarData.engineers.filter(e=>"night"===e.shift)
-    },
-    a={early:{},day:{},evening:{},night:{}};
+    const today=new Date();
     
-    ["sun","mon","tue","wed","thu","fri","sat"].forEach((e,n)=>{
-        ["early","day","evening","night"].forEach(r=>{
-            a[r][e]=0
-        })
-    });
+    // Group engineers by shift type
+    const shiftEngineers={
+        early:calendarData.engineers.filter(eng=>eng.shift==="early"),
+        day:calendarData.engineers.filter(eng=>eng.shift==="day"),
+        evening:calendarData.engineers.filter(eng=>eng.shift==="evening"),
+        night:calendarData.engineers.filter(eng=>eng.shift==="night")
+    };
     
-    for(let n=0;n<75;n++){
-        const r=new Date(e);
-        r.setDate(r.getDate()+n);
-        const s=r.getDay(),
-        i=["sun","mon","tue","wed","thu","fri","sat"][s],
-        o=r.toISOString().split("T")[0];
-        calendarData.rotation[o]={};
+    // Separate rotation index for each day of week for each shift
+    const rotationIndices={
+        early:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        day:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        evening:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0},
+        night:{sun:0,mon:0,tue:0,wed:0,thu:0,fri:0,sat:0}
+    };
+    
+    // Generate 75 days of rotation
+    for(let dayOffset=0;dayOffset<75;dayOffset++){
+        const currentDate=new Date(today);
+        currentDate.setDate(currentDate.getDate()+dayOffset);
         
-        Object.keys(t).forEach(e=>{
-            const n=t[e].filter(e=>isWorking(e,s));
-            if(n.length>0){
-                const t=n[a[e][i]%n.length];
-                calendarData.rotation[o][e]=t;
-                a[e][i]++
+        const dayOfWeek=currentDate.getDay();
+        const dayName=["sun","mon","tue","wed","thu","fri","sat"][dayOfWeek];
+        const dateStr=currentDate.toISOString().split("T")[0];
+        
+        calendarData.rotation[dateStr]={};
+        
+        // Assign each shift type
+        ["night","early","day","evening"].forEach(shiftType=>{
+            // Get all engineers for this shift who work on this day of week
+            const availableEngineers=shiftEngineers[shiftType].filter(eng=>isWorking(eng,dayOfWeek));
+            
+            if(availableEngineers.length>0){
+                // Get the next engineer in rotation for this shift and day of week
+                const engineerIndex=rotationIndices[shiftType][dayName]%availableEngineers.length;
+                const selectedEngineer=availableEngineers[engineerIndex];
+                
+                calendarData.rotation[dateStr][shiftType]=selectedEngineer;
+                rotationIndices[shiftType][dayName]++;
             }
-        })
+            // If no engineers available, shift remains unassigned
+        });
     }
 }
 
