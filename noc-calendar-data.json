@@ -466,18 +466,18 @@
         "shift": "early"
       },
       "day": {
-        "name": "Sarah Heriford",
-        "email": "sarah.heriford@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "08:00-16:30",
-          "tue": "08:00-16:30",
-          "wed": "08:00-16:30",
-          "thu": "08:00-16:30",
-          "fri": "08:00-16:30",
-          "sat": "OFF"
+          "mon": "OFF",
+          "tue": "01:00-10:00",
+          "wed": "01:00-10:00",
+          "thu": "01:00-10:00",
+          "fri": "01:00-10:00",
+          "sat": "01:00-10:00"
         },
-        "shift": "day"
+        "shift": "night"
       },
       "evening": {
         "name": "Love Lyn Cano",
