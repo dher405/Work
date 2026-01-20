@@ -264,16 +264,16 @@
     },
     "2026-01-21": {
       "night": {
-        "name": "Rushikesh Sawant",
-        "email": "rushikesh.sawant@ringcentral.com",
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "22:30-07:30",
-          "tue": "22:30-07:30",
-          "wed": "22:30-07:30",
-          "thu": "22:30-07:30",
-          "fri": "22:30-07:30",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
         }
       },
