@@ -758,16 +758,16 @@
     },
     "2026-01-30": {
       "night": {
-        "name": "Andy Connolly",
-        "email": "andy.connolly@ringcentral.com",
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
           "sat": "OFF"
         }
       },
