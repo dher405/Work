@@ -4355,16 +4355,16 @@
     {
       "name": "Joseph Bendecio",
       "email": "joseph.bendecio@ringcentral.com",
+      "shift": "night",
       "schedule": {
         "sun": "OFF",
-        "mon": "OFF",
-        "tue": "01:00-10:00",
-        "wed": "01:00-10:00",
-        "thu": "01:00-10:00",
-        "fri": "01:00-10:00",
-        "sat": "01:00-10:00"
-      },
-      "shift": "night"
+        "mon": "00:00-09:00",
+        "tue": "00:00-09:00",
+        "wed": "00:00-09:00",
+        "thu": "00:00-09:00",
+        "fri": "00:00-09:00",
+        "sat": "OFF"
+      }
     },
     {
       "name": "Pearce Hamblin",
