@@ -4173,16 +4173,16 @@
     {
       "name": "John Glenn Bayron",
       "email": "john.bayron@ringcentral.com",
+      "shift": "day",
       "schedule": {
         "sun": "OFF",
-        "mon": "08:00-15:30",
-        "tue": "08:00-15:30",
-        "wed": "08:00-15:30",
-        "thu": "08:00-15:30",
-        "fri": "08:00-15:30",
+        "mon": "07:00-16:00",
+        "tue": "07:00-16:00",
+        "wed": "07:00-16:00",
+        "thu": "07:00-16:00",
+        "fri": "07:00-16:00",
         "sat": "OFF"
-      },
-      "shift": "day"
+      }
     },
     {
       "name": "Robert Carter",
