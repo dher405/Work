@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Strategic Focus Calendar - O365 Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .auth-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .auth-status {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        
+        .status-indicator.connected {
+            background: #10b981;
+        }
+        
+        .btn {
+            background: white;
+            color: #2d3748;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn.danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #f7fafc;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .week-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .week-display {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
+            min-width: 250px;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 25px;
+            background: #f7fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .legend-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .legend-item.active {
+            border: 2px solid #2d3748;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .legend-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 0;
+        }
+        
+        .time-column {
+            background: #f7fafc;
+            border-right: 2px solid #e2e8f0;
+        }
+        
+        .time-label {
+            padding: 15px 10px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .day-column {
+            border-right: 1px solid #e2e8f0;
+            position: relative;
+        }
+        
+        .day-column:last-child {
+            border-right: none;
+        }
+        
+        .day-header {
+            background: #2d3748;
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 3px solid;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .day-header:hover {
+            background: #1a202c;
+        }
+        
+        .day-header.mon { border-bottom-color: #10b981; }
+        .day-header.tue { border-bottom-color: #3b82f6; }
+        .day-header.wed { border-bottom-color: #8b5cf6; }
+        .day-header.thu { border-bottom-color: #f59e0b; }
+        .day-header.fri { border-bottom-color: #ec4899; }
+        
+        .time-slot {
+            border-bottom: 1px solid #e2e8f0;
+            min-height: 80px;
+            padding: 4px;
+            position: relative;
+        }
+        
+        .add-event-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px dashed #3b82f6;
+            color: #3b82f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .time-slot:hover .add-event-btn {
+            opacity: 1;
+        }
+        
+        .add-event-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .event {
+            background: #fff;
+            border-left: 4px solid;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .event-title {
+            font-weight: 700;
+            margin-bottom: 3px;
+            font-size: 12px;
+            padding-right: 20px;
+        }
+        
+        .event-time {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+        
+        .event-desc {
+            font-size: 11px;
+            color: #4a5568;
+            line-height: 1.3;
+        }
+        
+        .event-actions {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: none;
+            gap: 4px;
+        }
+        
+        .event:hover .event-actions {
+            display: flex;
+        }
+        
+        .event-action-btn {
+            background: rgba(0,0,0,0.1);
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: background 0.2s;
+        }
+        
+        .event-action-btn:hover {
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .event.people-dev { 
+            border-left-color: #10b981; 
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .event.ops-perf { 
+            border-left-color: #3b82f6; 
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        
+        .event.process-sys { 
+            border-left-color: #8b5cf6; 
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        }
+        
+        .event.training { 
+            border-left-color: #f59e0b; 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .event.strategic { 
+            border-left-color: #ec4899; 
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        }
+        
+        .event.uncategorized {
+            border-left-color: #6b7280;
+            background: #f3f4f6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 16px;
+            color: #6b7280;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1200px) {
+            .calendar {
+                grid-template-columns: 60px repeat(5, 1fr);
+            }
+            .event-title {
+                font-size: 11px;
+            }
+            .event-desc {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="auth-controls">
+                <div class="auth-status">
+                    <span class="status-indicator" id="statusIndicator"></span>
+                    <span id="statusText">Not Connected</span>
+                </div>
+                <button class="btn primary" id="loginBtn" onclick="login()">Connect O365</button>
+                <button class="btn danger" id="logoutBtn" onclick="logout()" style="display: none;">Disconnect</button>
+            </div>
+            <h1>🎯 Weekly Strategic Focus Calendar</h1>
+            <p>T3 Global Director - Office 365 Integration</p>
+        </div>
+        
+        <div class="controls-bar">
+            <div class="week-nav">
+                <button class="btn" onclick="previousWeek()">← Previous</button>
+                <div class="week-display" id="weekDisplay">Loading...</div>
+                <button class="btn" onclick="nextWeek()">Next →</button>
+                <button class="btn" onclick="goToToday()">Today</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn primary" onclick="refreshCalendar()">🔄 Refresh</button>
+                <button class="btn" onclick="showSettings()">⚙️ Settings</button>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item" data-category="people-dev">
+                <div class="legend-color" style="background: #10b981;"></div>
+                <div class="legend-text">People Development</div>
+            </div>
+            <div class="legend-item" data-category="ops-perf">
+                <div class="legend-color" style="background: #3b82f6;"></div>
+                <div class="legend-text">Operations & Performance</div>
+            </div>
+            <div class="legend-item" data-category="process-sys">
+                <div class="legend-color" style="background: #8b5cf6;"></div>
+                <div class="legend-text">Process & Systems</div>
+            </div>
+            <div class="legend-item" data-category="training">
+                <div class="legend-color" style="background: #f59e0b;"></div>
+                <div class="legend-text">Training & Enablement</div>
+            </div>
+            <div class="legend-item" data-category="strategic">
+                <div class="legend-color" style="background: #ec4899;"></div>
+                <div class="legend-text">Strategic Projects</div>
+            </div>
+        </div>
+        
+        <div id="calendarContainer">
+            <div class="info-box">
+                <strong>📋 Setup Instructions:</strong><br>
+                Click "Connect O365" to authenticate with your Microsoft account. Once connected, your calendar events will display here automatically. Events are color-coded based on categories you set in Outlook.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Create Event</div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" class="form-input" id="eventStartTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration (minutes)</label>
+                    <input type="number" class="form-input" id="eventDuration" value="60" min="15" step="15">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="eventCategory">
+                        <option value="people-dev">People Development</option>
+                        <option value="ops-perf">Operations & Performance</option>
+                        <option value="process-sys">Process & Systems</option>
+                        <option value="training">Training & Enablement</option>
+                        <option value="strategic">Strategic Projects</option>
+                        <option value="uncategorized">Uncategorized</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea class="form-textarea" id="eventDescription"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn danger" id="deleteBtn" onclick="deleteEvent()" style="display: none;">Delete</button>
+                    <button type="submit" class="btn primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MSAL.js library -->
+    <script src="https://alcdn.msauth.net/browser/2.32.2/js/msal-browser.min.js"></script>
+    
+    <script>
+        // Microsoft Authentication Library configuration
+        const msalConfig = {
+            auth: {
+                clientId: 'YOUR_CLIENT_ID_HERE', // Replace with your Azure AD app registration client ID
+                authority: 'https://login.microsoftonline.com/common',
+                redirectUri: window.location.origin
+            },
+            cache: {
+                cacheLocation: 'localStorage',
+                storeAuthStateInCookie: false
+            }
+        };
+        
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+        
+        const loginRequest = {
+            scopes: ['Calendars.ReadWrite', 'User.Read']
+        };
+        
+        // Global state
+        let currentWeekStart = null;
+        let accessToken = null;
+        let currentEvents = [];
+        let editingEvent = null;
+        
+        // Category keywords for automatic categorization
+        const categoryKeywords = {
+            'people-dev': ['1:1', 'one-on-one', 'coaching', 'mentoring', 'team building', 'managing up', 'recognition'],
+            'ops-perf': ['mbo', 'metrics', 'report', 'performance', 'kpi', 'dashboard', 'budget', 'promotion'],
+            'process-sys': ['process', 'workflow', 'automation', 'power automate', 'system', 'documentation'],
+            'training': ['training', 'enablement', 'learning', 'certification', 'onboarding', 'skill'],
+            'strategic': ['strategic', 'project', 'innovation', 'api', 'integration', 'roadmap', 'planning']
+        };
+        
+        // Initialize
+        window.onload = async function() {
+            await initializeAuth();
+            initializeWeek();
+        };
+        
+        async function initializeAuth() {
+            try {
+                const accounts = msalInstance.getAllAccounts();
+                if (accounts.length > 0) {
+                    msalInstance.setActiveAccount(accounts[0]);
+                    await acquireToken();
+                    updateAuthUI(true);
+                }
+            } catch (error) {
+                console.error('Auth initialization error:', error);
+            }
+        }
+        
+        async function login() {
+            try {
+                const response = await msalInstance.loginPopup(loginRequest);
+                msalInstance.setActiveAccount(response.account);
+                await acquireToken();
+                updateAuthUI(true);
+                await loadCalendarEvents();
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        }
+        
+        async function logout() {
+            try {
+                await msalInstance.logoutPopup();
+                accessToken = null;
+                updateAuthUI(false);
+                document.getElementById('calendarContainer').innerHTML = '<div class="info-box">Disconnected. Click "Connect O365" to reconnect.</div>';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+        
+        async function acquireToken() {
+            try {
+                const account = msalInstance.getActiveAccount();
+                const response = await msalInstance.acquireTokenSilent({
+                    ...loginRequest,
+                    account: account
+                });
+                accessToken = response.accessToken;
+            } catch (error) {
+                console.error('Token acquisition error:', error);
+                if (error instanceof msal.InteractionRequiredAuthError) {
+                    await login();
+                }
+            }
+        }
+        
+        function updateAuthUI(isAuthenticated) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (isAuthenticated) {
+                statusIndicator.classList.add('connected');
+                statusText.textContent = 'Connected';
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+            } else {
+                statusIndicator.classList.remove('connected');
+                statusText.textContent = 'Not Connected';
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+            }
+        }
+        
+        function initializeWeek() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+            monday.setHours(0, 0, 0, 0);
+            currentWeekStart = monday;
+            updateWeekDisplay();
+            if (accessToken) {
+                loadCalendarEvents();
+            }
+        }
+        
+        function updateWeekDisplay() {
+            const endDate = new Date(currentWeekStart);
+            endDate.setDate(endDate.getDate() + 4);
+            
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = currentWeekStart.toLocaleDateString('en-US', options);
+            const endStr = endDate.toLocaleDateString('en-US', options);
+            
+            document.getElementById('weekDisplay').textContent = `${startStr} - ${endStr}`;
+        }
+        
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            updateWeekDisplay();
+            if (accessToken) loadCalendarEvents();
+        }
+        
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            updateWeekDisplay();
+            if (accessToken) loadCalendarEvents();
+        }
+        
+        function goToToday() {
+            initializeWeek();
+        }
+        
+        async function refreshCalendar() {
+            if (!accessToken) {
+                alert('Please connect to Office 365 first');
+                return;
+            }
+            await loadCalendarEvents();
+        }
+        
+        async function loadCalendarEvents() {
+            if (!accessToken) return;
+            
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading calendar events...</div>';
+            
+            try {
+                const startDate = new Date(currentWeekStart);
+                startDate.setHours(0, 0, 0, 0);
+                
+                const endDate = new Date(currentWeekStart);
+                endDate.setDate(endDate.getDate() + 5);
+                endDate.setHours(23, 59, 59, 999);
+                
+                const startISO = startDate.toISOString();
+                const endISO = endDate.toISOString();
+                
+                const response = await fetch(
+                    `https://graph.microsoft.com/v1.0/me/calendarview?startdatetime=${startISO}&enddatetime=${endISO}&$orderby=start/dateTime`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch calendar events');
+                }
+                
+                const data = await response.json();
+                currentEvents = data.value;
+                renderCalendar();
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                container.innerHTML = '<div class="error-message">Failed to load calendar events. Please try refreshing.</div>';
+            }
+        }
+        
+        function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            
+            const html = `
+                <div class="calendar">
+                    ${renderTimeColumn()}
+                    ${renderDayColumns()}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function renderTimeColumn() {
+            let html = '<div class="time-column"><div class="day-header" style="background: transparent;"></div>';
+            for (let hour = 8; hour <= 16; hour++) {
+                const time = hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
+                html += `<div class="time-label">${time}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+        
+        function renderDayColumns() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const dayClasses = ['mon', 'tue', 'wed', 'thu', 'fri'];
+            const themes = ['People Development', 'Operations & Performance', 'Process & Systems', 'Training & Enablement', 'Strategic Projects'];
+            
+            let html = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const dayDate = new Date(currentWeekStart);
+                dayDate.setDate(dayDate.getDate() + i);
+                
+                html += `<div class="day-column">`;
+                html += `<div class="day-header ${dayClasses[i]}">${days[i]}<br>${themes[i]}</div>`;
+                
+                for (let hour = 8; hour <= 16; hour++) {
+                    const dayEvents = getEventsForTimeSlot(dayDate, hour);
+                    html += `<div class="time-slot" data-date="${dayDate.toISOString()}" data-hour="${hour}">`;
+                    html += `<button class="add-event-btn" onclick="showAddEvent('${dayDate.toISOString()}', ${hour})">+ Add</button>`;
+                    
+                    dayEvents.forEach(event => {
+                        html += renderEvent(event);
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
+            }
+            
+            return html;
+        }
+        
+        function getEventsForTimeSlot(date, hour) {
+            return currentEvents.filter(event => {
+                const eventStart = new Date(event.start.dateTime);
+                const eventDate = eventStart.toDateString();
+                const slotDate = date.toDateString();
+                const eventHour = eventStart.getHours();
+                
+                return eventDate === slotDate && eventHour === hour;
+            });
+        }
+        
+        function renderEvent(event) {
+            const category = categorizeEvent(event);
+            const startTime = new Date(event.start.dateTime);
+            const endTime = new Date(event.end.dateTime);
+            const timeStr = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+            
+            return `
+                <div class="event ${category}" onclick="editEvent('${event.id}')">
+                    <div class="event-title">${escapeHtml(event.subject)}</div>
+                    <div class="event-time">${timeStr}</div>
+                    ${event.body?.content ? `<div class="event-desc">${escapeHtml(event.body.content.substring(0, 60))}...</div>` : ''}
+                    <div class="event-actions">
+                        <button class="event-action-btn" onclick="event.stopPropagation(); editEvent('${event.id}')">✏️</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function categorizeEvent(event) {
+            // Check if event has Outlook categories
+            if (event.categories && event.categories.length > 0) {
+                const outlookCategory = event.categories[0].toLowerCase();
+                if (outlookCategory.includes('people')) return 'people-dev';
+                if (outlookCategory.includes('ops') || outlookCategory.includes('performance')) return 'ops-perf';
+                if (outlookCategory.includes('process')) return 'process-sys';
+                if (outlookCategory.includes('training')) return 'training';
+                if (outlookCategory.includes('strategic')) return 'strategic';
+            }
+            
+            // Auto-categorize based on keywords in title
+            const title = event.subject.toLowerCase();
+            for (const [category, keywords] of Object.entries(categoryKeywords)) {
+                if (keywords.some(keyword => title.includes(keyword))) {
+                    return category;
+                }
+            }
+            
+            return 'uncategorized';
+        }
+        
+        function formatTime(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `${displayHours}:${displayMinutes} ${ampm}`;
+        }
+        
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+        
+        function showAddEvent(dateStr, hour) {
+            editingEvent = null;
+            document.getElementById('modalTitle').textContent = 'Create Event';
+            document.getElementById('deleteBtn').style.display = 'none';
+            
+            const date = new Date(dateStr);
+            const dateInput = date.toISOString().split('T')[0];
+            const timeInput = `${hour.toString().padStart(2, '0')}:00`;
+            
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = dateInput;
+            document.getElementById('eventStartTime').value = timeInput;
+            document.getElementById('eventDuration').value = '60';
+            document.getElementById('eventDescription').value = '';
+            
+            // Set default category based on day
+            const dayOfWeek = date.getDay();
+            const defaultCategories = ['', 'people-dev', 'ops-perf', 'process-sys', 'training', 'strategic'];
+            document.getElementById('eventCategory').value = defaultCategories[dayOfWeek] || 'uncategorized';
+            
+            document.getElementById('eventModal').classList.add('active');
+        }
+        
+        function editEvent(eventId) {
+            const event = currentEvents.find(e => e.id === eventId);
+            if (!event) return;
+            
+            editingEvent = event;
+            document.getElementById('modalTitle').textContent = 'Edit Event';
+            document.getElementById('deleteBtn').style.display = 'block';
+            
+            const startTime = new Date(event.start.dateTime);
+            const endTime = new Date(event.end.dateTime);
+            const duration = (endTime - startTime) / (1000 * 60);
+            
+            document.getElementById('eventTitle').value = event.subject;
+            document.getElementById('eventDate').value = startTime.toISOString().split('T')[0];
+            document.getElementById('eventStartTime').value = startTime.toTimeString().substring(0, 5);
+            document.getElementById('eventDuration').value = duration;
+            document.getElementById('eventDescription').value = event.body?.content || '';
+            document.getElementById('eventCategory').value = categorizeEvent(event);
+            
+            document.getElementById('eventModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            editingEvent = null;
+        }
+        
+        document.getElementById('eventForm').onsubmit = async function(e) {
+            e.preventDefault();
+            await saveEvent();
+        };
+        
+        async function saveEvent() {
+            if (!accessToken) {
+                alert('Please connect to Office 365 first');
+                return;
+            }
+            
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const startTime = document.getElementById('eventStartTime').value;
+            const duration = parseInt(document.getElementById('eventDuration').value);
+            const description = document.getElementById('eventDescription').value;
+            const category = document.getElementById('eventCategory').value;
+            
+            const startDateTime = new Date(`${date}T${startTime}`);
+            const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+            
+            const categoryNames = {
+                'people-dev': 'People Development',
+                'ops-perf': 'Operations & Performance',
+                'process-sys': 'Process & Systems',
+                'training': 'Training & Enablement',
+                'strategic': 'Strategic Projects'
+            };
+            
+            const eventData = {
+                subject: title,
+                start: {
+                    dateTime: startDateTime.toISOString(),
+                    timeZone: 'UTC'
+                },
+                end: {
+                    dateTime: endDateTime.toISOString(),
+                    timeZone: 'UTC'
+                },
+                body: {
+                    contentType: 'Text',
+                    content: description
+                },
+                categories: category !== 'uncategorized' ? [categoryNames[category]] : []
+            };
+            
+            try {
+                let url = 'https://graph.microsoft.com/v1.0/me/events';
+                let method = 'POST';
+                
+                if (editingEvent) {
+                    url = `https://graph.microsoft.com/v1.0/me/events/${editingEvent.id}`;
+                    method = 'PATCH';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(eventData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save event');
+                }
+                
+                closeModal();
+                await loadCalendarEvents();
+            } catch (error) {
+                console.error('Error saving event:', error);
+                alert('Failed to save event. Please try again.');
+            }
+        }
+        
+        async function deleteEvent() {
+            if (!editingEvent || !accessToken) return;
+            
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(
+                    `https://graph.microsoft.com/v1.0/me/events/${editingEvent.id}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to delete event');
+                }
+                
+                closeModal();
+                await loadCalendarEvents();
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                alert('Failed to delete event. Please try again.');
+            }
+        }
+        
+        function showSettings() {
+            alert('Settings panel coming soon! This will allow you to:\n\n- Customize category keywords\n- Set default meeting durations\n- Configure work hours\n- Choose color themes');
+        }
+    </script>
+</body>
+</html>
