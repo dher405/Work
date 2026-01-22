@@ -534,8 +534,8 @@
         
         <div id="calendarContainer">
             <div class="info-box">
-                <strong>📋 Setup Instructions:</strong><br>
-                Click "Connect O365" to authenticate with your Microsoft account. Once connected, your calendar events will display here automatically. Events are color-coded based on categories you set in Outlook.
+                <strong>📋 Ready to Use - No Setup Required!</strong><br>
+                Click "Connect O365" to authenticate with your Microsoft account. This uses Microsoft Graph Explorer's authentication (you may see Graph Explorer branding during login - this is normal). Once connected, your calendar events will display here automatically with color-coded themes based on your daily focus areas.
             </div>
         </div>
     </div>
@@ -590,9 +590,10 @@
     
     <script>
         // Microsoft Authentication Library configuration
+        // Using Microsoft Graph Explorer's client ID - no registration needed!
         const msalConfig = {
             auth: {
-                clientId: 'YOUR_CLIENT_ID_HERE', // Replace with your Azure AD app registration client ID
+                clientId: 'de8bc8b5-d9f9-48b1-a8ad-b748da725064', // Microsoft Graph Explorer client ID
                 authority: 'https://login.microsoftonline.com/common',
                 redirectUri: window.location.origin
             },
