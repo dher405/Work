@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Case Router - Logic Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .legend-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .flow-section {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .box {
+            padding: 20px 30px;
+            border-radius: 12px;
+            border: 3px solid #2d3748;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        
+        .box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .box-trigger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .box-process {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .box-decision {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #2d3748;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            padding: 30px 40px;
+            font-weight: bold;
+        }
+        
+        .box-ai {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d3748;
+            border-color: #805ad5;
+            border-width: 4px;
+        }
+        
+        .box-data {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            color: #2d3748;
+        }
+        
+        .box-action {
+            background: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%);
+            color: #2d3748;
+        }
+        
+        .box-error {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .box-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .arrow-down {
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 2.5em;
+            color: #667eea;
+        }
+        
+        .arrow-split {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+            height: 60px;
+        }
+        
+        .arrow-split::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: #667eea;
+            transform: translateX(-50%);
+        }
+        
+        .arrow-split::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: #667eea;
+        }
+        
+        .arrow-split-label-left {
+            position: absolute;
+            left: 20%;
+            top: 40px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #fc8181;
+            font-size: 0.9em;
+        }
+        
+        .arrow-split-label-right {
+            position: absolute;
+            right: 20%;
+            top: 40px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #48bb78;
+            font-size: 0.9em;
+        }
+        
+        .details {
+            font-size: 0.85em;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        
+        .branch-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        
+        .branch-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: #667eea;
+            transform: translateX(-50%);
+        }
+        
+        .branch-container::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: #667eea;
+        }
+        
+        .branch {
+            flex: 1;
+            min-width: 350px;
+            max-width: 550px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 3px solid #cbd5e0;
+            position: relative;
+            margin-top: 30px;
+        }
+        
+        .branch::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: #667eea;
+            transform: translateX(-50%);
+        }
+        
+        .branch-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .branch-yes {
+            border-color: #48bb78;
+            background: linear-gradient(to bottom, #f0fff4 0%, white 100%);
+        }
+        
+        .branch-no {
+            border-color: #fc8181;
+            background: linear-gradient(to bottom, #fff5f5 0%, white 100%);
+        }
+        
+        .branch-yes .branch-title {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .branch-no .branch-title {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+        }
+        
+        .sub-branch {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .note {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+        
+        .note-title {
+            font-weight: bold;
+            color: #c53030;
+            margin-bottom: 8px;
+        }
+        
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 8px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Intelligent Case Router</h1>
+            <div class="subtitle">Automated Case Distribution System - Workato Implementation</div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box box-trigger"></div>
+                <span>Trigger/Start</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-ai"></div>
+                <span>AI Processing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-decision" style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);"></div>
+                <span>Decision Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-process"></div>
+                <span>Processing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-data"></div>
+                <span>Data Operation</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-action"></div>
+                <span>Action/Update</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-success"></div>
+                <span>Success</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box box-error"></div>
+                <span>Error/Retry</span>
+            </div>
+        </div>
+        
+        <!-- PHASE 1: EMAIL TRIGGER & PARSING -->
+        <div class="flow-section">
+            <div class="section-title">📧 Phase 1: Email Trigger & Initial Parsing</div>
+            
+            <div class="flow-row">
+                <div class="box box-trigger">
+                    📨 New Email Arrives
+                    <div class="details">To: tier3@ringcentral.com<br>Subject contains: "New Case Escalated"</div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-process">
+                    Parse Email Body
+                    <div class="details">Extract plain text from HTML</div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Extract Case Details
+                    <div class="details">
+                        • Created By (engineer name)<br>
+                        • Case Subject<br>
+                        • Case Number<br>
+                        • Case Severity (1-5)<br>
+                        • Brand<br>
+                        • Retry Count
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-decision">
+                    Case Created by<br>Team Member?
+                </div>
+            </div>
+            
+            <div class="arrow-split">
+                <span class="arrow-split-label-left">NO ✗</span>
+                <span class="arrow-split-label-right">YES ✓</span>
+            </div>
+            
+            <div class="branch-container">
+                <div class="branch branch-yes">
+                    <div class="branch-title">✓ YES - Created by Engineer</div>
+                    <div class="flow-row">
+                        <div class="box box-success">
+                            🛑 Stop Processing
+                            <div class="details">Prevents self-assignment loop</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="branch branch-no">
+                    <div class="branch-title">✗ NO - External Case</div>
+                    <div class="flow-row">
+                        <div class="box box-process">
+                            ✓ Continue to Phase 2
+                            <div class="details">Proceed to AI Classification →</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHASE 2: AI CLASSIFICATION -->
+        <div class="flow-section">
+            <div class="section-title">🤖 Phase 2: AI Team Classification</div>
+            
+            <div class="flow-row">
+                <div class="box box-ai">
+                    🧠 Google Gemini AI Analysis
+                    <div class="details">
+                        Analyzes case subject & description<br>
+                        Returns team: App, Platform, Network, RCX, RCCC, or AI
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">AI Classification Logic:</div>
+                • Checks for bracket override: [PLATFORM], [RCCC], etc.<br>
+                • Analyzes keywords and context<br>
+                • Matches against team responsibility definitions<br>
+                • Returns single best-fit team name
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Normalize Team Name
+                    <div class="details">Convert to uppercase: "Ai" → "AI"</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHASE 3: CONFIGURATION LOOKUP -->
+        <div class="flow-section">
+            <div class="section-title">📊 Phase 3: Load Configuration Data</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Load Rotation Counter
+                    <div class="details">
+                        Search Rotation sheet for current team<br>
+                        Get: CurrentRotation, CycleCount
+                    </div>
+                </div>
+                <span class="arrow">→</span>
+                <div class="box box-data">
+                    Load Engineers List
+                    <div class="details">
+                        Fetch all engineers from sheet<br>
+                        Filter by Available = "Yes"
+                    </div>
+                </div>
+                <span class="arrow">→</span>
+                <div class="box box-data">
+                    Get Overflow Status
+                    <div class="details">
+                        Check if overflow mode enabled<br>
+                        (Skips shift time filtering)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Get Brand Geography
+                    <div class="details">
+                        Lookup required geographies for brand<br>
+                        Example: "NAR, APAC, EMEA"
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHASE 4: FILTERING CASCADE -->
+        <div class="flow-section">
+            <div class="section-title">🔍 Phase 4: Engineer Filtering Cascade</div>
+            
+            <div class="note">
+                <div class="note-title">Filter Order Matters!</div>
+                Each filter is applied sequentially. If a filter produces zero results, the system checks severity and either retries or expands criteria.
+            </div>
+            
+            <div class="flow-row">
+                <div class="box box-process">
+                    Filter 1: Basic Availability
+                    <div class="details">
+                        • Available = "Yes"<br>
+                        • Not on PTO (date range check)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-decision">
+                    Overflow Mode<br>Enabled?
+                </div>
+            </div>
+            
+            <div class="arrow-split">
+                <span class="arrow-split-label-left">NO ✗</span>
+                <span class="arrow-split-label-right">YES ✓</span>
+            </div>
+            
+            <div class="branch-container">
+                <div class="branch branch-no">
+                    <div class="branch-title">✗ NO - Standard Mode</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-decision">
+                            Severity 1-2<br>(Critical)?
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch branch-yes">
+                            <div class="branch-title">✓ YES - Sev 1-2</div>
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    Filter 2A: Strict Shift Check
+                                    <div class="details">
+                                        • Currently on shift<br>
+                                        • Handles overnight shifts<br>
+                                        • Exact time matching
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="branch branch-no">
+                            <div class="branch-title">✗ NO - Sev 3-5</div>
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    Filter 2B: No Shift Check
+                                    <div class="details">
+                                        All available engineers<br>
+                                        (Can be retried later)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="branch branch-yes">
+                    <div class="branch-title">✓ YES - Overflow Mode Active</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-decision">
+                            Severity 1-2<br>(Critical)?
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch branch-yes">
+                            <div class="branch-title">✓ YES - Sev 1-2</div>
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    Strict Shift Check
+                                    <div class="details">Critical cases still require on-shift</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="branch branch-no">
+                            <div class="branch-title">✗ NO - Sev 3-5</div>
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    Expanded Pool
+                                    <div class="details">
+                                        No shift check<br>
+                                        All available engineers
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-process">
+                    Filter 3: Product Match
+                    <div class="details">
+                        Keep only: Product_[Team] = "Yes"<br>
+                        Example: Product_AI = "Yes" for AI cases
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-process">
+                    Filter 4: Level-Based Participation
+                    <div class="details">
+                        Level 1: Every cycle<br>
+                        Level 2: Every 2nd cycle (even CycleCount)<br>
+                        Level 3: Every 3rd cycle (CycleCount % 3 = 0)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-process">
+                    Filter 5: Geography Match
+                    <div class="details">
+                        Engineer Geography in Brand's required list<br>
+                        Example: NAR engineer for NAR-only brands
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Candidate Pool Ready
+                    <div class="details">Filtered engineers sorted by RotationOrder</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHASE 5: ENGINEER SELECTION -->
+        <div class="flow-section">
+            <div class="section-title">👤 Phase 5: Engineer Selection Logic</div>
+            
+            <div class="flow-row">
+                <div class="box box-decision">
+                    Any Candidates<br>in Pool?
+                </div>
+            </div>
+            
+            <div class="arrow-split">
+                <span class="arrow-split-label-left">NO ✗</span>
+                <span class="arrow-split-label-right">YES ✓</span>
+            </div>
+            
+            <div class="branch-container">
+                <div class="branch branch-no">
+                    <div class="branch-title">✗ NO - Empty Pool</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-decision">
+                            Severity 1-2<br>(Critical)?
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch branch-yes">
+                            <div class="branch-title">✓ YES - Critical Case</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-error">
+                                    🚨 Send Alert Email
+                                    <div class="details">
+                                        To: Management Team<br>
+                                        Subject: NO ENGINEER AVAILABLE<br>
+                                        Manual intervention required
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="arrow-down">↓</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-error">
+                                    🛑 STOP FLOW
+                                    <div class="details">Flow terminates</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="branch branch-no">
+                            <div class="branch-title">✗ NO - Sev 3-5</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-decision">
+                                    Retry Count < 4?
+                                </div>
+                            </div>
+                            
+                            <div class="branch-container">
+                                <div class="branch branch-yes">
+                                    <div class="branch-title">✓ YES - Can Retry</div>
+                                    
+                                    <div class="flow-row">
+                                        <div class="box box-action">
+                                            Add to RetryQueue
+                                            <div class="details">
+                                                Status = "Pending"<br>
+                                                Will retry in 6 hours
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="arrow-down">↓</div>
+                                    
+                                    <div class="flow-row">
+                                        <div class="box box-action">
+                                            📧 Send Retry Email
+                                            <div class="details">
+                                                To: tier3@ringcentral.com<br>
+                                                Subject: "...[RETRY]"<br>
+                                                Body: Incremented RetryCount
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="arrow-down">↓</div>
+                                    
+                                    <div class="flow-row">
+                                        <div class="box box-success">
+                                            ✓ STOP (Retry Scheduled)
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="branch branch-no">
+                                    <div class="branch-title">✗ NO - Max Retries Reached</div>
+                                    
+                                    <div class="flow-row">
+                                        <div class="box box-error">
+                                            🚨 MAX RETRIES ALERT
+                                            <div class="details">
+                                                4 attempts over 24 hours failed<br>
+                                                Send escalation email
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="arrow-down">↓</div>
+                                    
+                                    <div class="flow-row">
+                                        <div class="box box-error">
+                                            🛑 STOP WITH ERROR
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="branch branch-yes">
+                    <div class="branch-title">✓ YES - Candidates Found</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-process">
+                            Sort by RotationOrder
+                            <div class="details">Ascending (1, 2, 3...)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-decision">
+                            Any with<br>LastAssigned = "No"?
+                        </div>
+                    </div>
+                    
+                    <div class="branch-container">
+                        <div class="branch branch-yes">
+                            <div class="branch-title">✓ YES - Unassigned Found</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-success">
+                                    ✓ Select First Unassigned
+                                    <div class="details">
+                                        Priority to engineers<br>
+                                        without recent assignments
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="arrow-down">↓</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    ✓ Continue to Phase 6
+                                    <div class="details">Proceed to assignment →</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="branch branch-no">
+                            <div class="branch-title">✗ NO - All Recently Assigned</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-action">
+                                    🔄 Reset Rotation Cycle
+                                    <div class="details">
+                                        • Set all LastAssigned_[Team] = "No"<br>
+                                        • Increment CycleCount<br>
+                                        • Reset CurrentRotation = 1
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="arrow-down">↓</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-success">
+                                    ✓ Select First Engineer
+                                    <div class="details">Start fresh rotation cycle</div>
+                                </div>
+                            </div>
+                            
+                            <div class="arrow-down">↓</div>
+                            
+                            <div class="flow-row">
+                                <div class="box box-process">
+                                    ✓ Continue to Phase 6
+                                    <div class="details">Proceed to assignment →</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHASE 6: ASSIGNMENT & LOGGING -->
+        <div class="flow-section">
+            <div class="section-title">📝 Phase 6: Assignment & State Updates</div>
+            
+            <div class="flow-row">
+                <div class="box box-success">
+                    ✓ Engineer Selected
+                    <div class="details">Final candidate chosen</div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-action">
+                    Update LastAssigned Flags
+                    <div class="details">
+                        Selected: LastAssigned_[Team] = "Yes"<br>
+                        All Others: LastAssigned_[Team] = "No"
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-action">
+                    Update Rotation Counter
+                    <div class="details">
+                        Increment CurrentRotation<br>
+                        (Or reset if end of cycle)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-action">
+                    📧 Send Assignment Email
+                    <div class="details">
+                        To: Selected Engineer<br>
+                        CC: Management Team<br>
+                        Subject: Case Number + Severity<br>
+                        Body: Full case details
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Log to Recent Sheet
+                    <div class="details">
+                        Record: Case #, Engineer, Date/Time, Brand, Subject<br>
+                        Auto-cleanup: Keep most recent 50 entries
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-success">
+                    ✅ COMPLETE
+                    <div class="details">Case successfully routed</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SUPPLEMENTAL: RETRY PROCESSOR -->
+        <div class="flow-section" style="border-left-color: #f56565;">
+            <div class="section-title">🔄 Supplemental Flow: Retry Processor (Runs Every 6 Hours)</div>
+            
+            <div class="flow-row">
+                <div class="box box-trigger">
+                    ⏰ Scheduled Trigger
+                    <div class="details">Every 6 hours</div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-data">
+                    Scan RetryQueue Sheet
+                    <div class="details">Find: Status = "Pending" AND RetryCount < 4</div>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="box box-decision">
+                    Any Pending<br>Retries?
+                </div>
+            </div>
+            
+            <div class="arrow-split">
+                <span class="arrow-split-label-left">NO ✗</span>
+                <span class="arrow-split-label-right">YES ✓</span>
+            </div>
+            
+            <div class="branch-container">
+                <div class="branch branch-yes">
+                    <div class="branch-title">✓ YES - Retries Found</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-action">
+                            📋 For Each Pending Case
+                            <div class="details">Loop through RetryQueue entries</div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-action">
+                            📧 Send Retry Email
+                            <div class="details">
+                                To: tier3@ringcentral.com<br>
+                                Subject: "New Case Escalated - [RETRY]"<br>
+                                Body: Original case + RetryCount
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-data">
+                            Update RetryQueue Status
+                            <div class="details">Mark as "Processed"</div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow-down">↓</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-success">
+                            ✓ Triggers Main Flow
+                            <div class="details">
+                                Email picked up by main router<br>
+                                Starts from Phase 1
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="branch branch-no">
+                    <div class="branch-title">✗ NO - Queue Empty</div>
+                    
+                    <div class="flow-row">
+                        <div class="box box-success">
+                            ✓ End Gracefully
+                            <div class="details">Nothing to retry this cycle</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- KEY CONCEPTS -->
+        <div class="flow-section" style="border-left-color: #48bb78;">
+            <div class="section-title">💡 Key Concepts & Business Rules</div>
+            
+            <div class="info-box">
+                <div class="info-title">🎯 Fair Rotation System:</div>
+                • <strong>RotationOrder</strong>: Determines engineer sequence (1, 2, 3...)<br>
+                • <strong>LastAssigned Flag</strong>: Tracks who recently got a case<br>
+                • <strong>CycleCount</strong>: Increments when rotation completes full cycle<br>
+                • <strong>Level System</strong>: Controls participation frequency based on skill/availability
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">⏰ Shift & Geography Logic:</div>
+                • <strong>Shift Times</strong>: Format "HH:mm-HH:mm" (e.g., "09:00-17:00")<br>
+                • <strong>Overnight Shifts</strong>: Automatically detected when start > end<br>
+                • <strong>Geography Matching</strong>: Required for certain brands (AT&T, Verizon, etc.)<br>
+                • <strong>Overflow Mode</strong>: Expands pool by ignoring shift times for Sev 3-5
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">🔢 Severity Handling:</div>
+                • <strong>Sev 1-2 (Critical)</strong>: Requires immediate on-shift engineer, no retries<br>
+                • <strong>Sev 3-5 (Standard)</strong>: Can retry up to 4 times over 24 hours if no one available
+            </div>
+            
+            <div class="note">
+                <div class="note-title">⚠️ Common Failure Points:</div>
+                • <strong>No Geography Match</strong>: Brand requires specific geography, no engineers available<br>
+                • <strong>All on PTO</strong>: Entire team unavailable on same dates<br>
+                • <strong>Level Participation</strong>: CycleCount doesn't match Level 2/3 requirements<br>
+                • <strong>Case Sensitivity</strong>: Team name "Ai" vs "AI" mismatch in sheet
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="flow-section" style="background: #2d3748; color: white; border-left-color: #667eea;">
+            <div class="section-title" style="color: white;">📚 Data Sources & Configuration</div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">Engineers Sheet</strong>
+                    • Email, EngineerName, Level<br>
+                    • Product_* columns (App, Platform, Network, RCX, RCCC, AI)<br>
+                    • LastAssigned_* columns<br>
+                    • Geography, Available, PTO, RotationOrder<br>
+                    • Shift schedules (Monday-Sunday columns)
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">Rotation Sheet</strong>
+                    • Product (team name)<br>
+                    • CurrentRotation (position in cycle)<br>
+                    • CycleCount (rotation cycle number)
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">Brand Sheet</strong>
+                    • Brand name<br>
+                    • Geography (comma-separated list)<br>
+                    • Controls geography requirements per brand
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">Overflow Sheet</strong>
+                    • Single row with Overflow status<br>
+                    • "Yes" = Expand pool (skip shift checks for Sev 3-5)<br>
+                    • "No" = Standard mode (strict shift enforcement)
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">RetryQueue Sheet</strong>
+                    • Cases pending retry<br>
+                    • ID, CaseNumber, RetryCount, Team, Geography<br>
+                    • Status (Pending/Processed)<br>
+                    • RequestedAt timestamp
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #90cdf4;">Recent Sheet</strong>
+                    • Assignment history log<br>
+                    • Auto-maintains 50 most recent entries<br>
+                    • Used for reporting and auditing
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
