@@ -109,6 +109,7 @@ async function loadData() {
 
 function getCalendarData() {
     const baseDate = new Date();
+    baseDate.setDate(1); // Set to first day of month to avoid overflow issues
     baseDate.setMonth(baseDate.getMonth() + currentMonth);
     const year = baseDate.getFullYear();
     const month = baseDate.getMonth();
