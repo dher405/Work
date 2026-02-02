@@ -2140,16 +2140,16 @@
     },
     "2026-02-25": {
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Amine Dahel",
+        "email": "amine.dahel@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
+          "mon": "00:00-06:00",
+          "tue": "00:00-06:00",
+          "wed": "00:00-06:00",
+          "thu": "00:00-06:00",
+          "fri": "00:00-06:00",
           "sat": "OFF"
         }
       },
