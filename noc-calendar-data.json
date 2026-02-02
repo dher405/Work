@@ -1762,16 +1762,16 @@
     },
     "2026-02-18": {
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Pearce Hamblin",
+        "email": "pearce.hamblin@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "02:00-08:00",
+          "mon": "01:00-07:00",
+          "tue": "01:00-07:00",
+          "wed": "01:00-07:00",
+          "thu": "01:00-07:00",
+          "fri": "01:00-07:00",
           "sat": "OFF"
         }
       },
