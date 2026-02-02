@@ -1558,17 +1558,17 @@
     },
     "2026-02-14": {
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
-          "sat": "OFF"
+          "mon": "OFF",
+          "tue": "00:00-09:00",
+          "wed": "00:00-09:00",
+          "thu": "00:00-09:00",
+          "fri": "00:00-09:00",
+          "sat": "00:00-09:00"
         }
       },
       "early": {
