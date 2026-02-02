@@ -1180,17 +1180,17 @@
     },
     "2026-02-07": {
       "night": {
-        "name": "Hugo Nickal-Thibeaud",
-        "email": "hugo.thibeaud@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "02:00-08:00",
-          "sat": "OFF"
+          "mon": "OFF",
+          "tue": "00:00-09:00",
+          "wed": "00:00-09:00",
+          "thu": "00:00-09:00",
+          "fri": "00:00-09:00",
+          "sat": "00:00-09:00"
         }
       },
       "early": {
