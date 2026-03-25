@@ -3444,15 +3444,15 @@
         }
       },
       "early": {
-        "name": "Bo Lemecha",
-        "email": "Bo.Lemecha@ringcentral.com",
+        "name": "Cindy Hubert",
+        "email": "cindy.hubert@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "06:00-14:30",
-          "tue": "06:00-14:30",
-          "wed": "06:00-14:30",
-          "thu": "06:00-14:30",
-          "fri": "06:00-14:30",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "07:00-16:00",
           "sat": "OFF"
         },
         "shift": "early"
