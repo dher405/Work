@@ -4790,17 +4790,17 @@
         }
       },
       "night": {
-        "name": "Andrew Neill",
-        "email": "andrew.neill@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
-          "sat": "OFF"
+          "mon": "OFF",
+          "tue": "00:00-09:00",
+          "wed": "00:00-09:00",
+          "thu": "00:00-09:00",
+          "fri": "00:00-09:00",
+          "sat": "00:00-09:00"
         }
       }
     },
