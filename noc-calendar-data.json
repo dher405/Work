@@ -7079,20 +7079,6 @@
       }
     },
     {
-      "name": "John Glenn Bayron",
-      "email": "john.bayron@ringcentral.com",
-      "shift": "day",
-      "schedule": {
-        "sun": "OFF",
-        "mon": "07:00-16:00",
-        "tue": "07:00-16:00",
-        "wed": "07:00-16:00",
-        "thu": "07:00-16:00",
-        "fri": "07:00-16:00",
-        "sat": "OFF"
-      }
-    },
-    {
       "name": "Robert Carter",
       "email": "robert.carter@ringcentral.com",
       "schedule": {
