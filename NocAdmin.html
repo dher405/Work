@@ -219,13 +219,16 @@ function assignShiftsForRange(startDate, endDate) {
     });
 
     // Rotation indices: rotIdx[shiftType][dayOfWeek] = next index into that day's available list
+    // Also track backfill indices separately so backfill rotates fairly too
     const rotIdx = {};
+    const backfillIdx = {};
     shiftTypes.forEach(s => {
         rotIdx[s] = {};
+        backfillIdx[s] = {};
         for (let d = 0; d < 7; d++) {
-            // Randomise starting position so redistribution varies each run
             const available = pools[s].filter(e => isWorking(e, d));
             rotIdx[s][d] = available.length > 0 ? Math.floor(Math.random() * available.length) : 0;
+            backfillIdx[s][d] = 0;
         }
     });
 
@@ -239,16 +242,25 @@ function assignShiftsForRange(startDate, endDate) {
         }
 
         shiftTypes.forEach(s => {
-            // Only engineers who actually work this day-of-week
-            const available = pools[s].filter(e => isWorking(e, dow));
+            // Primary pool: engineers whose designated shift matches AND who work this day
+            const primary = pools[s].filter(e => isWorking(e, dow));
 
-            if (available.length > 0) {
-                const idx = rotIdx[s][dow] % available.length;
-                calendarData.rotation[dateKey][s] = available[idx];
+            if (primary.length > 0) {
+                const idx = rotIdx[s][dow] % primary.length;
+                calendarData.rotation[dateKey][s] = primary[idx];
                 rotIdx[s][dow]++;
             } else {
-                // No coverage possible — leave slot unset rather than assign an OFF engineer
-                delete calendarData.rotation[dateKey][s];
+                // Backfill: any engineer working this day-of-week, regardless of shift type,
+                // rotating fairly so the same person isn't always double-assigned.
+                const backfill = calendarData.engineers.filter(e => isWorking(e, dow));
+                if (backfill.length > 0) {
+                    const idx = backfillIdx[s][dow] % backfill.length;
+                    calendarData.rotation[dateKey][s] = backfill[idx];
+                    backfillIdx[s][dow]++;
+                } else {
+                    // Truly no one available for this shift on this day
+                    delete calendarData.rotation[dateKey][s];
+                }
             }
         });
 
