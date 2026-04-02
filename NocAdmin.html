@@ -85,8 +85,8 @@
                     <div class="flex items-center gap-2"><div class="w-4 h-4 bg-green-100 border border-green-300 rounded"></div><span>☀️ Day</span></div>
                     <div class="flex items-center gap-2"><div class="w-4 h-4 bg-purple-100 border border-purple-300 rounded"></div><span>🌆 Evening</span></div>
                     <div class="ml-auto flex gap-2">
-                        <button onclick="showRedistributeModal()" class="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">🔄 Redistribute</button>
-                        <button onclick="resetRotation()" class="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Reset</button>
+                        <button onclick="showRedistributeModal()" class="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">🔄 Redistribute — reassign shifts in a date range</button>
+                        <button onclick="resetRotation()" class="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">⚡ Fill — regenerate all 75 days from scratch</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-7 gap-0 border border-gray-300 rounded-lg overflow-hidden">
@@ -174,7 +174,8 @@
 
     <div id="redistributeModal" class="modal">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-xl font-bold mb-4">Redistribute Shifts</h3>
+            <h3 class="text-xl font-bold mb-4">Redistribute — Reassign a Date Range</h3>
+            <p class="text-sm text-gray-500 mb-4">Reassigns shifts only within the dates you choose. Dates outside this range are not affected.</p>
             <div class="mb-4"><label class="block text-sm font-semibold mb-2">Start:</label><input type="date" id="redistributeStart" class="w-full p-2 border rounded-lg"></div>
             <div class="mb-6"><label class="block text-sm font-semibold mb-2">End:</label><input type="date" id="redistributeEnd" class="w-full p-2 border rounded-lg"></div>
             <div class="flex gap-3">
@@ -186,7 +187,373 @@
 
     <script>
 const DEFAULT_ENGINEERS=[{name:"Alexandra Hock",email:"alexandra.hock@ringcentral.com",schedule:{sun:"OFF",mon:"05:00-14:00",tue:"05:00-14:00",wed:"05:00-14:00",thu:"05:00-14:00",fri:"05:00-14:00",sat:"OFF"},shift:"early"},{name:"Marina Stambaugh",email:"marina.stambaugh@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Rochelle Gobis",email:"rochelle.gobis@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"OFF"},shift:"day"},{name:"Sarah Heriford",email:"sarah.heriford@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Karla Talamantes",email:"karla.talamantes@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Jeremy Rodriguez",email:"jeremyr@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Jenny Deasy",email:"jenny.deasy@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-15:30",tue:"07:00-15:30",wed:"07:00-15:30",thu:"07:00-15:30",fri:"07:00-15:30",sat:"OFF"},shift:"early"},{name:"Bo Lemecha",email:"Bo.Lemecha@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-14:30",tue:"06:00-14:30",wed:"06:00-14:30",thu:"06:00-14:30",fri:"06:00-14:30",sat:"OFF"},shift:"early"},{name:"Edwin Reveley",email:"edwin.reveley@ringcentral.com",schedule:{sun:"OFF",mon:"09:30-18:00",tue:"09:30-18:00",wed:"09:30-18:00",thu:"09:30-18:00",fri:"09:30-18:00",sat:"OFF"},shift:"day"},{name:"Edward Salvador",email:"edward.salvador@ringcentral.com",schedule:{sun:"08:00-15:30",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"OFF",sat:"OFF"},shift:"day"},{name:"John Glenn Bayron",email:"john.bayron@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"OFF"},shift:"day"},{name:"Robert Carter",email:"robert.carter@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-17:00",tue:"09:00-17:00",wed:"09:00-17:00",thu:"09:00-17:00",fri:"09:00-17:00",sat:"OFF"},shift:"day"},{name:"Dan Baker",email:"dan.baker1@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-15:00",tue:"07:00-15:00",wed:"07:00-15:00",thu:"07:00-15:00",fri:"07:00-15:00",sat:"OFF"},shift:"early"},{name:"John Tran",email:"john.tran@ringcentral.com",schedule:{sun:"OFF",mon:"10:00-18:00",tue:"10:00-18:00",wed:"10:00-18:00",thu:"10:00-18:00",fri:"10:00-18:00",sat:"OFF"},shift:"day"},{name:"Jared Cooper",email:"jared.cooper@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Lara Mae Dela Cruz",email:"lara.delacruz@ringcentral.com",schedule:{sun:"OFF",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"15:00-00:00",fri:"15:00-00:00",sat:"OFF"},shift:"evening"},{name:"Love Lyn Cano",email:"love.cano@ringcentral.com",schedule:{sun:"15:00-00:00",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"OFF",fri:"OFF",sat:"15:00-00:00"},shift:"evening"},{name:"James Belleza",email:"james.belleza@ringcentral.com",schedule:{sun:"15:00-00:00",mon:"15:00-00:00",tue:"15:00-00:00",wed:"15:00-00:00",thu:"15:00-00:00",fri:"OFF",sat:"OFF"},shift:"evening"},{name:"Rushikesh Sawant",email:"rushikesh.sawant@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Santosh Sahoo",email:"santosh.sahoo@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Srikanth Reddy",email:"srikanth.v@ringcentral.com",schedule:{sun:"22:30-07:30",mon:"22:30-07:30",tue:"22:30-07:30",wed:"22:30-07:30",thu:"22:30-07:30",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Jobon Chinel",email:"jobon.chinel@ringcentral.com",schedule:{sun:"01:00-10:00",mon:"01:00-10:00",tue:"01:00-10:00",wed:"01:00-10:00",thu:"01:00-10:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Ryan Hawkins",email:"ryan.hawkins@ringcentral.com",schedule:{sun:"01:00-07:00",mon:"01:00-07:00",tue:"01:00-07:00",wed:"01:00-07:00",thu:"01:00-07:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Joseph Bendecio",email:"joseph.bendecio@ringcentral.com",schedule:{sun:"OFF",mon:"OFF",tue:"01:00-10:00",wed:"01:00-10:00",thu:"01:00-10:00",fri:"01:00-10:00",sat:"01:00-10:00"},shift:"night"},{name:"Pearce Hamblin",email:"pearce.hamblin@ringcentral.com",schedule:{sun:"01:00-07:00",mon:"01:00-07:00",tue:"01:00-07:00",wed:"01:00-07:00",thu:"01:00-07:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Amine Dahel",email:"amine.dahel@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Andrew Neill",email:"andrew.neill@ringcentral.com",schedule:{sun:"03:00-09:00",mon:"03:00-09:00",tue:"03:00-09:00",wed:"03:00-09:00",thu:"03:00-09:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Andy Connolly",email:"andy.connolly@ringcentral.com",schedule:{sun:"03:00-09:00",mon:"03:00-09:00",tue:"03:00-09:00",wed:"03:00-09:00",thu:"03:00-09:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Colin Finn",email:"colin.finn@ringcentral.com",schedule:{sun:"02:00-08:00",mon:"02:00-08:00",tue:"02:00-08:00",wed:"02:00-08:00",thu:"02:00-08:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Deepthi Chandran",email:"deepthi.chandran@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Derek Walker",email:"derek.walker@ringcentral.com",schedule:{sun:"00:00-06:00",mon:"00:00-06:00",tue:"00:00-06:00",wed:"00:00-06:00",thu:"00:00-06:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Hugo Nickal-Thibeaud",email:"hugo.thibeaud@ringcentral.com",schedule:{sun:"02:00-08:00",mon:"02:00-08:00",tue:"02:00-08:00",wed:"02:00-08:00",thu:"02:00-08:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Baranee Selvendran",email:"baranee.selvendran@ringcentral.com",schedule:{sun:"02:00-10:00",mon:"02:00-10:00",tue:"02:00-10:00",wed:"02:00-10:00",thu:"02:00-10:00",fri:"OFF",sat:"OFF"},shift:"night"},{name:"Eryll Azucena",email:"eryll.azucena@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-15:30",tue:"08:00-15:30",wed:"08:00-15:30",thu:"08:00-15:30",fri:"08:00-15:30",sat:"08:00-15:30"},shift:"day"},{name:"Mare Snyder",email:"mare.snyder@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Nate Malone",email:"nate.malone@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Peter Czarnecki",email:"peter.czarnecki@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-14:30",tue:"06:00-14:30",wed:"06:00-14:30",thu:"06:00-14:30",fri:"06:00-14:30",sat:"OFF"},shift:"early"},{name:"Colby Jestes",email:"colby.jestes@ringcentral.com",schedule:{sun:"OFF",mon:"08:00-16:30",tue:"08:00-16:30",wed:"08:00-16:30",thu:"08:00-16:30",fri:"08:00-16:30",sat:"OFF"},shift:"day"},{name:"Mark Peirce",email:"mark.peirce@ringcentral.com",schedule:{sun:"OFF",mon:"09:00-18:00",tue:"09:00-18:00",wed:"09:00-18:00",thu:"09:00-18:00",fri:"09:00-18:00",sat:"OFF"},shift:"day"},{name:"Roscoe Bryant",email:"roscoe.bryant@ringcentral.com",schedule:{sun:"OFF",mon:"08:30-17:00",tue:"08:30-17:00",wed:"08:30-17:00",thu:"08:30-17:00",fri:"08:30-17:00",sat:"OFF"},shift:"day"},{name:"Cindy Hubert",email:"cindy.hubert@ringcentral.com",schedule:{sun:"OFF",mon:"07:00-16:00",tue:"07:00-16:00",wed:"07:00-16:00",thu:"07:00-16:00",fri:"07:00-16:00",sat:"OFF"},shift:"early"},{name:"Abby Bearden",email:"abby.bearden@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-15:00",tue:"06:00-15:00",wed:"06:00-15:00",thu:"06:00-15:00",fri:"06:00-15:00",sat:"OFF"},shift:"early"},{name:"Tim Arnott",email:"tim.arnott@ringcentral.com",schedule:{sun:"OFF",mon:"06:00-15:00",tue:"06:00-15:00",wed:"06:00-15:00",thu:"06:00-15:00",fri:"06:00-15:00",sat:"OFF"},shift:"early"},{name:"Tomislav Vranjes",email:"tomislav.vranjes@ringcentral.com",schedule:{sun:"OFF",mon:"09:30-18:00",tue:"09:30-18:00",wed:"09:30-18:00",thu:"09:30-18:00",fri:"09:30-18:00",sat:"OFF"},shift:"day"}];
-let config={username:"",repo:"",token:"",branch:"main"},fileSha="",calendarData={rotation:{},engineers:[...DEFAULT_ENGINEERS]},currentMonth=0,selectedDate=null,editingDate=null,editingShift=null,editingEngineerIndex=null;function showLoading(){document.getElementById("loadingBar").style.display="block"}function hideLoading(){document.getElementById("loadingBar").style.display="none"}function showPage(e){document.querySelectorAll(".page").forEach(e=>e.classList.remove("active")),document.querySelectorAll("[id^=nav]").forEach(e=>{e.classList.remove("bg-red-700"),e.classList.add("hover:bg-red-700")}),"calendar"===e?(document.getElementById("calendarPage").classList.add("active"),document.getElementById("navCalendar").classList.add("bg-red-700")):"engineers"===e?(document.getElementById("engineersPage").classList.add("active"),document.getElementById("navEngineers").classList.add("bg-red-700"),renderEngineersTable()):"settings"===e&&(document.getElementById("settingsPage").classList.add("active"),document.getElementById("navSettings").classList.add("bg-red-700"),loadSettings())}function loadSettings(){const e=localStorage.getItem("adminConfig");e&&(config=JSON.parse(e),document.getElementById("githubUsername").value=config.username,document.getElementById("githubRepo").value=config.repo,document.getElementById("githubToken").value=config.token,document.getElementById("githubBranch").value=config.branch)}async function saveSettings(){config={username:document.getElementById("githubUsername").value.trim(),repo:document.getElementById("githubRepo").value.trim(),token:document.getElementById("githubToken").value.trim(),branch:document.getElementById("githubBranch").value.trim()||"main"};if(!config.username||!config.repo||!config.token)return void showStatus("All fields required","error");localStorage.setItem("adminConfig",JSON.stringify(config)),showStatus("Connecting...","info");try{await loadData(),showStatus("✅ Connected!","success"),setTimeout(()=>showPage("calendar"),1500)}catch(e){showStatus("⚠️ Saved but couldn't load data","warning")}}function showStatus(e,t){const a=document.getElementById("settingsStatus"),n={success:"bg-green-50 text-green-800 border-green-200",error:"bg-red-50 text-red-800 border-red-200",warning:"bg-yellow-50 text-yellow-800 border-yellow-200",info:"bg-blue-50 text-blue-800 border-blue-200"};a.className=`p-4 rounded-lg border ${n[t]}`,a.textContent=e}async function loadData(){if(!config.token)return;showLoading();try{const e=await fetch(`https://api.github.com/repos/${config.username}/${config.repo}/contents/noc-calendar-data.json?ref=${config.branch}`,{headers:{Authorization:`token ${config.token}`,Accept:"application/vnd.github.v3+json"}});if(e.ok){const t=await e.json();fileSha=t.sha,calendarData=JSON.parse(atob(t.content))}else calendarData={rotation:{},engineers:[...DEFAULT_ENGINEERS]},generateRotation(),await saveData();renderCalendar(),renderEngineersTable()}catch(e){console.error(e)}finally{hideLoading()}}async function saveData(){if(!config.token)return;showLoading();try{const e=btoa(unescape(encodeURIComponent(JSON.stringify(calendarData,null,2)))),t={message:"Update NOC calendar",content:e,branch:config.branch};fileSha&&(t.sha=fileSha);const a=await fetch(`https://api.github.com/repos/${config.username}/${config.repo}/contents/noc-calendar-data.json`,{method:"PUT",headers:{Authorization:`token ${config.token}`,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},body:JSON.stringify(t)});if(a.ok){const e=await a.json();fileSha=e.content.sha}}catch(e){console.error(e),alert("Save error")}finally{hideLoading()}}function renderEngineersTable(){const e=document.getElementById("engineersTable");e.innerHTML="",calendarData.engineers.forEach((t,a)=>{const n=document.createElement("tr");n.innerHTML=`<td class="border p-2 text-sm">${t.name}</td><td class="border p-2 text-sm">${t.email}</td><td class="border p-2 text-sm">${t.shift}</td><td class="border p-2 text-xs text-center">${t.schedule.sun}</td><td class="border p-2 text-xs text-center">${t.schedule.mon}</td><td class="border p-2 text-xs text-center">${t.schedule.tue}</td><td class="border p-2 text-xs text-center">${t.schedule.wed}</td><td class="border p-2 text-xs text-center">${t.schedule.thu}</td><td class="border p-2 text-xs text-center">${t.schedule.fri}</td><td class="border p-2 text-xs text-center">${t.schedule.sat}</td><td class="border p-2 text-center"><button onclick="editEngineer(${a})" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 mr-1">Edit</button><button onclick="deleteEngineer(${a})" class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Del</button></td>`,e.appendChild(n)})}function addEngineer(){editingEngineerIndex=-1,document.getElementById("editEngName").value="",document.getElementById("editEngEmail").value="",document.getElementById("editEngShift").value="day",document.getElementById("editEngSun").value="OFF",document.getElementById("editEngMon").value="08:00-17:00",document.getElementById("editEngTue").value="08:00-17:00",document.getElementById("editEngWed").value="08:00-17:00",document.getElementById("editEngThu").value="08:00-17:00",document.getElementById("editEngFri").value="08:00-17:00",document.getElementById("editEngSat").value="OFF",document.getElementById("editEngineerModal").classList.add("show")}function editEngineer(e){editingEngineerIndex=e;const t=calendarData.engineers[e];document.getElementById("editEngName").value=t.name,document.getElementById("editEngEmail").value=t.email,document.getElementById("editEngShift").value=t.shift,document.getElementById("editEngSun").value=t.schedule.sun,document.getElementById("editEngMon").value=t.schedule.mon,document.getElementById("editEngTue").value=t.schedule.tue,document.getElementById("editEngWed").value=t.schedule.wed,document.getElementById("editEngThu").value=t.schedule.thu,document.getElementById("editEngFri").value=t.schedule.fri,document.getElementById("editEngSat").value=t.schedule.sat,document.getElementById("editEngineerModal").classList.add("show")}async function saveEngineer(){const e={name:document.getElementById("editEngName").value.trim(),email:document.getElementById("editEngEmail").value.trim(),shift:document.getElementById("editEngShift").value,schedule:{sun:document.getElementById("editEngSun").value.trim(),mon:document.getElementById("editEngMon").value.trim(),tue:document.getElementById("editEngTue").value.trim(),wed:document.getElementById("editEngWed").value.trim(),thu:document.getElementById("editEngThu").value.trim(),fri:document.getElementById("editEngFri").value.trim(),sat:document.getElementById("editEngSat").value.trim()}};e.name&&e.email?(-1===editingEngineerIndex?calendarData.engineers.push(e):calendarData.engineers[editingEngineerIndex]=e,await saveData(),closeEngineerModal(),renderEngineersTable()):alert("Name and email required")}async function deleteEngineer(e){confirm(`Delete ${calendarData.engineers[e].name}?`)&&(calendarData.engineers.splice(e,1),await saveData(),renderEngineersTable())}function closeEngineerModal(){document.getElementById("editEngineerModal").classList.remove("show"),editingEngineerIndex=null}function showRedistributeModal(){const e=new Date;document.getElementById("redistributeStart").value=e.toISOString().split("T")[0];const t=new Date(e);t.setDate(t.getDate()+30),document.getElementById("redistributeEnd").value=t.toISOString().split("T")[0],document.getElementById("redistributeModal").classList.add("show")}function closeRedistributeModal(){document.getElementById("redistributeModal").classList.remove("show")}async function redistributeShifts(){const e=document.getElementById("redistributeStart").value,t=document.getElementById("redistributeEnd").value;if(!e||!t)return void alert("Select both dates");const a=new Date(e),n=new Date(t);if(a>n)return void alert("Start before end");if(confirm("Redistribute?")){const e={early:calendarData.engineers.filter(e=>"early"===e.shift),day:calendarData.engineers.filter(e=>"day"===e.shift),evening:calendarData.engineers.filter(e=>"evening"===e.shift),night:calendarData.engineers.filter(e=>"night"===e.shift)},t={early:0,day:0,evening:0,night:0};let r=new Date(a);for(;r<=n;){const a=r.getDay(),n=r.toISOString().split("T")[0];calendarData.rotation[n]||(calendarData.rotation[n]={}),Object.keys(e).forEach(s=>{const i=e[s].filter(e=>isWorking(e,a));if(i.length>0){const e=i[t[s]%i.length];calendarData.rotation[n][s]=e,t[s]++}}),r.setDate(r.getDate()+1)}await saveData(),closeRedistributeModal(),renderCalendar(),alert("Done!")}}function isWorking(e,t){return"OFF"!==e.schedule[["sun","mon","tue","wed","thu","fri","sat"][t]]}function generateRotation(){const e=new Date(),t={early:calendarData.engineers.filter(e=>"early"===e.shift),day:calendarData.engineers.filter(e=>"day"===e.shift),evening:calendarData.engineers.filter(e=>"evening"===e.shift),night:calendarData.engineers.filter(e=>"night"===e.shift)},a={early:{},day:{},evening:{},night:{}};["sun","mon","tue","wed","thu","fri","sat"].forEach((e,n)=>{["early","day","evening","night"].forEach(r=>{a[r][e]=0})});for(let n=0;n<75;n++){const r=new Date(e);r.setDate(r.getDate()+n);const s=r.getDay(),i=["sun","mon","tue","wed","thu","fri","sat"][s],o=r.toISOString().split("T")[0];calendarData.rotation[o]={},Object.keys(t).forEach(e=>{const n=t[e].filter(e=>isWorking(e,s));if(n.length>0){const t=n[a[e][i]%n.length];calendarData.rotation[o][e]=t,a[e][i]++}})}}async function resetRotation(){confirm("Reset?")&&(generateRotation(),await saveData(),renderCalendar(),selectedDate&&showDateDetails(selectedDate))}function getCalendarData(){const e=new Date();e.setDate(1);e.setMonth(e.getMonth()+currentMonth);const t=e.getFullYear(),a=e.getMonth();return{monthName:["January","February","March","April","May","June","July","August","September","October","November","December"][a],year:t,daysInMonth:new Date(t,a+1,0).getDate(),startingDayOfWeek:new Date(t,a,1).getDay(),month:a}}function renderCalendar(){const e=getCalendarData(),t=document.getElementById("calendarGrid");t.innerHTML="",t.className="col-span-7 grid grid-cols-7";for(let a=0;a<e.startingDayOfWeek;a++){const e=document.createElement("div");e.className="p-2 border border-gray-100",t.appendChild(e)}for(let a=1;a<=e.daysInMonth;a++){const n=new Date(e.year,e.month,a),r=n.toISOString().split("T")[0],s=calendarData.rotation[r]||{},i=new Date;i.setHours(0,0,0,0);const o=n.getTime()===i.getTime(),l=document.createElement("div");l.className=`calendar-cell p-2 border border-gray-200 cursor-pointer transition-colors ${o?"bg-blue-100 border-blue-400":""} ${selectedDate===r?"selected-cell":""}`,l.onclick=()=>selectDate(r);let d=`<div class="font-semibold text-sm mb-1 ${o?"text-blue-700":"text-gray-700"}">${a}</div><div class="text-xs space-y-1">`;s.night&&(d+=`<div class="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate">🌙 ${s.night.name.split(" ")[0]}</div>`),s.early&&(d+=`<div class="bg-amber-100 text-amber-800 px-1 py-0.5 rounded truncate">🌅 ${s.early.name.split(" ")[0]}</div>`),s.day&&(d+=`<div class="bg-green-100 text-green-800 px-1 py-0.5 rounded truncate">☀️ ${s.day.name.split(" ")[0]}</div>`),s.evening&&(d+=`<div class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded truncate">🌆 ${s.evening.name.split(" ")[0]}</div>`),d+="</div>",l.innerHTML=d,t.appendChild(l)}document.getElementById("monthDisplay").textContent=`${e.monthName} ${e.year}`,updateButtons()}function selectDate(e){selectedDate=e,renderCalendar(),showDateDetails(e)}function showDateDetails(e){const t=calendarData.rotation[e]||{},[a,n,r]=e.split("-").map(Number),s=new Date(a,n-1,r),i=s.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}),o=s.getDay(),l=["sun","mon","tue","wed","thu","fri","sat"],d=document.getElementById("selectedDetails");d.className="mt-6 bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg";let c=`<h3 class="text-lg font-bold mb-3">${i}</h3><div class="space-y-3">`;t.night&&(c+=`<div class="border-l-4 border-indigo-500 pl-3 py-2 bg-indigo-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-indigo-900">🌙 Night</div><div class="text-sm text-indigo-800">${t.night.name}</div><div class="text-xs text-indigo-600">${t.night.email}</div><div class="text-xs text-indigo-700 mt-1">${t.night.schedule[l[o]]}</div></div><button onclick="editAssignment('${e}','night')" class="ml-2 px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600">Edit</button></div></div>`),t.early&&(c+=`<div class="border-l-4 border-amber-500 pl-3 py-2 bg-amber-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-amber-900">🌅 Early</div><div class="text-sm text-amber-800">${t.early.name}</div><div class="text-xs text-amber-600">${t.early.email}</div><div class="text-xs text-amber-700 mt-1">${t.early.schedule[l[o]]}</div></div><button onclick="editAssignment('${e}','early')" class="ml-2 px-2 py-1 text-xs bg-amber-500 text-white rounded hover:bg-amber-600">Edit</button></div></div>`),t.day&&(c+=`<div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-green-900">☀️ Day</div><div class="text-sm text-green-800">${t.day.name}</div><div class="text-xs text-green-600">${t.day.email}</div><div class="text-xs text-green-700 mt-1">${t.day.schedule[l[o]]}</div></div><button onclick="editAssignment('${e}','day')" class="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600">Edit</button></div></div>`),t.evening&&(c+=`<div class="border-l-4 border-purple-500 pl-3 py-2 bg-purple-50 rounded"><div class="flex justify-between items-start"><div class="flex-1"><div class="font-semibold text-purple-900">🌆 Evening</div><div class="text-sm text-purple-800">${t.evening.name}</div><div class="text-xs text-purple-600">${t.evening.email}</div><div class="text-xs text-purple-700 mt-1">${t.evening.schedule[l[o]]}</div></div><button onclick="editAssignment('${e}','evening')" class="ml-2 px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600">Edit</button></div></div>`),c+="</div>",d.innerHTML=c}function editAssignment(e,t){editingDate=e,editingShift=t;const[a,n,r]=e.split("-").map(Number),s=new Date(a,n-1,r),i=s.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}),o=s.getDay(),l={night:"🌙 Night",early:"🌅 Early",day:"☀️ Day",evening:"🌆 Evening"};document.getElementById("modalDate").textContent=i,document.getElementById("modalShift").textContent=l[t];const d=calendarData.engineers.filter(e=>e.shift===t&&isWorking(e,o)),c=document.getElementById("engineerSelect");c.innerHTML="",d.forEach(e=>{const t=document.createElement("option");t.value=e.email,t.textContent=`${e.name} (${e.email})`,c.appendChild(t)}),document.getElementById("editModal").classList.add("show")}function closeModal(){document.getElementById("editModal").classList.remove("show"),editingDate=null,editingShift=null}async function saveEdit(){const e=document.getElementById("engineerSelect").value,t=calendarData.engineers.find(t=>t.email===e);t&&editingDate&&editingShift&&(calendarData.rotation[editingDate][editingShift]=t,await saveData(),closeModal(),renderCalendar(),showDateDetails(editingDate))}function changeMonth(e){const t=currentMonth+e;t>=0&&t<=2&&(currentMonth=t,selectedDate=null,document.getElementById("selectedDetails").className="mt-6 hidden",renderCalendar())}function updateButtons(){document.getElementById("prevBtn").disabled=0===currentMonth,document.getElementById("nextBtn").disabled=2===currentMonth,document.getElementById("prevBtn").className=0===currentMonth?"p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":"p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600",document.getElementById("nextBtn").className=2===currentMonth?"p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":"p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"}loadSettings();
+
+let config={username:"",repo:"",token:"",branch:"main"},fileSha="",calendarData={rotation:{},engineers:[...DEFAULT_ENGINEERS]},currentMonth=0,selectedDate=null,editingDate=null,editingShift=null,editingEngineerIndex=null;
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+const DAY_KEYS = ["sun","mon","tue","wed","thu","fri","sat"];
+
+/** Returns true only if the engineer has a non-OFF schedule entry for that JS day-of-week (0=Sun). */
+function isWorking(engineer, dayOfWeek) {
+    return engineer.schedule[DAY_KEYS[dayOfWeek]] !== "OFF";
+}
+
+/**
+ * Core assignment engine used by both generateRotation() and redistributeShifts().
+ * 
+ * FIX 1: Rotation indices are tracked PER shift-type PER day-of-week (0-6),
+ *         NOT globally. This prevents index drift when engineers are skipped.
+ * FIX 2: Only engineers who are working on that specific day-of-week are
+ *         considered — the filter happens BEFORE selection, not after.
+ * FIX 3: Randomised starting offset per day-of-week so repeated runs don't
+ *         always start at the same engineer.
+ */
+function assignShiftsForRange(startDate, endDate) {
+    const shiftTypes = ["early","day","evening","night"];
+
+    // Build per-shift pools: { early: [...engineers], day: [...], ... }
+    const pools = {};
+    shiftTypes.forEach(s => {
+        pools[s] = calendarData.engineers.filter(e => e.shift === s);
+    });
+
+    // Rotation indices: rotIdx[shiftType][dayOfWeek] = next index into that day's available list
+    const rotIdx = {};
+    shiftTypes.forEach(s => {
+        rotIdx[s] = {};
+        for (let d = 0; d < 7; d++) {
+            // Randomise starting position so redistribution varies each run
+            const available = pools[s].filter(e => isWorking(e, d));
+            rotIdx[s][d] = available.length > 0 ? Math.floor(Math.random() * available.length) : 0;
+        }
+    });
+
+    let cursor = new Date(startDate);
+    while (cursor <= endDate) {
+        const dow = cursor.getDay();                          // 0-6
+        const dateKey = cursor.toISOString().split("T")[0];  // "YYYY-MM-DD"
+
+        if (!calendarData.rotation[dateKey]) {
+            calendarData.rotation[dateKey] = {};
+        }
+
+        shiftTypes.forEach(s => {
+            // Only engineers who actually work this day-of-week
+            const available = pools[s].filter(e => isWorking(e, dow));
+
+            if (available.length > 0) {
+                const idx = rotIdx[s][dow] % available.length;
+                calendarData.rotation[dateKey][s] = available[idx];
+                rotIdx[s][dow]++;
+            } else {
+                // No coverage possible — leave slot unset rather than assign an OFF engineer
+                delete calendarData.rotation[dateKey][s];
+            }
+        });
+
+        cursor.setDate(cursor.getDate() + 1);
+    }
+}
+
+// ─── UI helpers ─────────────────────────────────────────────────────────────
+
+function showLoading(){document.getElementById("loadingBar").style.display="block"}
+function hideLoading(){document.getElementById("loadingBar").style.display="none"}
+
+function showPage(e){
+    document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));
+    document.querySelectorAll("[id^=nav]").forEach(e=>{e.classList.remove("bg-red-700");e.classList.add("hover:bg-red-700")});
+    if("calendar"===e){document.getElementById("calendarPage").classList.add("active");document.getElementById("navCalendar").classList.add("bg-red-700")}
+    else if("engineers"===e){document.getElementById("engineersPage").classList.add("active");document.getElementById("navEngineers").classList.add("bg-red-700");renderEngineersTable()}
+    else if("settings"===e){document.getElementById("settingsPage").classList.add("active");document.getElementById("navSettings").classList.add("bg-red-700");loadSettings()}
+}
+
+function loadSettings(){
+    const e=localStorage.getItem("adminConfig");
+    if(e){config=JSON.parse(e);document.getElementById("githubUsername").value=config.username;document.getElementById("githubRepo").value=config.repo;document.getElementById("githubToken").value=config.token;document.getElementById("githubBranch").value=config.branch}
+}
+
+async function saveSettings(){
+    config={username:document.getElementById("githubUsername").value.trim(),repo:document.getElementById("githubRepo").value.trim(),token:document.getElementById("githubToken").value.trim(),branch:document.getElementById("githubBranch").value.trim()||"main"};
+    if(!config.username||!config.repo||!config.token)return void showStatus("All fields required","error");
+    localStorage.setItem("adminConfig",JSON.stringify(config));showStatus("Connecting...","info");
+    try{await loadData();showStatus("✅ Connected!","success");setTimeout(()=>showPage("calendar"),1500)}
+    catch(e){showStatus("⚠️ Saved but couldn't load data","warning")}
+}
+
+function showStatus(e,t){
+    const a=document.getElementById("settingsStatus"),n={success:"bg-green-50 text-green-800 border-green-200",error:"bg-red-50 text-red-800 border-red-200",warning:"bg-yellow-50 text-yellow-800 border-yellow-200",info:"bg-blue-50 text-blue-800 border-blue-200"};
+    a.className=`p-4 rounded-lg border ${n[t]}`;a.textContent=e
+}
+
+async function loadData(){
+    if(!config.token)return;showLoading();
+    try{
+        const e=await fetch(`https://api.github.com/repos/${config.username}/${config.repo}/contents/noc-calendar-data.json?ref=${config.branch}`,{headers:{Authorization:`token ${config.token}`,Accept:"application/vnd.github.v3+json"}});
+        if(e.ok){const t=await e.json();fileSha=t.sha;calendarData=JSON.parse(atob(t.content))}
+        else{calendarData={rotation:{},engineers:[...DEFAULT_ENGINEERS]};generateRotation();await saveData()}
+        renderCalendar();renderEngineersTable()
+    }catch(e){console.error(e)}finally{hideLoading()}
+}
+
+async function saveData(){
+    if(!config.token)return;showLoading();
+    try{
+        const e=btoa(unescape(encodeURIComponent(JSON.stringify(calendarData,null,2)))),t={message:"Update NOC calendar",content:e,branch:config.branch};
+        fileSha&&(t.sha=fileSha);
+        const a=await fetch(`https://api.github.com/repos/${config.username}/${config.repo}/contents/noc-calendar-data.json`,{method:"PUT",headers:{Authorization:`token ${config.token}`,Accept:"application/vnd.github.v3+json","Content-Type":"application/json"},body:JSON.stringify(t)});
+        if(a.ok){const e=await a.json();fileSha=e.content.sha}
+    }catch(e){console.error(e);alert("Save error")}finally{hideLoading()}
+}
+
+// ─── Generate / Reset / Redistribute ────────────────────────────────────────
+
+function generateRotation(){
+    const start = new Date();
+    start.setHours(0,0,0,0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 74); // 75 days
+    calendarData.rotation = {};
+    assignShiftsForRange(start, end);
+}
+
+async function resetRotation(){
+    if(!confirm("Fill: This will regenerate ALL shifts for the next 75 days from scratch. Any manual edits will be overwritten. Continue?")) return;
+    generateRotation();
+    await saveData();
+    renderCalendar();
+    if(selectedDate) showDateDetails(selectedDate);
+}
+
+async function redistributeShifts(){
+    const startVal=document.getElementById("redistributeStart").value;
+    const endVal=document.getElementById("redistributeEnd").value;
+    if(!startVal||!endVal)return void alert("Select both dates");
+
+    // Parse dates in local time to avoid UTC offset shifting the day
+    const [sy,sm,sd]=startVal.split("-").map(Number);
+    const [ey,em,ed]=endVal.split("-").map(Number);
+    const start=new Date(sy,sm-1,sd);
+    const end=new Date(ey,em-1,ed);
+
+    if(start>end)return void alert("Start must be before end");
+    if(!confirm("Redistribute: Reassign shifts for the selected date range only. Dates outside this range will not change. Continue?")) return;
+
+    assignShiftsForRange(start, end);
+    await saveData();
+    closeRedistributeModal();
+    renderCalendar();
+    if(selectedDate) showDateDetails(selectedDate);
+    alert("Done! Shifts redistributed.");
+}
+
+// ─── Calendar rendering ──────────────────────────────────────────────────────
+
+function renderEngineersTable(){
+    const e=document.getElementById("engineersTable");e.innerHTML="";
+    calendarData.engineers.forEach((t,a)=>{
+        const n=document.createElement("tr");
+        n.innerHTML=`<td class="border p-2 text-sm">${t.name}</td><td class="border p-2 text-sm">${t.email}</td><td class="border p-2 text-sm">${t.shift}</td><td class="border p-2 text-xs text-center">${t.schedule.sun}</td><td class="border p-2 text-xs text-center">${t.schedule.mon}</td><td class="border p-2 text-xs text-center">${t.schedule.tue}</td><td class="border p-2 text-xs text-center">${t.schedule.wed}</td><td class="border p-2 text-xs text-center">${t.schedule.thu}</td><td class="border p-2 text-xs text-center">${t.schedule.fri}</td><td class="border p-2 text-xs text-center">${t.schedule.sat}</td><td class="border p-2 text-center"><button onclick="editEngineer(${a})" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 mr-1">Edit</button><button onclick="deleteEngineer(${a})" class="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">Del</button></td>`;
+        e.appendChild(n)
+    })
+}
+
+function addEngineer(){
+    editingEngineerIndex=-1;
+    document.getElementById("editEngName").value="";document.getElementById("editEngEmail").value="";document.getElementById("editEngShift").value="day";
+    document.getElementById("editEngSun").value="OFF";document.getElementById("editEngMon").value="08:00-17:00";document.getElementById("editEngTue").value="08:00-17:00";
+    document.getElementById("editEngWed").value="08:00-17:00";document.getElementById("editEngThu").value="08:00-17:00";document.getElementById("editEngFri").value="08:00-17:00";document.getElementById("editEngSat").value="OFF";
+    document.getElementById("editEngineerModal").classList.add("show")
+}
+
+function editEngineer(e){
+    editingEngineerIndex=e;const t=calendarData.engineers[e];
+    document.getElementById("editEngName").value=t.name;document.getElementById("editEngEmail").value=t.email;document.getElementById("editEngShift").value=t.shift;
+    document.getElementById("editEngSun").value=t.schedule.sun;document.getElementById("editEngMon").value=t.schedule.mon;document.getElementById("editEngTue").value=t.schedule.tue;
+    document.getElementById("editEngWed").value=t.schedule.wed;document.getElementById("editEngThu").value=t.schedule.thu;document.getElementById("editEngFri").value=t.schedule.fri;document.getElementById("editEngSat").value=t.schedule.sat;
+    document.getElementById("editEngineerModal").classList.add("show")
+}
+
+async function saveEngineer(){
+    const e={name:document.getElementById("editEngName").value.trim(),email:document.getElementById("editEngEmail").value.trim(),shift:document.getElementById("editEngShift").value,schedule:{sun:document.getElementById("editEngSun").value.trim(),mon:document.getElementById("editEngMon").value.trim(),tue:document.getElementById("editEngTue").value.trim(),wed:document.getElementById("editEngWed").value.trim(),thu:document.getElementById("editEngThu").value.trim(),fri:document.getElementById("editEngFri").value.trim(),sat:document.getElementById("editEngSat").value.trim()}};
+    if(e.name&&e.email){-1===editingEngineerIndex?calendarData.engineers.push(e):calendarData.engineers[editingEngineerIndex]=e;await saveData();closeEngineerModal();renderEngineersTable()}
+    else alert("Name and email required")
+}
+
+async function deleteEngineer(e){
+    if(confirm(`Delete ${calendarData.engineers[e].name}?`)){calendarData.engineers.splice(e,1);await saveData();renderEngineersTable()}
+}
+
+function closeEngineerModal(){document.getElementById("editEngineerModal").classList.remove("show");editingEngineerIndex=null}
+
+function showRedistributeModal(){
+    const e=new Date;document.getElementById("redistributeStart").value=e.toISOString().split("T")[0];
+    const t=new Date(e);t.setDate(t.getDate()+30);document.getElementById("redistributeEnd").value=t.toISOString().split("T")[0];
+    document.getElementById("redistributeModal").classList.add("show")
+}
+
+function closeRedistributeModal(){document.getElementById("redistributeModal").classList.remove("show")}
+
+function getCalendarData(){
+    const e=new Date();e.setDate(1);e.setMonth(e.getMonth()+currentMonth);
+    const t=e.getFullYear(),a=e.getMonth();
+    return{monthName:["January","February","March","April","May","June","July","August","September","October","November","December"][a],year:t,daysInMonth:new Date(t,a+1,0).getDate(),startingDayOfWeek:new Date(t,a,1).getDay(),month:a}
+}
+
+function renderCalendar(){
+    const e=getCalendarData(),t=document.getElementById("calendarGrid");
+    t.innerHTML="";t.className="col-span-7 grid grid-cols-7";
+    for(let a=0;a<e.startingDayOfWeek;a++){const e=document.createElement("div");e.className="p-2 border border-gray-100";t.appendChild(e)}
+    for(let a=1;a<=e.daysInMonth;a++){
+        const n=new Date(e.year,e.month,a),r=n.toISOString().split("T")[0],s=calendarData.rotation[r]||{};
+        const i=new Date;i.setHours(0,0,0,0);const o=n.getTime()===i.getTime();
+        const l=document.createElement("div");
+        l.className=`calendar-cell p-2 border border-gray-200 cursor-pointer transition-colors ${o?"bg-blue-100 border-blue-400":""} ${selectedDate===r?"selected-cell":""}`;
+        l.onclick=()=>selectDate(r);
+        let d=`<div class="font-semibold text-sm mb-1 ${o?"text-blue-700":"text-gray-700"}">${a}</div><div class="text-xs space-y-1">`;
+        if(s.night)d+=`<div class="bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate">🌙 ${s.night.name.split(" ")[0]}</div>`;
+        if(s.early)d+=`<div class="bg-amber-100 text-amber-800 px-1 py-0.5 rounded truncate">🌅 ${s.early.name.split(" ")[0]}</div>`;
+        if(s.day)d+=`<div class="bg-green-100 text-green-800 px-1 py-0.5 rounded truncate">☀️ ${s.day.name.split(" ")[0]}</div>`;
+        if(s.evening)d+=`<div class="bg-purple-100 text-purple-800 px-1 py-0.5 rounded truncate">🌆 ${s.evening.name.split(" ")[0]}</div>`;
+        d+="</div>";l.innerHTML=d;t.appendChild(l)
+    }
+    document.getElementById("monthDisplay").textContent=`${e.monthName} ${e.year}`;
+    updateButtons()
+}
+
+function selectDate(e){selectedDate=e;renderCalendar();showDateDetails(e)}
+
+/**
+ * FIX 4: showDateDetails now validates stored assignments against the engineer's
+ * current schedule for that day. Stale/invalid assignments are shown with a
+ * warning rather than silently displaying "OFF" or wrong people.
+ * All four shift slots are always rendered — missing slots get an "Unassigned" badge.
+ */
+function showDateDetails(dateKey) {
+    const stored = calendarData.rotation[dateKey] || {};
+    const [y, m, d] = dateKey.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    const dow = dateObj.getDay();
+    const dayLabel = dateObj.toLocaleDateString("en-US", {weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+    const shiftMeta = [
+        { key:"night",   label:"🌙 Night",   border:"border-indigo-500", bg:"bg-indigo-50",   text:"text-indigo-900",  sub:"text-indigo-800",  link:"text-indigo-600",  hours:"text-indigo-700",  btn:"bg-indigo-500 hover:bg-indigo-600" },
+        { key:"early",   label:"🌅 Early",   border:"border-amber-500",  bg:"bg-amber-50",    text:"text-amber-900",   sub:"text-amber-800",   link:"text-amber-600",   hours:"text-amber-700",   btn:"bg-amber-500 hover:bg-amber-600" },
+        { key:"day",     label:"☀️ Day",     border:"border-green-500",  bg:"bg-green-50",    text:"text-green-900",   sub:"text-green-800",   link:"text-green-600",   hours:"text-green-700",   btn:"bg-green-500 hover:bg-green-600" },
+        { key:"evening", label:"🌆 Evening", border:"border-purple-500", bg:"bg-purple-50",   text:"text-purple-900",  sub:"text-purple-800",  link:"text-purple-600",  hours:"text-purple-700",  btn:"bg-purple-500 hover:bg-purple-600" },
+    ];
+
+    const el = document.getElementById("selectedDetails");
+    el.className = "mt-6 bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg";
+
+    let html = `<h3 class="text-lg font-bold mb-3">${dayLabel}</h3><div class="space-y-3">`;
+
+    shiftMeta.forEach(sm => {
+        const assignment = stored[sm.key];
+
+        // Validate: engineer must exist AND be working this day-of-week
+        const isValid = assignment && isWorking(assignment, dow);
+
+        if (isValid) {
+            const hoursStr = assignment.schedule[DAY_KEYS[dow]];
+            html += `
+                <div class="border-l-4 ${sm.border} pl-3 py-2 ${sm.bg} rounded">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold ${sm.text}">${sm.label}</div>
+                            <div class="text-sm ${sm.sub}">${assignment.name}</div>
+                            <div class="text-xs ${sm.link}">${assignment.email}</div>
+                            <div class="text-xs ${sm.hours} mt-1">${hoursStr}</div>
+                        </div>
+                        <button onclick="editAssignment('${dateKey}','${sm.key}')" class="ml-2 px-2 py-1 text-xs ${sm.btn} text-white rounded">Edit</button>
+                    </div>
+                </div>`;
+        } else {
+            // Unassigned or stale — show placeholder with Edit button so admin can fix
+            const warningMsg = assignment
+                ? `⚠️ ${assignment.name} is OFF this day — reassignment needed`
+                : "No one assigned";
+            html += `
+                <div class="border-l-4 border-gray-300 pl-3 py-2 bg-gray-50 rounded">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-700">${sm.label}</div>
+                            <div class="text-sm text-gray-500 italic">${warningMsg}</div>
+                        </div>
+                        <button onclick="editAssignment('${dateKey}','${sm.key}')" class="ml-2 px-2 py-1 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded">Assign</button>
+                    </div>
+                </div>`;
+        }
+    });
+
+    html += "</div>";
+    el.innerHTML = html;
+}
+
+function editAssignment(dateKey, shiftKey) {
+    editingDate = dateKey;
+    editingShift = shiftKey;
+    const [y, m, d] = dateKey.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    const dow = dateObj.getDay();
+    const shiftLabels = {night:"🌙 Night", early:"🌅 Early", day:"☀️ Day", evening:"🌆 Evening"};
+
+    document.getElementById("modalDate").textContent = dateObj.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+    document.getElementById("modalShift").textContent = shiftLabels[shiftKey];
+
+    // Only show engineers who match the shift AND are working on this day-of-week
+    const eligible = calendarData.engineers.filter(e => e.shift === shiftKey && isWorking(e, dow));
+    const sel = document.getElementById("engineerSelect");
+    sel.innerHTML = "";
+
+    if (eligible.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "⚠️ No available engineers for this shift/day";
+        sel.appendChild(opt);
+    } else {
+        eligible.forEach(e => {
+            const opt = document.createElement("option");
+            opt.value = e.email;
+            opt.textContent = `${e.name} (${e.schedule[DAY_KEYS[dow]]})`;
+            // Pre-select current assignment if valid
+            if (calendarData.rotation[dateKey] && calendarData.rotation[dateKey][shiftKey] &&
+                calendarData.rotation[dateKey][shiftKey].email === e.email) {
+                opt.selected = true;
+            }
+            sel.appendChild(opt);
+        });
+    }
+
+    document.getElementById("editModal").classList.add("show");
+}
+
+function closeModal(){document.getElementById("editModal").classList.remove("show");editingDate=null;editingShift=null}
+
+async function saveEdit(){
+    const email = document.getElementById("engineerSelect").value;
+    const eng = calendarData.engineers.find(e => e.email === email);
+    if(eng && editingDate && editingShift){
+        if(!calendarData.rotation[editingDate]) calendarData.rotation[editingDate] = {};
+        calendarData.rotation[editingDate][editingShift] = eng;
+        await saveData();closeModal();renderCalendar();showDateDetails(editingDate)
+    }
+}
+
+function changeMonth(e){
+    const t=currentMonth+e;
+    if(t>=0&&t<=2){currentMonth=t;selectedDate=null;document.getElementById("selectedDetails").className="mt-6 hidden";renderCalendar()}
+}
+
+function updateButtons(){
+    document.getElementById("prevBtn").disabled=0===currentMonth;
+    document.getElementById("nextBtn").disabled=2===currentMonth;
+    document.getElementById("prevBtn").className=0===currentMonth?"p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":"p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600";
+    document.getElementById("nextBtn").className=2===currentMonth?"p-2 rounded-lg bg-gray-300 text-white cursor-not-allowed":"p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+}
+
+loadSettings();
     </script>
 </body>
 </html>
