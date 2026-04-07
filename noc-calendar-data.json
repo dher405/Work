@@ -4188,16 +4188,16 @@
     },
     "2026-04-10": {
       "night": {
-        "name": "Andrew Neill",
-        "email": "andrew.neill@ringcentral.com",
+        "name": "Rushikesh Sawant",
+        "email": "rushikesh.sawant@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "03:00-09:00",
-          "tue": "03:00-09:00",
-          "wed": "03:00-09:00",
-          "thu": "03:00-09:00",
-          "fri": "03:00-09:00",
+          "mon": "22:30-07:30",
+          "tue": "22:30-07:30",
+          "wed": "22:30-07:30",
+          "thu": "22:30-07:30",
+          "fri": "22:30-07:30",
           "sat": "OFF"
         }
       },
