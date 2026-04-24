@@ -613,81 +613,87 @@
 <section class="section-head" id="overview">
   <div class="eyebrow">§ 01 — Orientation</div>
   <h2 class="no-rule">Overview</h2>
-  <p class="lede">Before you can troubleshoot the product, you need a confident mental model of what it is, what it replaces for the customer, and what the moving parts are called.</p>
+  <p class="lede">Think of this section as your "day one" primer. By the end, you will understand what this product does, who uses it, and what the key terms mean — so when a customer calls, you can follow along immediately.</p>
 </section>
 
 <h3 id="what-is-ed">What Engage Digital is</h3>
-<p>Engage Digital (ED) is RingCentral's omnichannel digital customer-engagement platform. It originated as <strong>Dimelo</strong>, a Paris-based contact-center software company acquired by RingCentral in 2019. The product lets enterprise contact centers receive, route, respond to, and report on customer conversations that arrive across <em>non-voice</em> channels — email, SMS, web chat, in-app messaging, Facebook, Messenger, Instagram, X (Twitter), WhatsApp, Google Business Messages, Google Play reviews, and more.</p>
-<p>In the official language from the internal wiki: <em>"A unified management platform for your digital conversations — centralize the social media, email and forum message flows on its console to assure operational efficiency, messaging traceability, and the large-scale processing of all kind of interactions."</em> The platform organizes these into five pillars:</p>
+<p><strong>The one-sentence version:</strong> Engage Digital (ED) is a tool that lets a company's customer service team manage all of their digital conversations — email, text messages, Facebook, Instagram, WhatsApp, live chat, and more — from one single screen instead of jumping between ten different apps.</p>
+
+<p><strong>Think of it like this:</strong> Imagine you work at a help desk and customers can reach you through email, text, social media, and your website chat — all at once. Without ED, you would need to have Gmail open, Facebook open, Instagram open, WhatsApp open, and a chat tool open — all at the same time — and somehow keep track of who said what and where. ED replaces all of that with one unified inbox. A customer can email you on Monday, then message you on Facebook on Tuesday, and the agent sees both messages in the same conversation view.</p>
+
+<p>The product organizes customer communication into five main categories:</p>
 <ul>
-  <li><strong>Social</strong> — centralize all messages from social networks (Facebook, Instagram, X, WhatsApp)</li>
-  <li><strong>Chat</strong> — assist customers in real-time with live chat embedded in websites</li>
-  <li><strong>Mobile</strong> — in-app messaging via the Mobile Messaging SDK</li>
-  <li><strong>Mail</strong> — manage inbound emails and web forms</li>
-  <li><strong>Communities</strong> — customer engagement through online support communities</li>
+  <li><strong>Social media</strong> — Facebook posts and comments, Instagram DMs, X (Twitter) messages, WhatsApp, even LinkedIn</li>
+  <li><strong>Live Chat</strong> — a chat widget that lives on the customer's website (the little "Chat with us" bubble you see on many sites)</li>
+  <li><strong>Mobile messaging</strong> — in-app chat using a software kit that developers embed inside mobile apps</li>
+  <li><strong>Email</strong> — inbound customer emails and outbound replies, handled entirely within ED</li>
+  <li><strong>Communities</strong> — online forums and customer support communities</li>
 </ul>
-<p>It sits alongside RingCX (voice contact center) in the RingCentral portfolio. Many customers run both; a conversation that starts on a digital channel in ED can be escalated to RingCX voice, and calls can have their follow-ups handled in ED.</p>
 
 <div class="callout tip">
-  <span class="callout-label">Why this matters</span>
-  When a customer says "RingCentral messed up my email," almost nine times out of ten they mean Engage&nbsp;Digital's <em>email channel</em>, which is a specific configuration inside ED — not RingCentral's email-as-a-hosted-mailbox product. Knowing which side of the house the issue lives on is half the battle.
+  <span class="callout-label">Why this matters for support</span>
+  When a customer calls you and says "our RingCentral email isn't working," they almost always mean their <em>email channel inside Engage Digital</em> — not RingCentral's hosted email product. These are completely different systems. Learning to spot this distinction will save you from misrouting tickets on day one.
 </div>
 
-<h3 id="concepts">Core concepts &amp; glossary</h3>
-<p>Every support conversation about ED runs more smoothly if everyone agrees on the vocabulary. These are the terms you will hear daily.</p>
+<p>ED was originally built by a company called <strong>Dimelo</strong>, based in Paris, France. RingCentral acquired Dimelo in 2019 and rebranded it. This is important because you will still see "Dimelo" all over the place — in URLs, in documentation, in log files, and in how the Paris-based engineering team talks about the product. "Dimelo" and "Engage Digital" are the same thing.</p>
+
+<p>ED now sits alongside <strong>RingCX</strong> (the voice/phone contact center) in RingCentral's product family. Many customers use both — they handle phone calls in RingCX and handle emails, chats, and social media in Engage Digital. You may also see cases labeled <strong>"RingCX Digital"</strong> — this is the same Engage Digital platform, just rebranded for customers who buy it as part of the RingCX bundle.</p>
+
+<h3 id="concepts">Key terms you need to know</h3>
+<p>Every product has its own vocabulary. Here are the terms you will hear on every call and see in every ticket. Take five minutes to read through these — they are the building blocks of everything else in this guide.</p>
 
 <dl class="concept-grid">
-  <div class="concept"><dt>Channel / Content Source</dt><dd>A single configured connection to an inbound channel — for example, <em>one</em> Facebook Page, <em>one</em> email address, or <em>one</em> WhatsApp number. Internally the object is named <code>ContentSource</code>.</dd></div>
-  <div class="concept"><dt>Content / Message</dt><dd>An individual message imported into ED — a single email, a single social post, a single SMS. Has a Mongo <code>_id</code> (the <code>content_id</code>) and a <code>foreign_id</code> (the external platform's ID).</dd></div>
-  <div class="concept"><dt>Thread / Content Thread</dt><dd>The conversation object that groups related messages. Threading is done by matching a <code>foreign_id</code> on incoming messages to an existing <code>ContentThread</code>. When that lookup fails, you get two threads for what should have been one.</dd></div>
-  <div class="concept"><dt>Intervention / Task</dt><dd>A unit of work assigned to an agent. One thread can spawn multiple interventions over its lifetime (initial response, reopen, transfer).</dd></div>
-  <div class="concept"><dt>Identity</dt><dd>The end-user profile — the person on the other side of the conversation. Identities accrete data across channels (same email, same phone, same Facebook ID).</dd></div>
-  <div class="concept"><dt>Agent / Role</dt><dd>An ED user who handles tasks. Roles are permission bundles. <strong>A role can only edit agents whose role has a subset of its own permissions</strong> — this rule causes real support tickets (see Issue&nbsp;#3).</dd></div>
-  <div class="concept"><dt>Channel Group</dt><dd>A queue. Tasks are routed to a channel group, and agents are members of channel groups. Supervision metrics split by channel group vs. by agent do not always match — see Issue&nbsp;#5 of our review.</dd></div>
-  <div class="concept"><dt>Category / Disposition</dt><dd>A tag applied to a thread or message — used for reporting and routing. "Mandatory dispositions" force an agent to categorize before completing a task.</dd></div>
-  <div class="concept"><dt>Rules Engine</dt><dd>The automation layer that categorizes, routes, and modifies incoming messages based on content, source, or sender attributes.</dd></div>
-  <div class="concept"><dt>Supervision</dt><dd>The real-time view of pending tasks, agent presence, and channel load — used by team leads.</dd></div>
+  <div class="concept"><dt>Channel (or "Source")</dt><dd>A single connection to one communication method. For example: <em>one</em> email address, <em>one</em> Facebook page, or <em>one</em> WhatsApp phone number. If a customer has three email addresses for support, that is three separate channels in ED. You may also hear this called a "content source."</dd></div>
+  <div class="concept"><dt>Message (or "Content")</dt><dd>A single message — one email, one Facebook comment, one text message. It is the smallest unit of communication in ED. Every message has a unique ID that looks like a long string of letters and numbers.</dd></div>
+  <div class="concept"><dt>Thread</dt><dd>A conversation — a group of related messages. Think of a thread like an email chain: the original message and all its replies are grouped together. When customers report that "replies are going to the wrong place," they are describing a threading problem.</dd></div>
+  <div class="concept"><dt>Task (or "Intervention")</dt><dd>A piece of work assigned to an agent. When a new customer message arrives and is ready for an agent to handle, it becomes a task. One thread (conversation) can generate multiple tasks over its lifetime — the first response, a reopening, a transfer to another team, etc.</dd></div>
+  <div class="concept"><dt>Identity</dt><dd>The customer profile — the person on the other side of the conversation. ED builds a profile for each customer that can link together their email address, phone number, social media accounts, and other info. If a customer contacts you via email and later via Facebook, ED can recognize it is the same person.</dd></div>
+  <div class="concept"><dt>Agent</dt><dd>A customer service representative — the person using ED to respond to customers. Each agent has a "role" that controls what they can see and do. Roles are like permission levels (for example, an Agent role might be more limited than a Supervisor or Admin role).</dd></div>
+  <div class="concept"><dt>Channel Group (Queue)</dt><dd>A waiting line for tasks. Think of it like the lines at a bank — each channel group is a separate line, and agents are assigned to serve specific lines. This is how ED decides which agent gets which task. If no agents are available, the task waits in the queue.</dd></div>
+  <div class="concept"><dt>Category (or "Disposition")</dt><dd>A label that gets applied to a conversation — like tagging an email in Gmail. Categories are used for reporting ("How many billing complaints did we get this month?") and routing ("Send all billing complaints to Team A"). Some customers require their agents to select a category before they can finish handling a task — this is called a "mandatory disposition."</dd></div>
+  <div class="concept"><dt>Rules Engine</dt><dd>The automation system — "if this, then that" for incoming messages. For example: "If a message contains the word 'refund,' automatically categorize it as Billing and send it to the Billing queue." Rules run automatically when messages arrive.</dd></div>
+  <div class="concept"><dt>Supervision</dt><dd>The live monitoring dashboard. Team leaders use this to see, in real time, how many tasks are waiting, which agents are available, and how the workload is distributed. Think of it like a command center view.</dd></div>
 </dl>
 
-<h3 id="tenancy">Tenancy &amp; URL patterns</h3>
-<p>ED is multi-tenant. Every customer has their own subdomain, and <strong>two URL patterns coexist</strong> today — a legacy Dimelo pattern and a current RingCentral-branded pattern. You will see both daily. They point to the same product.</p>
+<div class="callout tip">
+  <span class="callout-label">Customer-to-ED translator</span>
+  Here is how to translate common customer language into ED terms. When a customer says "our inbox" they usually mean a <strong>Channel Group or Folder</strong>. "Our Facebook page" is a <strong>Channel</strong>. "The conversation" is a <strong>Thread</strong>. "The ticket" or "the case" is a <strong>Task</strong>. "The customer record" is an <strong>Identity</strong>. "The auto-sort rules" are the <strong>Rules Engine</strong>.
+</div>
+
+<h3 id="tenancy">How to recognize ED URLs in the wild</h3>
+<p>Every customer has their own private instance of ED, and you can tell which customer it belongs to just by looking at the web address. There are two URL formats you will see every day — they both point to the same product, just with different branding:</p>
 
 <table>
   <thead>
-    <tr><th>Pattern</th><th>Example</th><th>Notes</th></tr>
+    <tr><th>What you will see</th><th>Example</th><th>What it means</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>Legacy (Dimelo)</td>
-      <td><code>{customer}.engagement.dimelo.com</code></td>
-      <td>Original brand. Still the primary domain for EU customers (Orange, SFR, La Poste, Engie, Fizz, Odigo…).</td>
+      <td><strong>Dimelo format</strong> (older)</td>
+      <td><code>orange.engagement.dimelo.com</code></td>
+      <td>The original domain from before the RingCentral rebrand. Most European customers still use this. The customer name is the first part of the URL ("orange" in this example).</td>
     </tr>
     <tr>
-      <td>Current (RC)</td>
-      <td><code>{customer}.digital.ringcentral.com</code></td>
-      <td>Used for newer NA tenants and RC-integrated customers. Same platform, rebranded hostname.</td>
+      <td><strong>RingCentral format</strong> (newer)</td>
+      <td><code>frontier.digital.ringcentral.com</code></td>
+      <td>The rebranded domain. Newer customers and North American accounts typically use this. Same product, different web address.</td>
     </tr>
     <tr>
-      <td>Admin path</td>
-      <td><code>/admin/content_sources/{id}/edit</code></td>
-      <td>Standard admin URL. If a customer pastes one of these, you can jump straight to the channel config.</td>
+      <td><strong>Admin pages</strong></td>
+      <td><code>.../admin/content_sources/.../edit</code></td>
+      <td>If you see <code>/admin/</code> in a URL a customer shares, you are looking at a configuration page. The word after <code>/admin/</code> tells you what they are configuring (channels, rules, agents, etc.).</td>
     </tr>
     <tr>
-      <td>API host</td>
-      <td><code>{customer}.api.engagement.dimelo.com</code></td>
-      <td>REST API endpoint. Bearer-token auth. Docs at <code>developers.ringcentral.com/engage/digital</code>.</td>
-    </tr>
-    <tr>
-      <td>Thread URL</td>
-      <td><code>/content_threads/{id}</code></td>
-      <td>Deep link to a conversation. If a customer shares this, the path segment is the Mongo thread ID you can use in Kibana.</td>
+      <td><strong>Conversation links</strong></td>
+      <td><code>.../content_threads/69ba9d3a...</code></td>
+      <td>A direct link to a specific conversation. The long string of characters at the end is the conversation's unique ID — save this if you need to escalate a case.</td>
     </tr>
   </tbody>
 </table>
 
 <div class="callout tip">
-  <span class="callout-label">Pro tip</span>
-  The 24-character hex string at the end of any ED URL is always a MongoDB ObjectId. You can copy it straight into Kibana or Mongo queries — no translation needed.
+  <span class="callout-label">Quick rule of thumb</span>
+  If a URL contains <code>dimelo.com</code> or <code>digital.ringcentral.com</code>, you are looking at Engage Digital. The customer name is always the first part of the address, before the first period. Write it down — you will need it when logging the case.
 </div>
 
 <!-- ============================================= -->
@@ -696,243 +702,271 @@
 <section class="section-head" id="training">
   <div class="eyebrow">§ 01b — Onboarding</div>
   <h2 class="no-rule">Training &amp; Resources</h2>
-  <p class="lede">The official training curriculum, SCORM modules, and documentation links from the RingCentral Confluence wiki. This is the canonical onboarding path — follow it in order.</p>
+  <p class="lede">These are the official training materials you should complete during your first two weeks. Work through them in order — each step builds on the last.</p>
 </section>
 
-<h3 id="curriculum">Onboarding curriculum (2025 program)</h3>
-<p>The <strong>Engage Digital Product Onboarding 2025</strong> program (maintained in the CCI Confluence space) prescribes the following sequence. Each step should be completed before moving to the next.</p>
+<h3 id="curriculum">Your onboarding checklist</h3>
+<p>Follow this sequence. Do not skip ahead — the later materials assume you have seen the earlier ones.</p>
 
 <table>
-  <thead><tr><th>Step</th><th>Activity</th><th>Method</th></tr></thead>
+  <thead><tr><th>Step</th><th>What to do</th><th>How long</th><th>How</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td><strong>Product overview videos</strong> — "Introducing RingCentral Engage: Omni-digital Customer Care platform" introduction video. Optionally also watch "Introducing RingCX" (longer, more abstract — best after basic training).</td><td>Self-paced</td></tr>
-    <tr><td>2</td><td><strong>RingCentral University — Engage Digital Training</strong> (public training). Four tracks: Agent Tool, Supervising Agents, Administrator Management, Analytics &amp; Reporting.</td><td>Self-paced</td></tr>
-    <tr><td>3</td><td><strong>Internal training sessions</strong> — First session, Second session, "How to create account and connectors."</td><td>Self-paced / recorded</td></tr>
-    <tr><td>4</td><td><strong>Documentation deep-dive</strong> — Admin / User / Analytics / Supervisor guides. Objectives: understand users &amp; roles, folder &amp; task mode, admin &amp; analytics, channel / category / identity / community, message / intervention / thread / task.</td><td>Self-paced, ~2 hrs</td></tr>
-    <tr><td>5</td><td><strong>KB Articles 2025</strong> — Spend 2 hours familiarizing yourself with the different KB sections. Bookmark for future reference.</td><td>Self-paced</td></tr>
-    <tr><td>6</td><td><strong>Developer documentation</strong> — Developer Guide, API Reference, SDKs, Engage Messaging (web messaging implementation, structured messages).</td><td>Self-paced</td></tr>
-    <tr><td>7</td><td><strong>GoodData analytics</strong> (optional) — Presentation slides, recorded video walkthrough, Q&amp;A document. Topics: filter table data, create pivot tables, create charts, configure button visibility.</td><td>Optional</td></tr>
+    <tr><td>1</td><td><strong>Watch the product introduction video.</strong> "Introducing RingCentral Engage: Omni-digital Customer Care platform." This gives you a visual overview of what ED looks like and what it does. You can also optionally watch "Introducing RingCX" for the bigger picture of the RingCentral contact center suite.</td><td>15–30 min</td><td>Video (self-paced)</td></tr>
+    <tr><td>2</td><td><strong>Complete the RingCentral University training.</strong> There are four tracks: Agent Tool (how agents use the product), Supervising Agents (the supervisor view), Administrator Management (the admin panel), and Analytics &amp; Reporting (the reports). Start with Agent Tool — it is the most important for understanding what the customer sees.</td><td>2–4 hrs</td><td>Online training (self-paced)</td></tr>
+    <tr><td>3</td><td><strong>Watch the internal training recordings.</strong> These are recorded sessions from the team that cover real-world scenarios and include how to create accounts and set up connectors.</td><td>1–2 hrs</td><td>Recorded video (self-paced)</td></tr>
+    <tr><td>4</td><td><strong>Read the core documentation.</strong> Focus on the User Guide and the Administrator Guide. Your goals: understand what agents, roles, channels, categories, identities, threads, and tasks are (you have a head start from reading this guide). Also skim the Search Queries guide — it shows how to look up specific conversations in ED.</td><td>~2 hrs</td><td>Reading (self-paced)</td></tr>
+    <tr><td>5</td><td><strong>Browse the Knowledge Base.</strong> Spend two hours just clicking around the KB sections at <code>support.ringcentral.com/engagedigital.html</code>. You do not need to memorize anything — just get a sense of what topics are covered so you know where to look when a customer asks something.</td><td>2 hrs</td><td>Self-exploration</td></tr>
+    <tr><td>6</td><td><strong>Skim the Developer Documentation</strong> (if comfortable). This covers the API, webhooks, and SDKs. You do not need to understand code — just know these resources exist so you can point technical customers in the right direction.</td><td>30 min</td><td>Optional reading</td></tr>
+    <tr><td>7</td><td><strong>GoodData analytics training</strong> (optional). Covers the advanced reporting tool that some customers use. You can come back to this after you have handled a few analytics tickets.</td><td>30 min</td><td>Optional</td></tr>
   </tbody>
 </table>
 
-<h3 id="scorm-modules">SCORM training modules (Training Repository 1)</h3>
-<p>The <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository 1</a> wiki page contains 30+ downloadable SCORM packages with slide decks, organized by admin area. These are the primary reference for how each feature works. The table below lists every module — each has a <code>.pptx</code> slide deck and a <code>.zip</code> SCORM package.</p>
+<h3 id="scorm-modules">Bite-sized training modules</h3>
+<p>The <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository</a> on the wiki contains over 30 short training modules — each one is a slide deck with a specific topic. They range from 3 to 15 minutes each. Here are the ones most useful for support staff, grouped by what you will actually use them for:</p>
 
 <table>
-  <thead><tr><th>Admin area</th><th>Module topics</th></tr></thead>
+  <thead><tr><th>When you need to help a customer with...</th><th>Watch these modules</th></tr></thead>
   <tbody>
-    <tr><td>Technical Introduction</td><td>RCED Technical Introduction (15 min)</td></tr>
-    <tr><td>Agent Management</td><td>Agents (5 min), Identities (3 min), Teams &amp; Roles (4 min)</td></tr>
-    <tr><td>Message Management</td><td>Folders Mode (4 min), Categories (6 min), Notifications (4 min), Sources, Surveys (6 min), Reply Assistant (6 min)</td></tr>
-    <tr><td>Chat</td><td>Engage Digital Chat overview (9 min)</td></tr>
-    <tr><td>Task Mode</td><td>Task Mode overview (9 min)</td></tr>
-    <tr><td>Data Management</td><td>Overview, Exports, Journal (3 min), Automated Exports (8 min)</td></tr>
-    <tr><td>Advanced Settings</td><td>ICE, Identity Tags (3 min), Custom Fields (5 min), Email Templates, API Access Tokens, Webhooks, Extensions (8 min), Rules Engine, Business Hours (4 min), Security (4 min), Settings (6 min)</td></tr>
-    <tr><td>App SDK</td><td>Overview, Developed Applications, Installed Applications</td></tr>
-    <tr><td>Analytics</td><td>Dashboard Overview, Volume, Activity Tracking, Quality Measures, ICE</td></tr>
-    <tr><td>Supervision</td><td>Supervision overview</td></tr>
+    <tr><td>Setting up or managing their support agents</td><td>Agents (5 min), Teams &amp; Roles (4 min), Identities (3 min)</td></tr>
+    <tr><td>Configuring how messages are handled</td><td>Folders Mode (4 min), Task Mode (9 min), Categories (6 min), Notifications (4 min)</td></tr>
+    <tr><td>Connecting communication channels</td><td>Sources (overview), Chat (9 min)</td></tr>
+    <tr><td>Setting up automated rules</td><td>Rules Engine, Business Hours (4 min)</td></tr>
+    <tr><td>Understanding their reports</td><td>Analytics Overview, Volume, Activity Tracking, Quality Measures</td></tr>
+    <tr><td>Exporting data or setting up integrations</td><td>Data Management Overview, Exports, Automated Exports (8 min), API Access Tokens, Webhooks</td></tr>
+    <tr><td>Advanced settings questions</td><td>Custom Fields (5 min), Email Templates, Extensions (8 min), Security (4 min), Settings (6 min)</td></tr>
   </tbody>
 </table>
 
 <div class="callout tip">
   <span class="callout-label">Where to find these</span>
-  SCORM packages and slides are attached (76 attachments) to the <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository 1</a> wiki page. A second repository of live training recordings is stored on <a href="https://drive.google.com/drive/u/1/folders/1Rdkur8rIY6uuBj3EUhQsNItN4q-E4Y1g">Google Drive (Repository 2)</a> and <a href="https://drive.google.com/drive/u/1/folders/1--Pw3JLM1-Vp6sVSQjazxV-jzky1xX4P">Google Drive (Live Training)</a>.
+  All slide decks and training packages are attached to the <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository 1</a> wiki page (76 attachments). Additional live training recordings are on <a href="https://drive.google.com/drive/u/1/folders/1Rdkur8rIY6uuBj3EUhQsNItN4q-E4Y1g">Google Drive</a>.
 </div>
 
-<h3 id="doc-links">Documentation links (official references)</h3>
-<p>These are the canonical documentation resources. Many use legacy Dimelo bit.ly shortlinks that still resolve correctly.</p>
+<h3 id="doc-links">Documentation quick reference</h3>
+<p>When you need to look something up or point a customer to documentation, start here. These are the official guides — bookmark the ones relevant to your tier.</p>
 
 <table>
-  <thead><tr><th>Category</th><th>Document</th><th>Link</th></tr></thead>
+  <thead><tr><th>What you need</th><th>Where to find it</th></tr></thead>
   <tbody>
-    <tr><td>User</td><td>User Guide</td><td><code>bit.ly/dimelo_user_guide</code></td></tr>
-    <tr><td>User</td><td>Search Queries</td><td><code>bit.ly/dimelo_search_queries</code></td></tr>
-    <tr><td>Analytics</td><td>Analytics Guide</td><td><code>bit.ly/dimelo_analytics</code></td></tr>
-    <tr><td>Analytics</td><td>Supervisor Guide</td><td><code>bit.ly/dimelo_supervisor_guide</code></td></tr>
-    <tr><td>Admin</td><td>Administrator Guide</td><td><code>bit.ly/en_dimelo_admin_guide</code></td></tr>
-    <tr><td>Technical</td><td>REST API Guide</td><td><code>bit.ly/dimelo_REST_API</code></td></tr>
-    <tr><td>Technical</td><td>Webhook API Guide</td><td><code>bit.ly/dimelo_webhook_api</code></td></tr>
-    <tr><td>Technical</td><td>Chat Implementation Guide</td><td><code>bit.ly/dimelo_chat_implementation</code></td></tr>
-    <tr><td>Technical</td><td>Exports Guide</td><td><code>bit.ly/dimelo_exports</code></td></tr>
-    <tr><td>Technical</td><td>App SDK</td><td><code>bit.ly/dimelo_app_sdk</code></td></tr>
-    <tr><td>Technical</td><td>Mobile Messaging SDK</td><td><code>bit.ly/dimelo_mobile_messaging_sdk</code></td></tr>
-    <tr><td>Technical</td><td>Source SDK</td><td><code>bit.ly/dimelo_source_sdk</code></td></tr>
-    <tr><td>Technical</td><td>UI Embed</td><td><code>bit.ly/dimelo_ui_embed</code></td></tr>
-    <tr><td>GDPR</td><td>GDPR Compliance Document</td><td><code>bit.ly/dimelo_rgpd_doc</code></td></tr>
-    <tr><td>GDPR</td><td>GDPR Compliance Slides</td><td><code>bit.ly/dimelo_rgpd_slides</code></td></tr>
-    <tr><td>GDPR</td><td>Subprocessors List</td><td><code>bit.ly/dimelo_GDPR_subprocessors_list</code></td></tr>
-    <tr><td>Modern</td><td>Engage Digital KB Articles (current)</td><td><code>support.ringcentral.com/engagedigital.html</code></td></tr>
-    <tr><td>Modern</td><td>Developer Documentation Portal</td><td><code>developers.ringcentral.com/engage/digital</code></td></tr>
-    <tr><td>Modern</td><td>Engage Messaging — Web Implementation</td><td><code>bit.ly/RC_Engage_Digital_web_messaging_implementation</code></td></tr>
+    <tr><td>How do agents use the product?</td><td>User Guide: <code>bit.ly/dimelo_user_guide</code></td></tr>
+    <tr><td>How do admins configure things?</td><td>Administrator Guide: <code>bit.ly/en_dimelo_admin_guide</code></td></tr>
+    <tr><td>How do supervisors monitor the team?</td><td>Supervisor Guide: <code>bit.ly/dimelo_supervisor_guide</code></td></tr>
+    <tr><td>How do the reports work?</td><td>Analytics Guide: <code>bit.ly/dimelo_analytics</code></td></tr>
+    <tr><td>How do I search for a specific conversation?</td><td>Search Queries Guide: <code>bit.ly/dimelo_search_queries</code></td></tr>
+    <tr><td>How do data exports work?</td><td>Exports Guide: <code>bit.ly/dimelo_exports</code></td></tr>
+    <tr><td>Customer-facing help articles</td><td>KB: <code>support.ringcentral.com/engagedigital.html</code></td></tr>
+    <tr><td>Developer/API documentation</td><td>Dev Portal: <code>developers.ringcentral.com/engage/digital</code></td></tr>
+    <tr><td>Chat widget setup guide</td><td>Chat Implementation: <code>bit.ly/dimelo_chat_implementation</code></td></tr>
+    <tr><td>GDPR / privacy compliance</td><td>GDPR Doc: <code>bit.ly/dimelo_rgpd_doc</code></td></tr>
   </tbody>
 </table>
 
 <div class="callout warn">
-  <span class="callout-label">Note on legacy links</span>
-  The <code>bit.ly/dimelo_*</code> shortlinks point to Dimelo-era hosted PDFs. Most still resolve. If any are broken, the equivalent content usually lives under <code>support.ringcentral.com/engagedigital.html</code> or <code>developers.ringcentral.com/engage/digital</code>. The wiki attachments on Training Repository 1 also contain offline copies of most guides.
+  <span class="callout-label">About these links</span>
+  The <code>bit.ly/dimelo_*</code> links were created before the RingCentral rebrand — they still work and point to the correct documents. If any link is broken, look for the same topic at <code>support.ringcentral.com/engagedigital.html</code> instead.
 </div>
 
 <!-- ============================================= -->
 <!-- SECTION 2: AGENT USER GUIDE                   -->
 <!-- ============================================= -->
 <section class="section-head" id="user-guide">
-  <div class="eyebrow">§ 02 — For agents</div>
-  <h2 class="no-rule">Agent User Guide</h2>
-  <p class="lede">A walkthrough of what the product looks like from the agent's seat. When you impersonate an agent to replicate an issue, this is the surface you will be working with.</p>
+  <div class="eyebrow">§ 02 — Understanding the agent experience</div>
+  <h2 class="no-rule">What Agents See &amp; Do</h2>
+  <p class="lede">To help customers, you need to understand what their agents experience. This section walks you through the product from the agent's perspective — what they see when they log in, how they handle customer messages, and what goes wrong.</p>
 </section>
 
-<h3 id="ui-overview">Interface overview</h3>
-<p>After login, an agent lands on the main workspace. The top bar shows their presence status (<strong>Available</strong>, <strong>Away</strong>, <strong>Offline</strong>) — changing to Away can immediately expire any interactions currently in their workbin, which is the root cause of at least one ticket pattern you will see. The left rail gives access to the four modes an agent can work in:</p>
-
+<h3 id="ui-overview">What agents see when they log in</h3>
+<p>When an agent logs into Engage Digital, they land on their main workspace. Here is what matters:</p>
 <ul>
-  <li><strong>Inboxes</strong> — manual pull model. Agents browse threads in folders or saved searches and open the ones they want to work on.</li>
-  <li><strong>Routing</strong> — automatic push model. The system hands the agent the next-highest-priority task based on channel group config.</li>
-  <li><strong>Folders</strong> — organizational buckets (e.g., by category or by search filter). Useful for backfill and cleanup work.</li>
-  <li><strong>Supervision</strong> — read-only for most agents; active for team leads and admins.</li>
+  <li><strong>The status indicator (top of screen)</strong> — This shows whether the agent is "Available," "Away," or "Offline." This is critical because <em>the agent's status controls whether they receive work.</em> If they are set to "Away," the system will not send them new tasks. If they switch from "Available" to "Away" while they have a task, that task may be taken away from them and sent back to the queue.</li>
+  <li><strong>The left sidebar</strong> — This is how agents switch between different views of their work. There are four views, but three of them are the main ones agents use every day (described below).</li>
+  <li><strong>The conversation panel</strong> — When an agent opens a task, they see the full conversation history with the customer — every message, from every channel, in order. They type their reply at the bottom.</li>
 </ul>
 
-<h3 id="work-modes">The three work modes</h3>
-<p>Customers often confuse which mode they are in, and some behaviors only apply in one mode. Keep this table close.</p>
+<div class="callout tip">
+  <span class="callout-label">What customers often call these</span>
+  Customers rarely use the official names. They will say "my agents can't see any messages" (they might be in the wrong view), "the screen is empty" (the agent might be set to Away), or "tasks disappeared" (they probably timed out). Understanding the interface helps you translate these complaints.
+</div>
+
+<h3 id="work-modes">The three ways agents receive work</h3>
+<p>ED has three different ways to organize how agents get their tasks. Most customers use one of these as their primary mode, and different modes behave differently — which matters when troubleshooting.</p>
 
 <table>
   <thead>
-    <tr><th>Mode</th><th>Assignment</th><th>Task expiration</th><th>Typical use</th></tr>
+    <tr><th>Mode</th><th>How it works (plain English)</th><th>When tasks disappear</th><th>Who uses this</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>Routing</td>
-      <td>Pushed automatically</td>
-      <td>Yes — channel group timeout applies (default 15 min).</td>
-      <td>High-volume B2C contact centers.</td>
+      <td><strong>Routing Mode</strong></td>
+      <td>Tasks are <em>pushed</em> to agents automatically. The agent does not choose what to work on — the system decides. Think of it like a call center where the next call rings on your phone automatically.</td>
+      <td>Yes — if the agent does not respond within a set time limit (usually 15 minutes, but configurable), the task is taken back and given to someone else.</td>
+      <td>High-volume teams (e.g., telecom companies handling hundreds of messages a day)</td>
     </tr>
     <tr>
-      <td>Inboxes</td>
-      <td>Agent selects</td>
-      <td>Shared workbin — no timeout, but assignment can be transferred.</td>
-      <td>B2B, case-work style handling.</td>
+      <td><strong>Inboxes Mode</strong></td>
+      <td>Agents <em>pull</em> their own work. They browse a shared inbox and click on the conversations they want to handle. Think of it like a shared email inbox where you pick which email to answer.</td>
+      <td>No automatic timeout — once an agent claims a task, it stays with them until they finish it or manually hand it off.</td>
+      <td>Smaller teams, B2B support, case-management style work</td>
     </tr>
     <tr>
-      <td>Folders</td>
-      <td>Agent selects</td>
-      <td>n/a</td>
-      <td>Backlog cleanup, supervisor triage.</td>
+      <td><strong>Folders Mode</strong></td>
+      <td>Messages are organized into folders based on filters or categories. Agents browse folders and pick what to work on. Think of it like email folders — "Billing," "Technical Support," "VIP Customers," etc.</td>
+      <td>No timeout.</td>
+      <td>Backlog cleanup, supervisor triage, or secondary view alongside Routing</td>
     </tr>
   </tbody>
 </table>
 
 <div class="callout warn">
-  <span class="callout-label">Gotcha</span>
-  Interaction timeouts are configured on the <em>channel group</em>, not the channel. If a customer reports "my task expired in 34 minutes but the timeout is set to 15," confirm which channel group the task was assigned to and whether any rule overrode it. Presence changes (Available → Away) can also release the task back to the queue.
+  <span class="callout-label">Common troubleshooting scenario</span>
+  <strong>Customer says:</strong> "My agent's task disappeared after 34 minutes, but our timeout is set to 15 minutes."<br>
+  <strong>What to check:</strong> (1) Which channel group (queue) was the task assigned to? Each queue has its own timeout setting. (2) Did the agent change their status to "Away"? That can release the task immediately, regardless of the timer. (3) Was there a rule that transferred the task to a different queue with a different timeout?
 </div>
 
-<h3 id="handling-task">Handling a task end-to-end</h3>
-<p>The canonical flow, which you should be able to walk a customer through from memory:</p>
+<h3 id="handling-task">How an agent handles a task, step by step</h3>
+<p>This is the basic workflow that every agent follows. You should be able to walk a customer through this from memory:</p>
 <ol>
-  <li>Agent is in Routing mode and their presence is <strong>Available</strong>.</li>
-  <li>A task appears. The agent sees the full thread history — prior messages, identity info, any existing categories.</li>
-  <li>The agent drafts a reply in the composer. Attachments, templates, and signatures are available here.</li>
-  <li>If dispositions are mandatory on this channel, the agent must select one or more categories before completing.</li>
-  <li>The agent either <strong>Sends &amp; Completes</strong>, <strong>Ignores</strong> (dismiss without reply), or <strong>Transfers</strong> to another agent or channel group.</li>
-  <li>If they transfer with the <strong>bypass</strong> option, mandatory-disposition rules behave differently after a recent fix — see Issue tracking note in §05.</li>
+  <li><strong>Agent sets their status to "Available."</strong> Nothing happens until they do this — the system will not send them work while they are Away or Offline.</li>
+  <li><strong>A task appears.</strong> If in Routing Mode, it pops up automatically. If in Inboxes or Folders, the agent clicks on a conversation to open it.</li>
+  <li><strong>Agent reads the conversation history.</strong> They can see every message the customer has sent, any previous replies from other agents, and information about the customer (their Identity profile).</li>
+  <li><strong>Agent writes a reply.</strong> They can also attach files, use saved response templates, and add their email signature.</li>
+  <li><strong>Agent applies a category (if required).</strong> Some customers configure "mandatory dispositions" — this means the agent MUST select a label (like "Billing Question" or "Technical Issue") before they can close the task. If an agent says they "can't complete" a task, check whether mandatory categories are turned on.</li>
+  <li><strong>Agent finishes.</strong> They can: <strong>Send &amp; Complete</strong> (reply and close), <strong>Ignore</strong> (dismiss without replying — for spam or duplicates), or <strong>Transfer</strong> (hand it to another agent or team).</li>
 </ol>
 
 <div class="callout tip">
-  <span class="callout-label">Replication trick</span>
-  For most "why did this behave this way" questions, the fastest path is <strong>impersonate</strong> the affected user from the admin console, then reproduce the workflow in a test thread. Impersonation is a first-class feature of ED admin and leaves an audit trail.
+  <span class="callout-label">Your best friend: Impersonation</span>
+  ED has a built-in feature that lets admins (and support staff with admin access) <strong>"impersonate"</strong> any agent — meaning you can log in as that agent and see exactly what they see, without needing their password. This is the fastest way to diagnose "I can't see X" or "Y isn't working for me" complaints. Look for the impersonate option in the admin panel under the agent's profile. It leaves an audit trail, so it is fully sanctioned.
 </div>
 
-<h3 id="outbound">Outbound messages and identity creation</h3>
-<p>Agents can initiate conversations outbound — most commonly on email and SMS. When they do, the expected behavior is:</p>
+<h3 id="outbound">When agents send messages first (outbound)</h3>
+<p>Agents can start new conversations — not just reply to incoming ones. This is most common with email and SMS. When they do:</p>
 <ul>
-  <li>If an Identity already exists for the recipient (email address, phone number), ED attaches the outbound message to that Identity.</li>
-  <li>If no Identity exists, ED creates one.</li>
+  <li>If the recipient is already in the system (their email or phone number matches an existing customer profile), the new message gets linked to that customer automatically.</li>
+  <li>If the recipient is brand new, ED creates a new customer profile (Identity) for them automatically.</li>
 </ul>
-<p>The "no identity exists yet → new identity created" path has been the source of tickets where the identity <em>wasn't</em> auto-created. If a customer reports this, collect example thread URLs and the channel ID, then escalate — the root cause is usually in the identity-matching code path and is not reproducible without tenant-specific data.</p>
+<p>If a customer reports that outbound messages "aren't creating a customer record," collect the specific conversation links and the channel name, and escalate — this is a known edge case that requires investigation by Tier 3.</p>
 
-<h3 id="supervision">The Supervision view for team leads</h3>
-<p>Supervisors see live counts of pending tasks. There are two subviews — <strong>by channel group</strong> and <strong>by agent/user</strong> — and they do <em>not</em> always show the same numbers. This is expected, but misunderstood by customers often enough that it is Top Issue&nbsp;#5 in this guide. See <a href="#issue-5">§05-5</a> for the full explanation.</p>
+<h3 id="supervision">The Supervision dashboard (for team leads)</h3>
+<p>Team leaders and supervisors have a special real-time dashboard that shows them the state of their operation at a glance: how many tasks are waiting, who is online, and how busy each agent is.</p>
+<p><strong>Important:</strong> The Supervision view has two tabs — one that shows numbers <strong>by queue</strong> and one that shows numbers <strong>by agent</strong>. These two views will often show <em>different numbers</em> for what seems like the same thing. This is by design, not a bug — they count differently. This confuses customers so often that it is one of the Top 10 Issues in this guide (see <a href="#issue-10">Issue #10</a> for the full explanation and what to tell the customer).</p>
 
 <!-- ============================================= -->
 <!-- SECTION 3: ADMIN PORTAL GUIDE                 -->
 <!-- ============================================= -->
 <section class="section-head" id="admin-guide">
-  <div class="eyebrow">§ 03 — For support staff</div>
+  <div class="eyebrow">§ 03 — Navigating the admin panel</div>
   <h2 class="no-rule">Admin Portal Guide</h2>
-  <p class="lede">This section is for you. When a customer sends a screenshot of their admin console, or when you impersonate their admin user, this is the map.</p>
+  <p class="lede">When a customer needs help configuring their system, they (or you) will be working in the Admin panel. This section explains what each part of the admin panel does, and what typically goes wrong in each area.</p>
 </section>
 
-<h3 id="admin-channels">Channels (Content Sources)</h3>
-<p>Every inbound pathway is a <strong>Content Source</strong> in admin. The admin URL is predictable:</p>
-<pre><code>https://{tenant}/admin/content_sources/{mongo_id}/edit</code></pre>
-<p>Channel types you will encounter most often, and what breaks on each:</p>
+<h3 id="admin-channels">Channels — where messages come from</h3>
+<p>A "Channel" (also called a "Content Source" in the admin panel) is a connection to one communication method. Setting up and troubleshooting channels is a huge part of support work. Here is what you need to know about each type:</p>
 
-<h4>Email</h4>
-<p>Two delivery modes. This distinction drives much of your email-ticket triage.</p>
+<h4>Email channels</h4>
+<p>Email is the most common channel type and the source of the most support tickets (33% of all Tier 3 cases). There are two ways email works in ED:</p>
 <ul>
-  <li><strong>Postmark mode</strong> — ED's default for most customers. Inbound email hits Postmark's MX servers, which webhook the message to ED. Outbound goes out through Postmark as well. All deliverability signals (bounces, suppression list, spam marks) live on the <strong>Postmark</strong> side, not in ED.</li>
-  <li><strong>IMAP / SMTP mode</strong> — used by customers who want ED to connect to their own mail server (Exchange, on-prem). Behaves more slowly ("slow mode") because polling cadence is lower. Some customers combine this with appliances like <strong>Fortimail</strong> for DLP / attachment scanning.</li>
-</ul>
-<p>Other important email-channel knobs: <code>cc_blacklist</code> (addresses that will be stripped from replies), <code>display_text_of_original</code> (adds quoted thread body to replies — some customers want this turned off when it pulls attachments in unwanted). These are settable via API but, as recent tickets show, some fields silently no-op on update.</p>
-
-<h4>SMS</h4>
-<p>Uses <strong>Bandwidth</strong> (NA) or <strong>Twilio</strong> (global, depending on tenant). The channel holds a <em>telco token</em> that represents a provisioned TN (telephone number). Issues almost always trace back to one of three roots:</p>
-<ul>
-  <li>The TN was re-provisioned on the carrier and the ED channel's token is stale.</li>
-  <li>The TN does not have SMS-sender permission at the carrier level.</li>
-  <li>The TN has been flagged (spam, Cloudmark, etc.) at the carrier level — ED cannot override this.</li>
+  <li><strong>Postmark (the default for most customers)</strong> — Customer emails are received by a service called Postmark, which then forwards them into ED. When agents reply, the reply also goes out through Postmark. If an email fails to send, the problem is almost always on the <em>Postmark side</em>, not inside ED. The most common issue: an email address gets added to Postmark's "blocked" list (called the "suppression list") because a previous email bounced or was marked as spam. See <a href="#issue-1">Issue #1</a> for the full troubleshooting playbook.</li>
+  <li><strong>IMAP/SMTP (for customers who use their own mail server)</strong> — ED connects directly to the customer's email server (like Microsoft Exchange). This is slower because ED has to check the server periodically for new messages instead of receiving them instantly. Some customers also run email through security appliances like Fortimail that scan attachments.</li>
 </ul>
 
-<h4>Messaging SDK (Chat / In-app / RingCX digital channel)</h4>
-<p>An embeddable chat widget loaded via a JavaScript snippet on the customer's website or ServiceNow instance. The admin page for the channel generates this snippet. Gotcha: customers sometimes test the snippet in isolation (e.g., W3Schools sandbox) and report "the greeting doesn't appear" — pre-chat greetings are config-driven on the ED channel, not hardcoded in the snippet, so they will not render in a standalone HTML test. This is by design.</p>
-<p>There are two configurations for Messaging channels:</p>
-<ul>
-  <li><strong>Authenticated-only</strong> — chat requires the visitor to be logged in on the host site.</li>
-  <li><strong>Open to all visitors</strong> — anonymous visitors can chat, typically handed to a bot first, then handed over to an agent (at which point authentication may be requested). <em>Migrating between these two modes does not preserve conversation history</em> — this is a known limitation that several customers have raised.</li>
-</ul>
-
-<h4>Social (Facebook, Messenger, Instagram, WhatsApp, X/Twitter)</h4>
-<p>All Meta channels use the <strong>Koala Ruby gem</strong> as the underlying Graph API client. OAuth tokens are long-lived but not infinite — tokens can be invalidated by Meta password changes on the connected page, permission revocations, or Meta policy updates. Symptoms include <code>OAuthException code 100</code> and channel auto-deactivation.</p>
-<p>X / Twitter DMs began arriving encrypted in early 2026, causing import failures for tenants who have not configured a PIN within the X channel; workaround is to set the PIN on the app registration side.</p>
-
-<h4>Google Play reviews / Google Business Messages</h4>
-<p>Uses <code>Google::Apis</code> Ruby client. Failures typically surface as <code>Google::Apis::ClientError -&gt; Invalid request</code> and can persist over long periods (weeks+) when Google-side API deprecations are not yet mirrored on the ED side.</p>
-
-<h3 id="admin-agents-roles">Agents &amp; Roles — the permission hierarchy rule</h3>
-<p>This is the single most mis-diagnosed issue in the product. <strong>Read this carefully and internalize it — it will save you hours.</strong></p>
-
-<div class="callout critical">
-  <span class="callout-label">The rule</span>
-  In ED, <strong>a role can only edit agents whose role has a <em>subset</em> of its own permissions.</strong> If you add a permission to a subordinate role that the parent role lacks, the parent role loses the ability to edit anyone assigned to the subordinate role. Every field will appear grayed out. Nothing in the UI explains why.
+<div class="callout tip">
+  <span class="callout-label">The #1 email question you will get</span>
+  <strong>"Why can't we send emails to [specific address]?"</strong> — The answer is almost always: that address is on Postmark's suppression list. You fix it in Postmark (not in ED). See <a href="#issue-1">Issue #1</a>.
 </div>
 
-<p>So when a customer says "our Director and Manager roles suddenly cannot edit anyone — nothing changed overnight," what actually happened is someone <em>added</em> a permission to a downstream role. The fix is to add that same permission to Director and Manager, not to remove it from the downstream role (though that works too).</p>
-<p>When diagnosing: impersonate the affected admin, attempt the edit, and note <em>which</em> roles' members are not editable. Then compare the permission bitmap of the admin's role vs. the uneditable agents' role. The missing permissions on the admin's side are the culprit.</p>
-
-<h3 id="admin-rules">Rules Engine &amp; Categories</h3>
-<p>The Rules Engine runs on import, re-import, and can be replayed manually. A rule has a <em>trigger</em> (on message, on thread, on identity), <em>conditions</em> (content matching, source, sender attributes), and <em>actions</em> (categorize, route, set priority, ignore).</p>
-<p>A subtle behavior: "recategorize thread" rules sometimes emit events saying they applied to the <em>content</em> instead of the <em>thread</em>. This is logged in the rule event history. When a customer reports "my rule didn't apply," check the event log on the content — not just the rule config.</p>
-<p>Categories can be configured as <strong>mandatory dispositions</strong> on a channel. When mandatory, the agent cannot complete the task until at least one is selected. The <strong>bypass transfer</strong> option historically allowed an agent to ignore a message without categorizing; a fix deployed on <code>RD-33293</code> (April&nbsp;1, 2026) changed this behavior — ignoring now enforces mandatory categorization. Expect a wave of tickets from customers whose workflow relied on the old behavior.</p>
-
-<h3 id="admin-routing">Routing &amp; Channel Groups</h3>
-<p>A channel group is a queue. Its important config:</p>
+<h4>SMS channels</h4>
+<p>SMS works through phone carriers — <strong>Bandwidth</strong> (for North American numbers) or <strong>Twilio</strong> (for other regions). Each SMS channel has a phone number associated with it. When SMS breaks, it is usually because:</p>
 <ul>
-  <li><strong>Interaction timeout</strong> — how long a pushed task sits in an agent's workbin before being re-queued.</li>
-  <li><strong>Agents</strong> — which agents this queue can push to.</li>
-  <li><strong>Channels</strong> — which content sources feed into this queue.</li>
-  <li><strong>Priority</strong> — when an agent is available to multiple queues, which wins.</li>
+  <li>The phone number was changed or re-configured at the carrier, and ED's connection is outdated.</li>
+  <li>The phone number does not have the right permissions to send text messages at the carrier level.</li>
+  <li>The phone number has been flagged as spam by the carrier — ED cannot fix this; it requires working with the carrier.</li>
 </ul>
-<p>The consolidation pattern (see Appendix) — one "master source" fed by many phone lines, with the Rules Engine doing the categorization and routing — is an increasingly common request and is a supported topology. Customers sometimes create dozens of sources when they should create one.</p>
+<p>If an SMS channel shows an error, coordinate with our internal <strong>Telco Ops team</strong> — they manage the carrier relationships.</p>
 
-<h3 id="admin-identities">Identities</h3>
-<p>Identities are the end-user profile object. Admins can view, merge, and anonymize them. GDPR anonymization is supported and removes PII while keeping reporting counts intact. Identities can also be placed on channel-level blocklists.</p>
+<h4>Live Chat channels (Messaging SDK)</h4>
+<p>This is the chat widget — the "Chat with us" bubble that appears on a customer's website. The customer sets it up by adding a small piece of code (a "snippet") to their website. Common issues:</p>
+<ul>
+  <li><strong>"The chat bubble isn't showing up"</strong> — Usually a problem with how the code snippet was added to their website, or their website's security settings are blocking it.</li>
+  <li><strong>"The pre-chat form stopped working"</strong> — Someone changed the form settings in the admin panel. Check the channel configuration.</li>
+  <li><strong>"Chat history disappeared after we changed a setting"</strong> — If the customer switched their chat from "logged-in users only" mode to "open to everyone" mode, conversation history does not carry over. This is a known limitation.</li>
+</ul>
 
-<h3 id="admin-api">API tokens</h3>
-<p>The REST API (<code>{customer}.api.engagement.dimelo.com/1.0/...</code>) uses bearer-token auth. Tokens are generated per-user in the admin portal and inherit the user's permissions.</p>
-<pre><code>curl -X GET \
-  -H "Authorization: Bearer &lt;TOKEN&gt;" \
-  -H "Accept: application/json" \
-  "https://{customer}.api.engagement.dimelo.com/1.0/content_sources/{id}"</code></pre>
-<p>Not every admin action is exposed on the API. Notably: <strong>Channel create</strong>, and <strong>Rule Engine CREATE/UPDATE/DELETE</strong>, have historically been missing — customers who need to automate channel provisioning will hit this wall and request it as a feature. There is a "hidden" Email onboarding API but it is not documented and support should not point customers to it without engineering approval.</p>
+<h4>Social media channels (Facebook, Instagram, WhatsApp, X/Twitter)</h4>
+<p>Social channels connect to the customer's social media accounts. They all require the customer to <strong>authorize</strong> ED to access their social media pages (similar to when you "Connect with Facebook" on a website). This authorization can break for several reasons:</p>
+<ul>
+  <li>Someone changed the password on the social media account.</li>
+  <li>The social media platform (Meta, X, etc.) revoked access due to a policy change.</li>
+  <li>The authorization simply expired (they do not last forever).</li>
+</ul>
+<p>When a social channel stops working, the first step is almost always: <strong>ask the customer to re-authorize the connection</strong> from the channel's settings page in the admin panel. For X/Twitter specifically: direct messages started arriving encrypted in early 2026, which requires a special PIN to be configured. If an X channel suddenly stops importing DMs, ask if they have set up the PIN.</p>
+
+<h4>Google channels (Google Play, Google Business Messages)</h4>
+<p>These connect to Google's systems and occasionally break when Google updates their service. Errors can persist for weeks if they are on Google's side. If a Google channel shows "Invalid request" errors consistently, escalate to Tier 3 — it may require engineering involvement.</p>
+
+<h3 id="admin-agents-roles">Agents &amp; Roles — the most common admin headache</h3>
+<p>Managing agents and their permissions is straightforward, but there is one rule that catches everyone off guard and generates a significant number of support tickets. Understanding this rule now will save you hours of troubleshooting later.</p>
+
+<div class="callout critical">
+  <span class="callout-label">The permission rule (read this carefully)</span>
+  <p>In ED, <strong>a manager can only edit people whose permissions are <em>equal to or less than</em> their own.</strong></p>
+  <p><strong>Analogy:</strong> Imagine a company where a Director can manage Managers, and Managers can manage Agents. Now imagine someone gives the Agent role a special permission that the Manager role does not have (like access to a new feature). Suddenly, Managers can no longer edit Agents — because the system says "you can't manage someone with a permission you don't have." All the edit fields turn gray, and nothing in the interface explains why.</p>
+</div>
+
+<p><strong>What the customer will say:</strong> "Our Director and Manager roles suddenly can't edit anyone. Nothing changed."</p>
+<p><strong>What actually happened:</strong> Someone added a permission to a lower-level role, and that permission is not present on the Director/Manager role. The fix: add the same permission to the Director and Manager roles so they are equal or higher.</p>
+<p><strong>How to diagnose it:</strong></p>
+<ol>
+  <li>Use the "impersonate" feature to log in as the affected manager.</li>
+  <li>Try to edit a specific agent — confirm that the fields are grayed out.</li>
+  <li>Open the manager's role settings in one browser tab, and the agent's role settings in another.</li>
+  <li>Compare the permission checkboxes. Any permission that is checked on the agent's role but NOT checked on the manager's role is the culprit.</li>
+  <li>Add the missing permission(s) to the manager's role. The edit functionality will immediately start working again.</li>
+</ol>
+
+<h3 id="admin-rules">Rules Engine — the "if this, then that" system</h3>
+<p>The Rules Engine is how customers automate message handling. It is like setting up email filters in Gmail, but more powerful. Each rule has three parts:</p>
+<ol>
+  <li><strong>Trigger</strong> — When does the rule run? (When a new message arrives? When a conversation is updated? When a new customer is created?)</li>
+  <li><strong>Conditions</strong> — What does the rule look for? (Does the message contain certain words? Is it from a specific channel? Is the customer tagged as VIP?)</li>
+  <li><strong>Actions</strong> — What does the rule do? (Apply a category, send it to a specific queue, set the priority, auto-ignore it.)</li>
+</ol>
+<p><strong>When a customer says "my rule isn't working":</strong> Check the rule's event log (visible in the admin panel under the rule's history). The system records every time a rule runs and what it did. Sometimes the rule ran but applied to the wrong object — for example, it categorized the individual message instead of the whole conversation. The event log will show you exactly what happened.</p>
+
+<p><strong>About mandatory categories (dispositions):</strong> Customers can require agents to pick a category before closing a task. This is called a "mandatory disposition." A recent update (April 2026) changed how this works with transferred tasks — agents can no longer skip categorization when using the "bypass transfer" option. If customers report that agents are "being forced to categorize when they didn't have to before," this is the reason.</p>
+
+<h3 id="admin-routing">Routing &amp; Channel Groups — how work gets distributed</h3>
+<p>A Channel Group is a queue — it is the system that decides which agents get which tasks. Here are the four settings that matter most:</p>
+<ul>
+  <li><strong>Interaction timeout</strong> — How long a task sits with an agent before the system takes it back and gives it to someone else. Think of it like: "If you don't answer within 15 minutes, the call goes to the next available person."</li>
+  <li><strong>Agents</strong> — Which agents are assigned to this queue. If an agent is not in the queue's member list, they will never receive tasks from it.</li>
+  <li><strong>Channels</strong> — Which channels feed into this queue. For example, "All Facebook messages go to Queue A, all emails go to Queue B."</li>
+  <li><strong>Priority</strong> — If an agent is a member of multiple queues, which queue's tasks should they get first? The queue with the highest priority wins.</li>
+</ul>
+
+<div class="callout tip">
+  <span class="callout-label">Routing is the #2 support issue</span>
+  Routing and queue configuration is the second most common reason customers call support (28% of T3 cases). If an agent says "I'm not getting any tasks," the first things to check are: (1) Is the agent set to Available? (2) Is the agent a member of the right channel group? (3) Is the channel group connected to the right channel? These three checks resolve most routing issues.
+</div>
+
+<h3 id="admin-identities">Identities — customer profiles</h3>
+<p>An "Identity" is ED's name for a customer profile. When a customer contacts the company through any channel, ED creates a record for them. Admins can:</p>
+<ul>
+  <li><strong>View</strong> an identity to see all conversations that customer has had across all channels.</li>
+  <li><strong>Merge</strong> two identities if the same customer was accidentally created twice (e.g., they emailed from two different addresses).</li>
+  <li><strong>Anonymize</strong> an identity to comply with GDPR/privacy regulations — this removes personal information while keeping the conversation statistics intact for reporting.</li>
+  <li><strong>Block</strong> an identity on specific channels to prevent them from contacting the company.</li>
+</ul>
+
+<h3 id="admin-api">API access (for technical customers)</h3>
+<p>Some customers use ED's API (Application Programming Interface) to connect ED with their own systems — for example, automatically pulling conversation data into their CRM, or programmatically creating categories. You do not need to understand how APIs work, but you should know:</p>
+<ul>
+  <li>API access is controlled by <strong>tokens</strong> (like passwords) that are generated in the admin panel under Advanced Settings → API Access Tokens.</li>
+  <li>Each token is tied to a specific user account and inherits that user's permissions.</li>
+  <li>If a customer says "our API stopped working," the first thing to check is whether the token was deactivated (this can happen if the user account it is attached to was modified).</li>
+  <li>Not everything in the admin panel is available through the API. Customers frequently ask for API access to create channels or manage the Rules Engine — these are not currently available, and this is a known limitation.</li>
+</ul>
+
 
 <!-- ============================================= -->
 <!-- SECTION 4: TIER 3 — BACKEND                   -->
