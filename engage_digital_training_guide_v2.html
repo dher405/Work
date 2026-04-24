@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RingCentral Engage Digital — Support Staff Training Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rc-orange: #FF8800;
+    --rc-orange-dark: #E07800;
+    --rc-orange-soft: #FFF3E0;
+    --rc-blue: #013E5B;
+    --rc-blue-light: #0073AE;
+    --rc-blue-soft: #E8F4FA;
+    --ink: #1A1A1A;
+    --ink-2: #333333;
+    --ink-3: #666666;
+    --ink-4: #999999;
+    --paper: #FFFFFF;
+    --paper-warm: #FFF8F2;
+    --paper-gradient: linear-gradient(135deg, #FFF0E8 0%, #F5EAF5 55%, #EAF0FA 100%);
+    --sidebar-bg: linear-gradient(180deg, #013E5B 0%, #01516F 100%);
+    --rule: #E0E0E0;
+    --rule-light: #F0F0F0;
+    --teal: #0073AE;
+    --teal-soft: #E8F4FA;
+    --amber: #E07800;
+    --amber-soft: #FFF3E0;
+    --crimson: #C62828;
+    --crimson-soft: #FFEBEE;
+    --sidebar-w: 280px;
+    --content-w: 760px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0;
+    font-family: "Inter Tight", system-ui, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    min-height: 100vh;
+  }
+  aside.toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 24px 44px 28px;
+    border-right: none;
+    background: var(--sidebar-bg);
+    color: #FFFFFF;
+  }
+  main {
+    padding: 56px 48px 120px;
+    max-width: calc(var(--content-w) + 96px);
+    background: var(--paper);
+  }
+
+  /* Sidebar */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .brand img.rc-logo {
+    height: 28px;
+    width: auto;
+  }
+  .brand-sub {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 32px;
+    font-weight: 500;
+    padding-left: 2px;
+  }
+  nav.toc-nav h4 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.45);
+    margin: 26px 0 8px;
+    font-weight: 600;
+  }
+  nav.toc-nav h4:first-child { margin-top: 0; }
+  nav.toc-nav ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: sec;
+  }
+  nav.toc-nav ol > li {
+    counter-increment: sec;
+    margin: 3px 0;
+  }
+  nav.toc-nav a {
+    display: block;
+    text-decoration: none;
+    color: rgba(255,255,255,0.82);
+    font-size: 13.5px;
+    line-height: 1.4;
+    padding: 4px 0 4px 28px;
+    position: relative;
+    transition: color 120ms ease, background 120ms ease;
+    border-radius: 4px;
+  }
+  nav.toc-nav > ol > li > a::before {
+    content: counter(sec, decimal-leading-zero);
+    position: absolute;
+    left: 2px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--rc-orange);
+    top: 6px;
+    letter-spacing: 0.04em;
+  }
+  nav.toc-nav a:hover { color: #FFFFFF; background: rgba(255,255,255,0.08); }
+  nav.toc-nav ol ol {
+    padding-left: 28px;
+    margin: 1px 0 4px;
+  }
+  nav.toc-nav ol ol a {
+    padding: 2px 0;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+  }
+  nav.toc-nav ol ol a::before { content: none; }
+  nav.toc-nav ol ol a:hover { color: rgba(255,255,255,0.9); background: none; }
+
+  /* Typography */
+  h1, h2, h3, h4 {
+    font-family: "Inter Tight", sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.18;
+  }
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    background: linear-gradient(135deg, var(--rc-blue), var(--rc-blue-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 72px 0 14px;
+    padding-top: 28px;
+    border-top: 2px solid var(--rule-light);
+    color: var(--rc-blue);
+  }
+  section.section-head { margin-top: 80px; padding-top: 0; border-top: none; }
+  h2.no-rule { border-top: none; padding-top: 0; }
+  h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 44px 0 10px;
+    color: var(--ink);
+  }
+  h4 {
+    font-size: 16.5px;
+    font-weight: 600;
+    margin: 28px 0 8px;
+    color: var(--ink-2);
+  }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 11px;
+    color: var(--rc-orange);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .lede {
+    font-size: 20px;
+    line-height: 1.45;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin: 0 0 40px;
+    max-width: 620px;
+  }
+
+  /* Body */
+  p { margin: 0 0 16px; max-width: var(--content-w); }
+  p + p { margin-top: -4px; }
+  ul, ol { margin: 0 0 18px; padding-left: 22px; max-width: var(--content-w); }
+  li { margin: 4px 0; }
+  li p { margin-bottom: 8px; }
+  strong { font-weight: 600; color: var(--ink); }
+  em { color: var(--ink-2); }
+  a { color: var(--rc-blue-light); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--rc-blue); }
+
+  code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.86em;
+    background: var(--rc-blue-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--rc-blue);
+    border: 1px solid #D0E8F5;
+  }
+  pre {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    background: var(--rc-blue);
+    color: #E8F0F8;
+    padding: 20px 22px;
+    border-radius: 6px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 18px 0 24px;
+    max-width: var(--content-w);
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+  .ruby-keyword { color: #FFB347; }
+  .ruby-string  { color: #A8C8E8; }
+  .ruby-comment { color: #7A9AB5; font-style: italic; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    max-width: var(--content-w);
+    border-collapse: collapse;
+    margin: 20px 0 28px;
+    font-size: 14.5px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #FFFFFF;
+    background: var(--rc-blue);
+    border-bottom: none;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #FAFAFA; }
+  td code { font-size: 12px; }
+
+  /* Callouts */
+  .callout {
+    max-width: var(--content-w);
+    padding: 18px 20px 18px 22px;
+    border-left: 3px solid;
+    border-radius: 0 6px 6px 0;
+    margin: 22px 0;
+    font-size: 15px;
+    line-height: 1.58;
+  }
+  .callout .callout-label {
+    display: inline-block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-right: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    vertical-align: 2px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { border-color: var(--teal); background: var(--teal-soft); }
+  .callout.tip .callout-label { background: var(--teal); color: #FFF; }
+  .callout.warn { border-color: var(--amber); background: var(--amber-soft); }
+  .callout.warn .callout-label { background: var(--amber); color: #FFF; }
+  .callout.critical { border-color: var(--crimson); background: var(--crimson-soft); }
+  .callout.critical .callout-label { background: var(--crimson); color: #FFF; }
+  .callout.t3 { border-color: var(--rc-orange); background: var(--rc-orange-soft); }
+  .callout.t3 .callout-label { background: var(--rc-orange); color: #FFF; }
+
+  /* Metric blocks */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 30px 0 44px;
+    max-width: var(--content-w);
+    background: linear-gradient(135deg, #FFF0E8 0%, #F5EAF5 55%, #EAF0FA 100%);
+  }
+  .metric {
+    padding: 22px 18px;
+    border-right: 1px solid var(--rule);
+  }
+  .metric:last-child { border-right: none; }
+  .metric-num {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--rc-blue);
+    line-height: 1;
+  }
+  .metric-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    margin-top: 8px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* Issue cards */
+  .issue-card {
+    max-width: var(--content-w);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: white;
+    margin: 28px 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .issue-head {
+    padding: 22px 26px 18px;
+    background: linear-gradient(135deg, #FFF0E8, #EAF0FA);
+    border-bottom: 1px solid var(--rule);
+  }
+  .issue-rank {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--rc-orange);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .issue-rank-num {
+    font-size: 42px;
+    font-weight: 700;
+    margin-right: 6px;
+    vertical-align: -6px;
+    color: var(--rc-blue);
+  }
+  .issue-head h3 { margin: 0; font-size: 22px; color: var(--ink); }
+  .issue-freq {
+    display: inline-block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    color: var(--ink-3);
+    background: white;
+    padding: 3px 9px;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    margin-left: 10px;
+    vertical-align: 3px;
+    letter-spacing: 0.04em;
+  }
+  .issue-body { padding: 22px 26px 8px; }
+  .issue-body h4 {
+    margin-top: 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--rc-orange);
+    font-weight: 600;
+    border-bottom: 1px dotted var(--rule);
+    padding-bottom: 6px;
+  }
+  .issue-body h4:first-child { margin-top: 0; }
+  .issue-body ol, .issue-body ul { font-size: 15.2px; }
+
+  /* Concept grid */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: var(--content-w);
+    margin: 22px 0 28px;
+  }
+  .concept { background: var(--paper); padding: 18px 20px; }
+  .concept dt {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--rc-blue);
+    margin-bottom: 4px;
+  }
+  .concept dd { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+
+  /* Topology diagram */
+  .topology-wrap {
+    max-width: var(--content-w);
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 28px 20px 16px;
+    margin: 28px 0 32px;
+  }
+  .topology-wrap svg { width: 100%; height: auto; display: block; }
+  .topology-caption {
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: center;
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* Hero */
+  .hero-ornament { display: none; }
+
+  /* Meta row */
+  .meta-row {
+    display: flex;
+    gap: 36px;
+    font-size: 13px;
+    color: var(--ink-3);
+    margin: 26px 0 56px;
+    padding: 14px 0;
+    border-top: 2px solid var(--rc-orange);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .meta-row dt {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-4);
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .meta-row dd { margin: 0; color: var(--ink-2); font-weight: 500; }
+
+  footer {
+    margin-top: 96px;
+    padding-top: 28px;
+    border-top: 2px solid var(--rc-orange);
+    font-size: 13px;
+    color: var(--ink-3);
+    max-width: var(--content-w);
+  }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    aside.toc { position: static; height: auto; border-right: none; border-bottom: none; padding: 28px 24px; }
+    main { padding: 32px 24px 80px; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 26px; margin-top: 56px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metric:nth-child(2) { border-right: none; }
+    .concept-grid { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    aside.toc { display: none; }
+    .layout { display: block; }
+    main { padding: 0; max-width: none; }
+    h2 { page-break-before: always; }
+    .issue-card { page-break-inside: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+    h1 { -webkit-text-fill-color: var(--rc-blue); }
+  }
+
+  ::selection { background: var(--rc-orange); color: white; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="toc">
+  <div class="brand">
+    <img class="rc-logo" src="data:image/png;base64,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" alt="RingCentral">
+  </div>
+  <div class="brand-sub">Engage Digital · Support Training v2.0</div>
+
+  <nav class="toc-nav">
+    <h4>Contents</h4>
+    <ol>
+      <li><a href="#overview">Overview &amp; Orientation</a>
+        <ol>
+          <li><a href="#what-is-ed">What Engage Digital is</a></li>
+          <li><a href="#concepts">Core concepts &amp; glossary</a></li>
+          <li><a href="#tenancy">Tenancy &amp; URL patterns</a></li>
+        </ol>
+      </li>
+      <li><a href="#user-guide">Agent User Guide</a>
+        <ol>
+          <li><a href="#ui-overview">Interface overview</a></li>
+          <li><a href="#work-modes">Inboxes, Routing, Folders</a></li>
+          <li><a href="#handling-task">Handling a task</a></li>
+          <li><a href="#outbound">Outbound messages</a></li>
+          <li><a href="#supervision">Supervision view</a></li>
+        </ol>
+      </li>
+      <li><a href="#admin-guide">Admin Portal Guide</a>
+        <ol>
+          <li><a href="#admin-channels">Channels (Content Sources)</a></li>
+          <li><a href="#admin-agents-roles">Agents &amp; Roles</a></li>
+          <li><a href="#admin-rules">Rules Engine &amp; Categories</a></li>
+          <li><a href="#admin-routing">Routing &amp; Channel Groups</a></li>
+          <li><a href="#admin-identities">Identities</a></li>
+          <li><a href="#admin-api">API tokens</a></li>
+        </ol>
+      </li>
+      <li><a href="#tier3">Tier 3 — Backend &amp; Logs</a>
+        <ol>
+          <li><a href="#topology">Topology</a></li>
+          <li><a href="#stack">Stack &amp; workers</a></li>
+          <li><a href="#integrations">Third-party integrations</a></li>
+          <li><a href="#logging">Logging &amp; observability</a></li>
+          <li><a href="#mongo-lookups">MongoDB lookups</a></li>
+          <li><a href="#escalation">Escalation path</a></li>
+        </ol>
+      </li>
+      <li><a href="#top5">Top 10 Customer Issues</a>
+        <ol>
+          <li><a href="#issue-1">Email delivery/sync</a></li>
+          <li><a href="#issue-2">Routing &amp; queues</a></li>
+          <li><a href="#issue-3">Channel config</a></li>
+          <li><a href="#issue-4">Analytics/reporting</a></li>
+          <li><a href="#issue-5">Chat/Messaging widgets</a></li>
+          <li><a href="#issue-6">Social channels</a></li>
+          <li><a href="#issue-7">Thread aggregation</a></li>
+          <li><a href="#issue-8">API/SDK/Webhooks</a></li>
+          <li><a href="#issue-9">Data exports</a></li>
+          <li><a href="#issue-10">Supervision metrics</a></li>
+        </ol>
+      </li>
+      <li><a href="#training">Training &amp; Resources</a>
+        <ol>
+          <li><a href="#curriculum">Onboarding curriculum</a></li>
+          <li><a href="#scorm-modules">SCORM training modules</a></li>
+          <li><a href="#doc-links">Documentation links</a></li>
+        </ol>
+      </li>
+      <li><a href="#support-ops">Support Operations</a>
+        <ol>
+          <li><a href="#support-environment">Environments &amp; access</a></li>
+          <li><a href="#off-hours">Off-hours handling</a></li>
+          <li><a href="#feature-requests">Feature requests</a></li>
+        </ol>
+      </li>
+      <li><a href="#appendix">Appendix</a></li>
+    </ol>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main>
+
+<!-- HERO -->
+<div class="hero-ornament">※</div>
+<img src="data:image/png;base64,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" alt="RingCentral" style="height:32px;margin-bottom:20px;">
+<div class="eyebrow">Internal Training · Support Operations</div>
+<h1>RingCentral Engage&nbsp;Digital</h1>
+<p class="lede">A working handbook for Tier&nbsp;1, Tier&nbsp;2, and Tier&nbsp;3 support staff supporting the omnichannel digital engagement platform formerly known as Dimelo.</p>
+
+<dl class="meta-row">
+  <div><dt>Audience</dt><dd>L1 / L2 / L3 Support</dd></div>
+  <div><dt>Product</dt><dd>Engage Digital (ED)</dd></div>
+  <div><dt>Version</dt><dd>2.0 — April 2026</dd></div>
+  <div><dt>Scope</dt><dd>Admin, Agent, Backend</dd></div>
+</dl>
+
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-num">429</div>
+    <div class="metric-label">T3 cases analyzed</div>
+  </div>
+  <div class="metric">
+    <div class="metric-num">752</div>
+    <div class="metric-label">Chat messages mined</div>
+  </div>
+  <div class="metric">
+    <div class="metric-num">10</div>
+    <div class="metric-label">Issue playbooks</div>
+  </div>
+  <div class="metric">
+    <div class="metric-num">5</div>
+    <div class="metric-label">Training gaps found</div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 1: OVERVIEW                            -->
+<!-- ============================================= -->
+<section class="section-head" id="overview">
+  <div class="eyebrow">§ 01 — Orientation</div>
+  <h2 class="no-rule">Overview</h2>
+  <p class="lede">Before you can troubleshoot the product, you need a confident mental model of what it is, what it replaces for the customer, and what the moving parts are called.</p>
+</section>
+
+<h3 id="what-is-ed">What Engage Digital is</h3>
+<p>Engage Digital (ED) is RingCentral's omnichannel digital customer-engagement platform. It originated as <strong>Dimelo</strong>, a Paris-based contact-center software company acquired by RingCentral in 2019. The product lets enterprise contact centers receive, route, respond to, and report on customer conversations that arrive across <em>non-voice</em> channels — email, SMS, web chat, in-app messaging, Facebook, Messenger, Instagram, X (Twitter), WhatsApp, Google Business Messages, Google Play reviews, and more.</p>
+<p>In the official language from the internal wiki: <em>"A unified management platform for your digital conversations — centralize the social media, email and forum message flows on its console to assure operational efficiency, messaging traceability, and the large-scale processing of all kind of interactions."</em> The platform organizes these into five pillars:</p>
+<ul>
+  <li><strong>Social</strong> — centralize all messages from social networks (Facebook, Instagram, X, WhatsApp)</li>
+  <li><strong>Chat</strong> — assist customers in real-time with live chat embedded in websites</li>
+  <li><strong>Mobile</strong> — in-app messaging via the Mobile Messaging SDK</li>
+  <li><strong>Mail</strong> — manage inbound emails and web forms</li>
+  <li><strong>Communities</strong> — customer engagement through online support communities</li>
+</ul>
+<p>It sits alongside RingCX (voice contact center) in the RingCentral portfolio. Many customers run both; a conversation that starts on a digital channel in ED can be escalated to RingCX voice, and calls can have their follow-ups handled in ED.</p>
+
+<div class="callout tip">
+  <span class="callout-label">Why this matters</span>
+  When a customer says "RingCentral messed up my email," almost nine times out of ten they mean Engage&nbsp;Digital's <em>email channel</em>, which is a specific configuration inside ED — not RingCentral's email-as-a-hosted-mailbox product. Knowing which side of the house the issue lives on is half the battle.
+</div>
+
+<h3 id="concepts">Core concepts &amp; glossary</h3>
+<p>Every support conversation about ED runs more smoothly if everyone agrees on the vocabulary. These are the terms you will hear daily.</p>
+
+<dl class="concept-grid">
+  <div class="concept"><dt>Channel / Content Source</dt><dd>A single configured connection to an inbound channel — for example, <em>one</em> Facebook Page, <em>one</em> email address, or <em>one</em> WhatsApp number. Internally the object is named <code>ContentSource</code>.</dd></div>
+  <div class="concept"><dt>Content / Message</dt><dd>An individual message imported into ED — a single email, a single social post, a single SMS. Has a Mongo <code>_id</code> (the <code>content_id</code>) and a <code>foreign_id</code> (the external platform's ID).</dd></div>
+  <div class="concept"><dt>Thread / Content Thread</dt><dd>The conversation object that groups related messages. Threading is done by matching a <code>foreign_id</code> on incoming messages to an existing <code>ContentThread</code>. When that lookup fails, you get two threads for what should have been one.</dd></div>
+  <div class="concept"><dt>Intervention / Task</dt><dd>A unit of work assigned to an agent. One thread can spawn multiple interventions over its lifetime (initial response, reopen, transfer).</dd></div>
+  <div class="concept"><dt>Identity</dt><dd>The end-user profile — the person on the other side of the conversation. Identities accrete data across channels (same email, same phone, same Facebook ID).</dd></div>
+  <div class="concept"><dt>Agent / Role</dt><dd>An ED user who handles tasks. Roles are permission bundles. <strong>A role can only edit agents whose role has a subset of its own permissions</strong> — this rule causes real support tickets (see Issue&nbsp;#3).</dd></div>
+  <div class="concept"><dt>Channel Group</dt><dd>A queue. Tasks are routed to a channel group, and agents are members of channel groups. Supervision metrics split by channel group vs. by agent do not always match — see Issue&nbsp;#5 of our review.</dd></div>
+  <div class="concept"><dt>Category / Disposition</dt><dd>A tag applied to a thread or message — used for reporting and routing. "Mandatory dispositions" force an agent to categorize before completing a task.</dd></div>
+  <div class="concept"><dt>Rules Engine</dt><dd>The automation layer that categorizes, routes, and modifies incoming messages based on content, source, or sender attributes.</dd></div>
+  <div class="concept"><dt>Supervision</dt><dd>The real-time view of pending tasks, agent presence, and channel load — used by team leads.</dd></div>
+</dl>
+
+<h3 id="tenancy">Tenancy &amp; URL patterns</h3>
+<p>ED is multi-tenant. Every customer has their own subdomain, and <strong>two URL patterns coexist</strong> today — a legacy Dimelo pattern and a current RingCentral-branded pattern. You will see both daily. They point to the same product.</p>
+
+<table>
+  <thead>
+    <tr><th>Pattern</th><th>Example</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Legacy (Dimelo)</td>
+      <td><code>{customer}.engagement.dimelo.com</code></td>
+      <td>Original brand. Still the primary domain for EU customers (Orange, SFR, La Poste, Engie, Fizz, Odigo…).</td>
+    </tr>
+    <tr>
+      <td>Current (RC)</td>
+      <td><code>{customer}.digital.ringcentral.com</code></td>
+      <td>Used for newer NA tenants and RC-integrated customers. Same platform, rebranded hostname.</td>
+    </tr>
+    <tr>
+      <td>Admin path</td>
+      <td><code>/admin/content_sources/{id}/edit</code></td>
+      <td>Standard admin URL. If a customer pastes one of these, you can jump straight to the channel config.</td>
+    </tr>
+    <tr>
+      <td>API host</td>
+      <td><code>{customer}.api.engagement.dimelo.com</code></td>
+      <td>REST API endpoint. Bearer-token auth. Docs at <code>developers.ringcentral.com/engage/digital</code>.</td>
+    </tr>
+    <tr>
+      <td>Thread URL</td>
+      <td><code>/content_threads/{id}</code></td>
+      <td>Deep link to a conversation. If a customer shares this, the path segment is the Mongo thread ID you can use in Kibana.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+  <span class="callout-label">Pro tip</span>
+  The 24-character hex string at the end of any ED URL is always a MongoDB ObjectId. You can copy it straight into Kibana or Mongo queries — no translation needed.
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 1B: TRAINING & RESOURCES              -->
+<!-- ============================================= -->
+<section class="section-head" id="training">
+  <div class="eyebrow">§ 01b — Onboarding</div>
+  <h2 class="no-rule">Training &amp; Resources</h2>
+  <p class="lede">The official training curriculum, SCORM modules, and documentation links from the RingCentral Confluence wiki. This is the canonical onboarding path — follow it in order.</p>
+</section>
+
+<h3 id="curriculum">Onboarding curriculum (2025 program)</h3>
+<p>The <strong>Engage Digital Product Onboarding 2025</strong> program (maintained in the CCI Confluence space) prescribes the following sequence. Each step should be completed before moving to the next.</p>
+
+<table>
+  <thead><tr><th>Step</th><th>Activity</th><th>Method</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>Product overview videos</strong> — "Introducing RingCentral Engage: Omni-digital Customer Care platform" introduction video. Optionally also watch "Introducing RingCX" (longer, more abstract — best after basic training).</td><td>Self-paced</td></tr>
+    <tr><td>2</td><td><strong>RingCentral University — Engage Digital Training</strong> (public training). Four tracks: Agent Tool, Supervising Agents, Administrator Management, Analytics &amp; Reporting.</td><td>Self-paced</td></tr>
+    <tr><td>3</td><td><strong>Internal training sessions</strong> — First session, Second session, "How to create account and connectors."</td><td>Self-paced / recorded</td></tr>
+    <tr><td>4</td><td><strong>Documentation deep-dive</strong> — Admin / User / Analytics / Supervisor guides. Objectives: understand users &amp; roles, folder &amp; task mode, admin &amp; analytics, channel / category / identity / community, message / intervention / thread / task.</td><td>Self-paced, ~2 hrs</td></tr>
+    <tr><td>5</td><td><strong>KB Articles 2025</strong> — Spend 2 hours familiarizing yourself with the different KB sections. Bookmark for future reference.</td><td>Self-paced</td></tr>
+    <tr><td>6</td><td><strong>Developer documentation</strong> — Developer Guide, API Reference, SDKs, Engage Messaging (web messaging implementation, structured messages).</td><td>Self-paced</td></tr>
+    <tr><td>7</td><td><strong>GoodData analytics</strong> (optional) — Presentation slides, recorded video walkthrough, Q&amp;A document. Topics: filter table data, create pivot tables, create charts, configure button visibility.</td><td>Optional</td></tr>
+  </tbody>
+</table>
+
+<h3 id="scorm-modules">SCORM training modules (Training Repository 1)</h3>
+<p>The <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository 1</a> wiki page contains 30+ downloadable SCORM packages with slide decks, organized by admin area. These are the primary reference for how each feature works. The table below lists every module — each has a <code>.pptx</code> slide deck and a <code>.zip</code> SCORM package.</p>
+
+<table>
+  <thead><tr><th>Admin area</th><th>Module topics</th></tr></thead>
+  <tbody>
+    <tr><td>Technical Introduction</td><td>RCED Technical Introduction (15 min)</td></tr>
+    <tr><td>Agent Management</td><td>Agents (5 min), Identities (3 min), Teams &amp; Roles (4 min)</td></tr>
+    <tr><td>Message Management</td><td>Folders Mode (4 min), Categories (6 min), Notifications (4 min), Sources, Surveys (6 min), Reply Assistant (6 min)</td></tr>
+    <tr><td>Chat</td><td>Engage Digital Chat overview (9 min)</td></tr>
+    <tr><td>Task Mode</td><td>Task Mode overview (9 min)</td></tr>
+    <tr><td>Data Management</td><td>Overview, Exports, Journal (3 min), Automated Exports (8 min)</td></tr>
+    <tr><td>Advanced Settings</td><td>ICE, Identity Tags (3 min), Custom Fields (5 min), Email Templates, API Access Tokens, Webhooks, Extensions (8 min), Rules Engine, Business Hours (4 min), Security (4 min), Settings (6 min)</td></tr>
+    <tr><td>App SDK</td><td>Overview, Developed Applications, Installed Applications</td></tr>
+    <tr><td>Analytics</td><td>Dashboard Overview, Volume, Activity Tracking, Quality Measures, ICE</td></tr>
+    <tr><td>Supervision</td><td>Supervision overview</td></tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+  <span class="callout-label">Where to find these</span>
+  SCORM packages and slides are attached (76 attachments) to the <a href="https://wiki.ringcentral.com/pages/viewpage.action?pageId=275979541">Training Repository 1</a> wiki page. A second repository of live training recordings is stored on <a href="https://drive.google.com/drive/u/1/folders/1Rdkur8rIY6uuBj3EUhQsNItN4q-E4Y1g">Google Drive (Repository 2)</a> and <a href="https://drive.google.com/drive/u/1/folders/1--Pw3JLM1-Vp6sVSQjazxV-jzky1xX4P">Google Drive (Live Training)</a>.
+</div>
+
+<h3 id="doc-links">Documentation links (official references)</h3>
+<p>These are the canonical documentation resources. Many use legacy Dimelo bit.ly shortlinks that still resolve correctly.</p>
+
+<table>
+  <thead><tr><th>Category</th><th>Document</th><th>Link</th></tr></thead>
+  <tbody>
+    <tr><td>User</td><td>User Guide</td><td><code>bit.ly/dimelo_user_guide</code></td></tr>
+    <tr><td>User</td><td>Search Queries</td><td><code>bit.ly/dimelo_search_queries</code></td></tr>
+    <tr><td>Analytics</td><td>Analytics Guide</td><td><code>bit.ly/dimelo_analytics</code></td></tr>
+    <tr><td>Analytics</td><td>Supervisor Guide</td><td><code>bit.ly/dimelo_supervisor_guide</code></td></tr>
+    <tr><td>Admin</td><td>Administrator Guide</td><td><code>bit.ly/en_dimelo_admin_guide</code></td></tr>
+    <tr><td>Technical</td><td>REST API Guide</td><td><code>bit.ly/dimelo_REST_API</code></td></tr>
+    <tr><td>Technical</td><td>Webhook API Guide</td><td><code>bit.ly/dimelo_webhook_api</code></td></tr>
+    <tr><td>Technical</td><td>Chat Implementation Guide</td><td><code>bit.ly/dimelo_chat_implementation</code></td></tr>
+    <tr><td>Technical</td><td>Exports Guide</td><td><code>bit.ly/dimelo_exports</code></td></tr>
+    <tr><td>Technical</td><td>App SDK</td><td><code>bit.ly/dimelo_app_sdk</code></td></tr>
+    <tr><td>Technical</td><td>Mobile Messaging SDK</td><td><code>bit.ly/dimelo_mobile_messaging_sdk</code></td></tr>
+    <tr><td>Technical</td><td>Source SDK</td><td><code>bit.ly/dimelo_source_sdk</code></td></tr>
+    <tr><td>Technical</td><td>UI Embed</td><td><code>bit.ly/dimelo_ui_embed</code></td></tr>
+    <tr><td>GDPR</td><td>GDPR Compliance Document</td><td><code>bit.ly/dimelo_rgpd_doc</code></td></tr>
+    <tr><td>GDPR</td><td>GDPR Compliance Slides</td><td><code>bit.ly/dimelo_rgpd_slides</code></td></tr>
+    <tr><td>GDPR</td><td>Subprocessors List</td><td><code>bit.ly/dimelo_GDPR_subprocessors_list</code></td></tr>
+    <tr><td>Modern</td><td>Engage Digital KB Articles (current)</td><td><code>support.ringcentral.com/engagedigital.html</code></td></tr>
+    <tr><td>Modern</td><td>Developer Documentation Portal</td><td><code>developers.ringcentral.com/engage/digital</code></td></tr>
+    <tr><td>Modern</td><td>Engage Messaging — Web Implementation</td><td><code>bit.ly/RC_Engage_Digital_web_messaging_implementation</code></td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <span class="callout-label">Note on legacy links</span>
+  The <code>bit.ly/dimelo_*</code> shortlinks point to Dimelo-era hosted PDFs. Most still resolve. If any are broken, the equivalent content usually lives under <code>support.ringcentral.com/engagedigital.html</code> or <code>developers.ringcentral.com/engage/digital</code>. The wiki attachments on Training Repository 1 also contain offline copies of most guides.
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 2: AGENT USER GUIDE                   -->
+<!-- ============================================= -->
+<section class="section-head" id="user-guide">
+  <div class="eyebrow">§ 02 — For agents</div>
+  <h2 class="no-rule">Agent User Guide</h2>
+  <p class="lede">A walkthrough of what the product looks like from the agent's seat. When you impersonate an agent to replicate an issue, this is the surface you will be working with.</p>
+</section>
+
+<h3 id="ui-overview">Interface overview</h3>
+<p>After login, an agent lands on the main workspace. The top bar shows their presence status (<strong>Available</strong>, <strong>Away</strong>, <strong>Offline</strong>) — changing to Away can immediately expire any interactions currently in their workbin, which is the root cause of at least one ticket pattern you will see. The left rail gives access to the four modes an agent can work in:</p>
+
+<ul>
+  <li><strong>Inboxes</strong> — manual pull model. Agents browse threads in folders or saved searches and open the ones they want to work on.</li>
+  <li><strong>Routing</strong> — automatic push model. The system hands the agent the next-highest-priority task based on channel group config.</li>
+  <li><strong>Folders</strong> — organizational buckets (e.g., by category or by search filter). Useful for backfill and cleanup work.</li>
+  <li><strong>Supervision</strong> — read-only for most agents; active for team leads and admins.</li>
+</ul>
+
+<h3 id="work-modes">The three work modes</h3>
+<p>Customers often confuse which mode they are in, and some behaviors only apply in one mode. Keep this table close.</p>
+
+<table>
+  <thead>
+    <tr><th>Mode</th><th>Assignment</th><th>Task expiration</th><th>Typical use</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Routing</td>
+      <td>Pushed automatically</td>
+      <td>Yes — channel group timeout applies (default 15 min).</td>
+      <td>High-volume B2C contact centers.</td>
+    </tr>
+    <tr>
+      <td>Inboxes</td>
+      <td>Agent selects</td>
+      <td>Shared workbin — no timeout, but assignment can be transferred.</td>
+      <td>B2B, case-work style handling.</td>
+    </tr>
+    <tr>
+      <td>Folders</td>
+      <td>Agent selects</td>
+      <td>n/a</td>
+      <td>Backlog cleanup, supervisor triage.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <span class="callout-label">Gotcha</span>
+  Interaction timeouts are configured on the <em>channel group</em>, not the channel. If a customer reports "my task expired in 34 minutes but the timeout is set to 15," confirm which channel group the task was assigned to and whether any rule overrode it. Presence changes (Available → Away) can also release the task back to the queue.
+</div>
+
+<h3 id="handling-task">Handling a task end-to-end</h3>
+<p>The canonical flow, which you should be able to walk a customer through from memory:</p>
+<ol>
+  <li>Agent is in Routing mode and their presence is <strong>Available</strong>.</li>
+  <li>A task appears. The agent sees the full thread history — prior messages, identity info, any existing categories.</li>
+  <li>The agent drafts a reply in the composer. Attachments, templates, and signatures are available here.</li>
+  <li>If dispositions are mandatory on this channel, the agent must select one or more categories before completing.</li>
+  <li>The agent either <strong>Sends &amp; Completes</strong>, <strong>Ignores</strong> (dismiss without reply), or <strong>Transfers</strong> to another agent or channel group.</li>
+  <li>If they transfer with the <strong>bypass</strong> option, mandatory-disposition rules behave differently after a recent fix — see Issue tracking note in §05.</li>
+</ol>
+
+<div class="callout tip">
+  <span class="callout-label">Replication trick</span>
+  For most "why did this behave this way" questions, the fastest path is <strong>impersonate</strong> the affected user from the admin console, then reproduce the workflow in a test thread. Impersonation is a first-class feature of ED admin and leaves an audit trail.
+</div>
+
+<h3 id="outbound">Outbound messages and identity creation</h3>
+<p>Agents can initiate conversations outbound — most commonly on email and SMS. When they do, the expected behavior is:</p>
+<ul>
+  <li>If an Identity already exists for the recipient (email address, phone number), ED attaches the outbound message to that Identity.</li>
+  <li>If no Identity exists, ED creates one.</li>
+</ul>
+<p>The "no identity exists yet → new identity created" path has been the source of tickets where the identity <em>wasn't</em> auto-created. If a customer reports this, collect example thread URLs and the channel ID, then escalate — the root cause is usually in the identity-matching code path and is not reproducible without tenant-specific data.</p>
+
+<h3 id="supervision">The Supervision view for team leads</h3>
+<p>Supervisors see live counts of pending tasks. There are two subviews — <strong>by channel group</strong> and <strong>by agent/user</strong> — and they do <em>not</em> always show the same numbers. This is expected, but misunderstood by customers often enough that it is Top Issue&nbsp;#5 in this guide. See <a href="#issue-5">§05-5</a> for the full explanation.</p>
+
+<!-- ============================================= -->
+<!-- SECTION 3: ADMIN PORTAL GUIDE                 -->
+<!-- ============================================= -->
+<section class="section-head" id="admin-guide">
+  <div class="eyebrow">§ 03 — For support staff</div>
+  <h2 class="no-rule">Admin Portal Guide</h2>
+  <p class="lede">This section is for you. When a customer sends a screenshot of their admin console, or when you impersonate their admin user, this is the map.</p>
+</section>
+
+<h3 id="admin-channels">Channels (Content Sources)</h3>
+<p>Every inbound pathway is a <strong>Content Source</strong> in admin. The admin URL is predictable:</p>
+<pre><code>https://{tenant}/admin/content_sources/{mongo_id}/edit</code></pre>
+<p>Channel types you will encounter most often, and what breaks on each:</p>
+
+<h4>Email</h4>
+<p>Two delivery modes. This distinction drives much of your email-ticket triage.</p>
+<ul>
+  <li><strong>Postmark mode</strong> — ED's default for most customers. Inbound email hits Postmark's MX servers, which webhook the message to ED. Outbound goes out through Postmark as well. All deliverability signals (bounces, suppression list, spam marks) live on the <strong>Postmark</strong> side, not in ED.</li>
+  <li><strong>IMAP / SMTP mode</strong> — used by customers who want ED to connect to their own mail server (Exchange, on-prem). Behaves more slowly ("slow mode") because polling cadence is lower. Some customers combine this with appliances like <strong>Fortimail</strong> for DLP / attachment scanning.</li>
+</ul>
+<p>Other important email-channel knobs: <code>cc_blacklist</code> (addresses that will be stripped from replies), <code>display_text_of_original</code> (adds quoted thread body to replies — some customers want this turned off when it pulls attachments in unwanted). These are settable via API but, as recent tickets show, some fields silently no-op on update.</p>
+
+<h4>SMS</h4>
+<p>Uses <strong>Bandwidth</strong> (NA) or <strong>Twilio</strong> (global, depending on tenant). The channel holds a <em>telco token</em> that represents a provisioned TN (telephone number). Issues almost always trace back to one of three roots:</p>
+<ul>
+  <li>The TN was re-provisioned on the carrier and the ED channel's token is stale.</li>
+  <li>The TN does not have SMS-sender permission at the carrier level.</li>
+  <li>The TN has been flagged (spam, Cloudmark, etc.) at the carrier level — ED cannot override this.</li>
+</ul>
+
+<h4>Messaging SDK (Chat / In-app / RingCX digital channel)</h4>
+<p>An embeddable chat widget loaded via a JavaScript snippet on the customer's website or ServiceNow instance. The admin page for the channel generates this snippet. Gotcha: customers sometimes test the snippet in isolation (e.g., W3Schools sandbox) and report "the greeting doesn't appear" — pre-chat greetings are config-driven on the ED channel, not hardcoded in the snippet, so they will not render in a standalone HTML test. This is by design.</p>
+<p>There are two configurations for Messaging channels:</p>
+<ul>
+  <li><strong>Authenticated-only</strong> — chat requires the visitor to be logged in on the host site.</li>
+  <li><strong>Open to all visitors</strong> — anonymous visitors can chat, typically handed to a bot first, then handed over to an agent (at which point authentication may be requested). <em>Migrating between these two modes does not preserve conversation history</em> — this is a known limitation that several customers have raised.</li>
+</ul>
+
+<h4>Social (Facebook, Messenger, Instagram, WhatsApp, X/Twitter)</h4>
+<p>All Meta channels use the <strong>Koala Ruby gem</strong> as the underlying Graph API client. OAuth tokens are long-lived but not infinite — tokens can be invalidated by Meta password changes on the connected page, permission revocations, or Meta policy updates. Symptoms include <code>OAuthException code 100</code> and channel auto-deactivation.</p>
+<p>X / Twitter DMs began arriving encrypted in early 2026, causing import failures for tenants who have not configured a PIN within the X channel; workaround is to set the PIN on the app registration side.</p>
+
+<h4>Google Play reviews / Google Business Messages</h4>
+<p>Uses <code>Google::Apis</code> Ruby client. Failures typically surface as <code>Google::Apis::ClientError -&gt; Invalid request</code> and can persist over long periods (weeks+) when Google-side API deprecations are not yet mirrored on the ED side.</p>
+
+<h3 id="admin-agents-roles">Agents &amp; Roles — the permission hierarchy rule</h3>
+<p>This is the single most mis-diagnosed issue in the product. <strong>Read this carefully and internalize it — it will save you hours.</strong></p>
+
+<div class="callout critical">
+  <span class="callout-label">The rule</span>
+  In ED, <strong>a role can only edit agents whose role has a <em>subset</em> of its own permissions.</strong> If you add a permission to a subordinate role that the parent role lacks, the parent role loses the ability to edit anyone assigned to the subordinate role. Every field will appear grayed out. Nothing in the UI explains why.
+</div>
+
+<p>So when a customer says "our Director and Manager roles suddenly cannot edit anyone — nothing changed overnight," what actually happened is someone <em>added</em> a permission to a downstream role. The fix is to add that same permission to Director and Manager, not to remove it from the downstream role (though that works too).</p>
+<p>When diagnosing: impersonate the affected admin, attempt the edit, and note <em>which</em> roles' members are not editable. Then compare the permission bitmap of the admin's role vs. the uneditable agents' role. The missing permissions on the admin's side are the culprit.</p>
+
+<h3 id="admin-rules">Rules Engine &amp; Categories</h3>
+<p>The Rules Engine runs on import, re-import, and can be replayed manually. A rule has a <em>trigger</em> (on message, on thread, on identity), <em>conditions</em> (content matching, source, sender attributes), and <em>actions</em> (categorize, route, set priority, ignore).</p>
+<p>A subtle behavior: "recategorize thread" rules sometimes emit events saying they applied to the <em>content</em> instead of the <em>thread</em>. This is logged in the rule event history. When a customer reports "my rule didn't apply," check the event log on the content — not just the rule config.</p>
+<p>Categories can be configured as <strong>mandatory dispositions</strong> on a channel. When mandatory, the agent cannot complete the task until at least one is selected. The <strong>bypass transfer</strong> option historically allowed an agent to ignore a message without categorizing; a fix deployed on <code>RD-33293</code> (April&nbsp;1, 2026) changed this behavior — ignoring now enforces mandatory categorization. Expect a wave of tickets from customers whose workflow relied on the old behavior.</p>
+
+<h3 id="admin-routing">Routing &amp; Channel Groups</h3>
+<p>A channel group is a queue. Its important config:</p>
+<ul>
+  <li><strong>Interaction timeout</strong> — how long a pushed task sits in an agent's workbin before being re-queued.</li>
+  <li><strong>Agents</strong> — which agents this queue can push to.</li>
+  <li><strong>Channels</strong> — which content sources feed into this queue.</li>
+  <li><strong>Priority</strong> — when an agent is available to multiple queues, which wins.</li>
+</ul>
+<p>The consolidation pattern (see Appendix) — one "master source" fed by many phone lines, with the Rules Engine doing the categorization and routing — is an increasingly common request and is a supported topology. Customers sometimes create dozens of sources when they should create one.</p>
+
+<h3 id="admin-identities">Identities</h3>
+<p>Identities are the end-user profile object. Admins can view, merge, and anonymize them. GDPR anonymization is supported and removes PII while keeping reporting counts intact. Identities can also be placed on channel-level blocklists.</p>
+
+<h3 id="admin-api">API tokens</h3>
+<p>The REST API (<code>{customer}.api.engagement.dimelo.com/1.0/...</code>) uses bearer-token auth. Tokens are generated per-user in the admin portal and inherit the user's permissions.</p>
+<pre><code>curl -X GET \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -H "Accept: application/json" \
+  "https://{customer}.api.engagement.dimelo.com/1.0/content_sources/{id}"</code></pre>
+<p>Not every admin action is exposed on the API. Notably: <strong>Channel create</strong>, and <strong>Rule Engine CREATE/UPDATE/DELETE</strong>, have historically been missing — customers who need to automate channel provisioning will hit this wall and request it as a feature. There is a "hidden" Email onboarding API but it is not documented and support should not point customers to it without engineering approval.</p>
+
+<!-- ============================================= -->
+<!-- SECTION 4: TIER 3 — BACKEND                   -->
+<!-- ============================================= -->
+<section class="section-head" id="tier3">
+  <div class="eyebrow">§ 04 — For Tier 3</div>
+  <h2 class="no-rule">Backend, Logs &amp; Escalation</h2>
+  <p class="lede">The architecture, just enough of it. You do not need to be able to ship code. You do need to know where the moving parts live, what they are called, and how to pull logs without bothering engineering.</p>
+</section>
+
+<h3 id="topology">Topology at a glance</h3>
+<p>ED is a Ruby on Rails monolith fronted by a web tier, backed by MongoDB, with a fleet of worker processes consuming a job queue. It is multi-tenant, sharded, and runs multi-region.</p>
+
+<div class="topology-wrap">
+<svg viewBox="0 0 780 440" xmlns="http://www.w3.org/2000/svg" font-family="Inter Tight, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#6b6259"/>
+    </marker>
+  </defs>
+
+  <!-- Customer channels (left) -->
+  <g>
+    <rect x="20" y="30" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="46" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Postmark (email)</text>
+    <rect x="20" y="60" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="76" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Amazon SES (email)</text>
+    <rect x="20" y="90" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="106" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Bandwidth / Twilio (SMS)</text>
+    <rect x="20" y="120" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="136" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Meta Graph (FB, IG, WA)</text>
+    <rect x="20" y="150" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="166" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">X / Twitter</text>
+    <rect x="20" y="180" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="196" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Google APIs</text>
+    <rect x="20" y="210" width="160" height="22" fill="#FFF3E0" stroke="#FF8800" stroke-width="1"/>
+    <text x="100" y="226" font-size="11.5" text-anchor="middle" fill="#E07800" font-weight="600">Messaging SDK (web)</text>
+
+    <text x="20" y="20" font-size="10" fill="#9c9288" font-weight="600" letter-spacing="1">CHANNELS &amp; 3RD PARTIES</text>
+  </g>
+
+  <!-- Ingress -->
+  <g>
+    <rect x="240" y="80" width="140" height="100" fill="#faf6f0" stroke="#1a1613" stroke-width="1.5"/>
+    <text x="310" y="102" font-size="13" text-anchor="middle" fill="#1a1613" font-weight="600">Web Tier</text>
+    <text x="310" y="120" font-size="10.5" text-anchor="middle" fill="#6b6259">(Rails frontend)</text>
+    <text x="310" y="140" font-size="10.5" text-anchor="middle" fill="#6b6259">Webhooks in</text>
+    <text x="310" y="154" font-size="10.5" text-anchor="middle" fill="#6b6259">REST API</text>
+    <text x="310" y="168" font-size="10.5" text-anchor="middle" fill="#6b6259">Agent UI</text>
+  </g>
+
+  <!-- Workers -->
+  <g>
+    <rect x="240" y="220" width="140" height="90" fill="#faf6f0" stroke="#1a1613" stroke-width="1.5"/>
+    <text x="310" y="242" font-size="13" text-anchor="middle" fill="#1a1613" font-weight="600">digital_jobs</text>
+    <text x="310" y="260" font-size="10.5" text-anchor="middle" fill="#6b6259">back-01, 02, 03</text>
+    <text x="310" y="278" font-size="10" text-anchor="middle" fill="#6b6259">RealtimeWorker</text>
+    <text x="310" y="292" font-size="10" text-anchor="middle" fill="#6b6259">StatsDenormWorker</text>
+    <text x="310" y="304" font-size="9.5" text-anchor="middle" fill="#9c9288">(+ many others)</text>
+  </g>
+
+  <!-- Storage -->
+  <g>
+    <rect x="440" y="80" width="140" height="60" fill="#faf6f0" stroke="#0073AE" stroke-width="1.5"/>
+    <text x="510" y="104" font-size="13" text-anchor="middle" fill="#0073AE" font-weight="600">MongoDB</text>
+    <text x="510" y="122" font-size="10.5" text-anchor="middle" fill="#6b6259">ringcentral.web.mongo-01</text>
+
+    <rect x="440" y="155" width="140" height="45" fill="#faf6f0" stroke="#0073AE" stroke-width="1.5"/>
+    <text x="510" y="175" font-size="12" text-anchor="middle" fill="#0073AE" font-weight="600">Shard 2 (NA)</text>
+    <text x="510" y="192" font-size="10.5" text-anchor="middle" fill="#6b6259">engagement_console_s2</text>
+
+    <rect x="440" y="215" width="140" height="45" fill="#faf6f0" stroke="#0073AE" stroke-width="1.5"/>
+    <text x="510" y="235" font-size="12" text-anchor="middle" fill="#0073AE" font-weight="600">Shard 4 (EU)</text>
+    <text x="510" y="252" font-size="10.5" text-anchor="middle" fill="#6b6259">engagement_console_s4</text>
+  </g>
+
+  <!-- Observability -->
+  <g>
+    <text x="640" y="20" font-size="10" fill="#9c9288" font-weight="600" letter-spacing="1">OBSERVABILITY</text>
+    <rect x="620" y="35" width="140" height="34" fill="#E8F4FA" stroke="#0073AE" stroke-width="1"/>
+    <text x="690" y="49" font-size="11" text-anchor="middle" fill="#0073AE" font-weight="600">Kibana EU / Int</text>
+    <text x="690" y="62" font-size="9" text-anchor="middle" fill="#6b6259">kibana-*.ringcentral.com</text>
+
+    <rect x="620" y="80" width="140" height="34" fill="#E8F4FA" stroke="#0073AE" stroke-width="1"/>
+    <text x="690" y="94" font-size="11" text-anchor="middle" fill="#0073AE" font-weight="600">Kibana (Dimelo)</text>
+    <text x="690" y="107" font-size="9" text-anchor="middle" fill="#6b6259">kibana-new-infra.dimelo.com</text>
+
+    <rect x="620" y="125" width="140" height="34" fill="#E8F4FA" stroke="#0073AE" stroke-width="1"/>
+    <text x="690" y="139" font-size="11" text-anchor="middle" fill="#0073AE" font-weight="600">Bugsnag</text>
+    <text x="690" y="152" font-size="9" text-anchor="middle" fill="#6b6259">app.bugsnag.com</text>
+
+    <rect x="620" y="170" width="140" height="34" fill="#E8F4FA" stroke="#0073AE" stroke-width="1"/>
+    <text x="690" y="184" font-size="11" text-anchor="middle" fill="#0073AE" font-weight="600">Source (GitLab)</text>
+    <text x="690" y="197" font-size="9" text-anchor="middle" fill="#6b6259">git.ringcentral.com</text>
+  </g>
+
+  <!-- Agents -->
+  <g>
+    <rect x="240" y="340" width="140" height="50" fill="#f3ece1" stroke="#1a1613" stroke-width="1"/>
+    <text x="310" y="360" font-size="13" text-anchor="middle" fill="#1a1613" font-weight="600">Agents (browser)</text>
+    <text x="310" y="377" font-size="10.5" text-anchor="middle" fill="#6b6259">{tenant}.engagement.dimelo.com</text>
+  </g>
+
+  <!-- Arrows -->
+  <line x1="180" y1="110" x2="238" y2="110" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="180" y1="160" x2="238" y2="160" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="380" y1="130" x2="438" y2="110" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="380" y1="265" x2="438" y2="230" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="310" y1="180" x2="310" y2="218" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="310" y1="340" x2="310" y2="182" stroke="#6b6259" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="380" y1="265" x2="618" y2="140" stroke="#b8b090" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="380" y1="265" x2="618" y2="185" stroke="#b8b090" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <text x="390" y="430" font-size="10.5" fill="#9c9288" font-style="italic" font-family="Fraunces, serif">dashed = log/error export</text>
+</svg>
+<div class="topology-caption">Fig 1. Engage Digital high-level topology. Tenants are sharded by region; all shards feed the same observability stack.</div>
+</div>
+
+<h3 id="stack">Stack &amp; workers</h3>
+<p>The relevant nouns you will see in logs:</p>
+
+<table>
+  <thead>
+    <tr><th>Component</th><th>Identifier</th><th>What it does</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rails web tier</td>
+      <td><code>engage-digital</code> repo</td>
+      <td>Handles UI, REST API, inbound webhooks. Source: <code>git.ringcentral.com/engage-digital/engage-digital</code>.</td>
+    </tr>
+    <tr>
+      <td>Worker process</td>
+      <td><code>digital_jobs</code></td>
+      <td>Long-running job runner on <code>back-01</code>, <code>back-02</code>, <code>back-03</code>. Consumes the job queue and runs worker classes.</td>
+    </tr>
+    <tr>
+      <td>RealtimeWorker</td>
+      <td>class <code>RealtimeWorker</code></td>
+      <td>Processes realtime inbound events — social posts, messaging, etc. Handles thread matching by <code>foreign_id</code>.</td>
+    </tr>
+    <tr>
+      <td>StatsDenormWorker</td>
+      <td>class <code>StatsDenormWorker</code></td>
+      <td>Denormalizes stats for analytics/dashboards. When analytics lag, this is a primary suspect.</td>
+    </tr>
+    <tr>
+      <td>MongoDB</td>
+      <td><code>ringcentral.web.mongo-01:27017</code></td>
+      <td>Primary data store. Databases named <code>engagement_console_production_sN</code> where N is the shard number.</td>
+    </tr>
+    <tr>
+      <td>Tenant collections</td>
+      <td><code>{tenant}#content_threads</code></td>
+      <td>Tenant-prefixed collections (e.g., <code>fizz#content_threads</code>, <code>fizz#contents</code>). Impose per-tenant scoping at the collection level.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="integrations">Third-party integrations you will debug against</h3>
+<table>
+  <thead>
+    <tr><th>Service</th><th>Used for</th><th>Where to check</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Postmark</td><td>Inbound + outbound email for most tenants</td><td>account.postmarkapp.com — inbound stream, outbound stream, suppression list, status.postmarkapp.com</td></tr>
+    <tr><td>Amazon SES</td><td>Fallback / alternate email provider; envelope sender <code>engage-digital.aws.pro-shard{N}-eu{N}</code></td><td>AWS console (access via engineering)</td></tr>
+    <tr><td>Fortimail</td><td>On-prem email DLP / attachment scanning for specific customers (e.g., Franfinance)</td><td>Customer-side appliance — not ours</td></tr>
+    <tr><td>Bandwidth</td><td>SMS in North America — TN provisioning and delivery</td><td>Coordinate with <strong>Telco Ops</strong> internally</td></tr>
+    <tr><td>Twilio</td><td>SMS / WhatsApp in other regions</td><td>Twilio console, via engineering</td></tr>
+    <tr><td>Meta Graph API</td><td>Facebook, Messenger, Instagram, WhatsApp — via the <strong>Koala</strong> Ruby gem</td><td>developers.facebook.com for app registration; errors surface as <code>Koala::Facebook::ClientError</code></td></tr>
+    <tr><td>Google APIs</td><td>Google Play reviews, Google Business Messages</td><td>console.developers.google.com (via engineering); errors surface as <code>Google::Apis::ClientError</code></td></tr>
+    <tr><td>Cloudmark</td><td>SMS spam filtering (carrier-level)</td><td>Not ours — carrier escalation only</td></tr>
+  </tbody>
+</table>
+
+<h3 id="logging">Logging &amp; observability</h3>
+<p>You have four places to look. In rough order of how often you will use them:</p>
+
+<h4>Kibana</h4>
+<p>The primary log search interface. Three clusters, use whichever matches your tenant's region:</p>
+<ul>
+  <li><code>kibana-new-infra.dimelo.com</code> — the Dimelo infra cluster. Primary for ED workers.</li>
+  <li><code>kibana-eu.int.ringcentral.com</code> — EU RC cluster.</li>
+  <li><code>kibana.int.ringcentral.com</code> — general RC cluster.</li>
+</ul>
+<p>Kibana URLs from a shared link are deep links of the form <code>kibana-new-infra.dimelo.com/goto/{hash}</code>. You can follow those directly; they carry the filter preset with them.</p>
+
+<h4>Useful Kibana queries</h4>
+<pre><code><span class="ruby-comment"># Find all activity for a thread, by Mongo ID</span>
+thread_id:"69ba9d3ab7bf089a1dee3c42"
+
+<span class="ruby-comment"># Find a specific message / content</span>
+content_id:"69ba9d3ab7bf089a1dee3c41"
+
+<span class="ruby-comment"># Trace a single web request across components</span>
+TID:"245k"
+
+<span class="ruby-comment"># Filter to one worker type</span>
+class:"RealtimeWorker" AND tenant:"fizz"
+
+<span class="ruby-comment"># Find all activity for one tenant's email channel</span>
+source_id:"648b602c0e69dc384f718f25"</code></pre>
+
+<h4>Bugsnag</h4>
+<p><code>app.bugsnag.com</code> — aggregates exceptions. Useful for spotting error spikes and finding the stacktrace of a known error class. Always cross-reference a Bugsnag exception count against the tenant's ticket volume before escalating a one-off as a systemic issue.</p>
+
+<h4>Source code (GitLab)</h4>
+<p><code>git.ringcentral.com/engage-digital/engage-digital</code> — you do not need to be able to write code, but being able to <strong>read</strong> the relevant file when a ticket references one will massively speed up engineering handoffs. The paths you will see most often:</p>
+<ul>
+  <li><code>lib/realtime/{channel}.rb</code> — realtime inbound handlers per channel type.</li>
+  <li><code>app/models/{channel}/synchronizer.rb</code> — the thread-matching / import logic per channel.</li>
+  <li><code>app/models/{channel}/timeline_item.rb</code> — representation of a message/content in that channel.</li>
+</ul>
+
+<h4>Postmark dashboard</h4>
+<p>For every email-delivery ticket, Postmark is the authoritative source for whether the email left ED, whether it was accepted, and whether the destination address is on the suppression list. Bookmark:</p>
+<ul>
+  <li><strong>Inbound stream</strong> — shows every inbound webhook ED received from Postmark.</li>
+  <li><strong>Suppression list</strong> — hard bounces, spam complaints, manual unsubscribes.</li>
+  <li><strong>Message search</strong> — by subject, recipient, or Message-ID header.</li>
+</ul>
+
+<h3 id="mongo-lookups">MongoDB lookups for Tier 3</h3>
+<p>You will rarely query Mongo directly, but you will read log lines that show queries. Decoding them is straightforward. The common shape:</p>
+<pre><code>MONGODB | ringcentral.web.mongo-01:27017 |
+  engagement_console_production_s2.find |
+  STARTED |
+  { "find" =&gt; "fizz#content_threads",
+    "filter" =&gt; { "deleted_at" =&gt; nil,
+                  "foreign_id" =&gt; "b4b47031-461f-4e16-8ac9-b0f3099d231d",
+                  "_type" =&gt; "MobileMessaging::ContentThread" },
+    "hint" =&gt; { "foreign_id" =&gt; 1 },
+    "limit" =&gt; 1 }</code></pre>
+<p>What this tells you: <em>the RealtimeWorker, running on the fizz tenant (shard 2), is searching for a thread by foreign_id</em>. If no match, a new thread gets created — which is how thread-splitting bugs manifest. If you find this query in the logs and it returns zero results, but the thread <em>should</em> exist, that is your smoking gun.</p>
+
+<div class="callout t3">
+  <span class="callout-label">Tier 3 heuristic</span>
+  When a customer reports "messages are going to a new thread instead of the existing one," the fastest Tier 3 path is: (1) get the thread URL and the new-thread URL, (2) extract both Mongo IDs, (3) in Kibana, search <code>content_id:"X" OR content_id:"Y"</code> to find the RealtimeWorker logs, (4) compare the <code>foreign_id</code> each worker was looking up. The divergence between them is the root cause. This is true for email (Message-ID header mismatch), WhatsApp (UUID mismatch), and mobile messaging alike.
+</div>
+
+<h3 id="escalation">Escalation path</h3>
+<p>The canonical escalation ladder, with what each tier should have tried before handing off:</p>
+<ol>
+  <li><strong>Tier 1 (L1)</strong> — in-product replication, customer-side config check, KB lookup. Owns first-touch.</li>
+  <li><strong>Tier 2 (L2)</strong> — impersonate user, admin portal investigation, Postmark / Bandwidth dashboard checks, SFDC case linking.</li>
+  <li><strong>Tier 3 (L3)</strong> — Kibana logs, Bugsnag, Mongo query inspection, source-code reading. Reproduces with test tenant where possible.</li>
+  <li><strong>Paris Engineering</strong> — code-level diagnosis, Jira ticket filing (<code>jira.ringcentral.com</code>), hotfix coordination. Ticket prefixes: <code>RD-*</code> (core), <code>EDEQ-*</code> (messaging), <code>INIT-*</code> (UX), <code>DMO-*</code> (legacy).</li>
+</ol>
+
+<!-- ============================================= -->
+<!-- SECTION 5: TOP 10 ISSUES                      -->
+<!-- ============================================= -->
+<section class="section-head" id="top5">
+  <div class="eyebrow">§ 05 — Playbooks</div>
+  <h2 class="no-rule">The Top 10 Customer Issues</h2>
+  <p class="lede">Ranked by combining 429 Tier&nbsp;3 support cases (3&nbsp;years of data from our top T3 agent) with one year of internal troubleshooting chat transcripts (752&nbsp;messages). Each includes symptoms, root cause, and a resolution playbook.</p>
+</section>
+
+<div class="callout t3">
+  <span class="callout-label">Data note</span>
+  The T3 case data covers both Engage Digital (233&nbsp;cases) and RingCX Digital (113&nbsp;cases) — the two products share the same platform and the same support team. Top customers by case volume: Videotron (28), Odigo (39), The Hut.com (20), Zain Jordan (18), RC Internal (17), Henner (24), Direct Travel (14), SNCF (10), Ziggo (10), SCC France (10).
+</div>
+
+<!-- ISSUE 1 -->
+<article class="issue-card" id="issue-1">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">1</span> Highest volume</div>
+    <h3>Email delivery &amp; synchronization <span class="issue-freq">142 T3 cases (33%) · ~95 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>"Synchronization failed — The following emails are inactive or marked previous messages as spam"</li>
+      <li>Outbound emails silently fail for specific recipients.</li>
+      <li>Email delivery delays (30+ minutes) for entire tenant.</li>
+      <li>Emails not arriving in order of receipt.</li>
+      <li>IMAP/SMTP channels losing sync with customer mail server.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>For Postmark tenants: addresses on the <strong>suppression list</strong> (hard bounce, spam complaint). The "reactivate" inside ED does nothing — it must be cleared on the Postmark side. For IMAP tenants: sync folder removed or mail server connection dropped. For delivery delays: Postmark webhook latency between receiving the email and posting to ED.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Check <code>account.postmarkapp.com</code> → server → Suppressions tab. Search for the affected address.</li>
+      <li>If found, review the reason (HardBounce, SpamComplaint). Clear if customer confirms recipient is valid.</li>
+      <li>For delays: check <code>status.postmarkapp.com</code> for incidents. Pull Kibana webhook receipt timestamps.</li>
+      <li>For IMAP: check the channel admin page for "last sync time." Verify IMAP credentials with customer's IT.</li>
+      <li>For "emails not in order": this is a known limitation of webhook-based ingestion — timestamps are Postmark-receipt, not original-send.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Henner, SONATEL, Orange Tunisie, PMU, Remco, Direct Travel, Pendragon, ENGIE, Orange Business Services.</p>
+  </div>
+</article>
+
+<!-- ISSUE 2 -->
+<article class="issue-card" id="issue-2">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">2</span> Second-highest — new to ranking</div>
+    <h3>Routing &amp; queue configuration <span class="issue-freq">122 T3 cases (28%)</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Digital tasks not reaching available agents despite queue being active.</li>
+      <li>Tasks stuck in "pre-queued" state indefinitely.</li>
+      <li>Queue events not firing in sequence (e.g., "Send Message" step skipped).</li>
+      <li>Manual assignment from Inboxes showing incomplete agent list.</li>
+      <li>Priority routing not prioritizing correctly across channel groups.</li>
+      <li>"Follow the Sun" routing failing when time-zone handoffs trigger.</li>
+      <li>Emails actioned from review inbox not removed from main queue.</li>
+      <li>Transferred emails not appearing in the target inbox.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>Routing failures have many roots: (1) agent not a member of the correct channel group, (2) agent presence set to Away or Offline, (3) concurrent interaction limit reached on the agent, (4) queue event ordering misconfigured (events fire sequentially — if step 1 fails, step 2 never starts), (5) channel group filter excluding the source, (6) interaction timeout expiring before agent action.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Confirm the agent's channel group membership and their current presence status.</li>
+      <li>Check the queue event sequence in Admin → Channel Groups → edit → Events. Walk through each step.</li>
+      <li>For "pre-queued" states: check whether any prerequisite event (authentication, bot handoff) is blocking advancement.</li>
+      <li>For Follow-the-Sun: verify business hours configuration on each channel group involved in the handoff.</li>
+      <li>For priority routing: the priority is set per-channel-group. If an agent belongs to multiple groups, the highest-priority group wins. Verify the numeric priority values.</li>
+      <li>When tasks are stuck: check if mandatory dispositions are enabled — if an agent ignores a task without categorizing, it may recirculate rather than complete.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>The Hut.com, Acquire BPO, Direct Travel, Arrowhead Holdings, MedOne, Adelaide Crows, Rotherham, Now Prepay, Collaborative Neuroscience.</p>
+  </div>
+</article>
+
+<!-- ISSUE 3 -->
+<article class="issue-card" id="issue-3">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">3</span> Common across all tiers</div>
+    <h3>Channel configuration &amp; deactivation <span class="issue-freq">52 T3 cases (12%) · ~29 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Channel automatically deactivated without admin action.</li>
+      <li>"Source configuration error" on a previously working channel.</li>
+      <li>Channel missing from dropdown lists in admin or analytics.</li>
+      <li>Newly configured channel not importing messages.</li>
+      <li>IMAP channel: "Removed synced folder is completely forgotten at next sync."</li>
+    </ul>
+    <h4>Root cause</h4>
+    <ul>
+      <li><strong>Social channels</strong> — OAuth token expired or revoked (Meta password change, app review failure, permission scope changes).</li>
+      <li><strong>Email channels</strong> — Postmark server misconfigured, DNS changes on customer side, email address conflict with another channel on the same domain.</li>
+      <li><strong>Chat/SDK</strong> — JavaScript snippet not deployed correctly on the customer's site, CSP headers blocking the widget.</li>
+      <li><strong>WhatsApp</strong> — phone number re-verification required by Meta (the customer gets a notification but may not act on it).</li>
+    </ul>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Open the channel admin page (<code>/admin/content_sources/{id}/edit</code>). Check the error banner at the top.</li>
+      <li>For OAuth-based channels: re-authenticate from the channel config page. The customer may need to re-authorize from their social platform's admin.</li>
+      <li>For email: check Postmark server settings, DNS MX/SPF/DKIM records, and whether the address is on another channel.</li>
+      <li>For WhatsApp: check if Meta sent a re-verification notice — the customer needs to complete it from their WhatsApp Business Manager.</li>
+      <li>For "channel missing from dropdown": this is usually a permission issue — the admin's role may not have access to the channel's category. Check role permissions.</li>
+    </ol>
+  </div>
+</article>
+
+<!-- ISSUE 4 -->
+<article class="issue-card" id="issue-4">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">4</span> New to ranking — training gap identified</div>
+    <h3>Analytics &amp; reporting discrepancies <span class="issue-freq">47 T3 cases (11%) · ~22 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Report shows no data for a time period that should have data.</li>
+      <li>Analytics dashboard loading extremely slowly or returning errors.</li>
+      <li>Real-time dashboard lagging 20–30 seconds behind actual state.</li>
+      <li>Conversation volume totals differ between standard analytics and GoodData/Advanced Analytics.</li>
+      <li>Timezone mismatches between date-range filter and actual data.</li>
+      <li>Exported analytics CSV containing duplicate thread IDs.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <ul>
+      <li><strong>Missing data</strong> — the <code>StatsDenormWorker</code> that denormalizes stats is backlogged or encountered errors. This is the same worker that causes supervision discrepancies (Issue #10).</li>
+      <li><strong>Slow loading</strong> — large tenants with high message volumes hit MongoDB query timeouts when the date range is too wide or the category filter is too broad.</li>
+      <li><strong>Real-time lag</strong> — the real-time dashboard polls on an interval; 20–30 second delays are within expected range for large-scale tenants.</li>
+      <li><strong>GoodData discrepancies</strong> — GoodData has its own ETL pipeline with a separate sync schedule. Data may be 24–48 hours behind the native analytics.</li>
+    </ul>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>For missing data: narrow the date range. Try single-day slices. If some days have data and others don't, the issue is StatsDenormWorker — escalate to T3 with the exact missing date range.</li>
+      <li>For slow loading: reduce the scope — fewer channels, shorter date range, simpler report type. Large tenants (Asiacell, Orange) regularly hit this.</li>
+      <li>For timezone issues: confirm the tenant's timezone setting in Admin → Settings. Reports use this timezone, not the browser's local time.</li>
+      <li>For GoodData: confirm the ETL sync schedule with engineering. GoodData issues are often transient and resolve on the next sync cycle.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Asiacell, Henner Medical, Zain Jordan, SCC France, The Hut.com, RC Internal, Frontier Airlines.</p>
+  </div>
+</article>
+
+<!-- ISSUE 5 -->
+<article class="issue-card" id="issue-5">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">5</span> New to ranking — training gap identified</div>
+    <h3>Chat &amp; Messaging widget issues <span class="issue-freq">46 T3 cases (11%) · ~18 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Chat bubble not appearing on customer's website.</li>
+      <li>Pre-chat form stops collecting data — agents receive chats with no customer info.</li>
+      <li>Chat distributed to an agent who appears disconnected.</li>
+      <li>"Extra messages" being sent by bot channel at session start.</li>
+      <li>Conversation history lost after migrating from authenticated-only to open-to-all-visitors mode.</li>
+      <li>Chat session not being handed over from bot to live agent.</li>
+      <li>Queue position not displaying to the waiting visitor.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <ul>
+      <li><strong>Bubble not appearing</strong> — the JavaScript snippet is loaded but the customer's CSP (Content Security Policy) headers are blocking the ED domain. Or the snippet is placed inside a conditional block that isn't executing.</li>
+      <li><strong>Pre-chat form failure</strong> — this is typically a recent config change that broke the form fields. Check the channel admin page → pre-chat settings.</li>
+      <li><strong>Agent appears disconnected</strong> — race condition between presence update and task assignment. The agent's session may have timed out on the browser side while the server still considered them available.</li>
+      <li><strong>Auth-to-open migration</strong> — conversation history does not persist across this mode change. This is a known limitation (EDEQ-518).</li>
+    </ul>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>For bubble issues: open the customer's site in Chrome DevTools → Console. Look for CSP violations or JavaScript errors referencing the ED domain.</li>
+      <li>For pre-chat forms: impersonate a visitor by loading the chat snippet on a test page (do NOT use W3Schools — pre-chat config does not render in isolated sandboxes).</li>
+      <li>For bot handoff failures: check the Engage Messaging channel config → bot settings → handoff trigger. Verify the bot is correctly signaling the handover event.</li>
+      <li>For queue position display: this is a feature availability question — confirm with engineering whether the customer's plan includes queue position messaging.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Outremer Telecom, BMCE Maroc, RED By SFR, Odigo, Ziggo, Zain Jordan, MedOne, Videotron/Fizz.</p>
+  </div>
+</article>
+
+<!-- ISSUE 6 -->
+<article class="issue-card" id="issue-6">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">6</span> Cross-channel complexity</div>
+    <h3>Social channel failures (Facebook, Instagram, WhatsApp, X, LinkedIn) <span class="issue-freq">35 T3 cases · ~36 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Facebook posts/comments not importing into ED.</li>
+      <li>Twitter/X DMs arriving encrypted and unreadable.</li>
+      <li>Instagram DMs not importing — sync stopped.</li>
+      <li>WhatsApp view/attachment issues on customer side.</li>
+      <li>LinkedIn channel in error state.</li>
+      <li>YouTube channel not importing comments.</li>
+      <li>Dark posts (boosted Facebook posts) not visible in ED.</li>
+      <li><code>Koala::Facebook::ClientError → OAuthException code 100</code></li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>Each social platform has its own failure modes: Meta channels fail on OAuth token expiry or when the connected Page's permissions change. X/Twitter now encrypts DMs, requiring a PIN configuration on the app registration. Instagram shares Meta's OAuth infrastructure but has additional rate limits. LinkedIn and YouTube use separate API clients (<code>Google::Apis</code>) with their own deprecation cycles.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Check the channel admin page for error banners. Most social channel failures surface a specific error code.</li>
+      <li>For Meta channels (Facebook/Messenger/Instagram/WhatsApp): customer needs to re-authorize the app from <code>developers.facebook.com</code>. Check app review status and permission scopes.</li>
+      <li>For X/Twitter encrypted DMs: configure a PIN in the X developer app registration. This is a workaround documented in the chat transcripts (April 2026).</li>
+      <li>For Google channels: check <code>console.developers.google.com</code> for API quota and deprecation warnings. <code>Google::Apis::ClientError → Invalid request</code> errors can persist for weeks when they're on Google's side.</li>
+      <li>For LinkedIn: this is a less-common channel with limited documentation. Escalate to T3/engineering for config issues.</li>
+    </ol>
+  </div>
+</article>
+
+<!-- ISSUE 7 -->
+<article class="issue-card" id="issue-7">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">7</span> Complex diagnosis — Tier 3 specialty</div>
+    <h3>Thread aggregation failures <span class="issue-freq">35 T3 cases · ~80 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Customer reply creates a new thread instead of joining the existing conversation.</li>
+      <li>Two (or more) threads exist for what should be one conversation.</li>
+      <li>Affects email, WhatsApp, and Mobile Messaging channels.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>Thread matching is done by <strong>foreign_id</strong> lookup in MongoDB. When the inbound message's foreign_id doesn't match any existing thread, a new one is created. Common causes: Amazon SES Message-ID differs from ED-stored ID; email client strips <code>In-Reply-To</code> headers; WhatsApp UUID lookup races the outbound write; late imports cause duplicate thread creation.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Collect both thread URLs. Extract the 24-hex Mongo IDs.</li>
+      <li>In Kibana: <code>thread_id:"X" OR thread_id:"Y"</code>. Find the RealtimeWorker logs.</li>
+      <li>Compare the <code>foreign_id</code> each worker was looking up.</li>
+      <li>For email: pull the raw message from Postmark, check <code>References:</code> and <code>In-Reply-To:</code> headers vs. the outbound <code>Message-ID:</code>.</li>
+      <li>Report all four values (both thread IDs, both foreign_ids) to engineering.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Henner, Telefónica Germany, Fizz/Videotron, Orange SA, ENGIE, La Banque Postale, Advanced Water.</p>
+  </div>
+</article>
+
+<!-- ISSUE 8 -->
+<article class="issue-card" id="issue-8">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">8</span> New to ranking — developer-facing</div>
+    <h3>API, SDK &amp; Webhook errors <span class="issue-freq">32 T3 cases (7.5%)</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>REST API returning 500 errors on previously working endpoints.</li>
+      <li>API PUT/PATCH succeeds (returns 200) but the field is not actually updated (e.g., <code>cc_blacklist</code>).</li>
+      <li>Webhook notifications missing the <code>deferredAt</code> field for deferred tasks.</li>
+      <li>App SDK extensions not executing in the agent workspace.</li>
+      <li>Mobile SDK: date fields not displaying on Android.</li>
+      <li>API access token spontaneously deactivated.</li>
+      <li>Undeliverable emails not returning errors via API.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>Many API fields are silently read-only — they accept updates without error but don't persist the change (the <code>cc_blacklist</code> issue from the chat data is a prime example). Webhook payloads can be incomplete when a field's value is null at delivery time. App SDK failures are usually CSP or CORS issues in the customer's browser environment. Token deactivation can occur when the owning user account is modified.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>For 500 errors: check Bugsnag for the exception class. Pull the request logs in Kibana with the API endpoint path.</li>
+      <li>For silent no-op updates: verify the field is listed as writable in the API docs (<code>developers.ringcentral.com/engage/digital/api-reference</code>). If it's documented as writable but doesn't persist, this is a bug — file a Jira under <code>RD-*</code>.</li>
+      <li>For webhook issues: check the webhook config in Admin → Advanced Settings → Webhooks. Verify the endpoint is returning 200. Check the retry policy.</li>
+      <li>For SDK rendering: check browser console for CORS/CSP errors. The SDK domains must be allowlisted in the customer's CSP headers.</li>
+      <li>For token deactivation: check the audit log for changes to the user who owns the token. Regenerate from Admin → API Access Tokens.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Odigo (heavy API user), SNCF, ORANGE BUSINESS SERVICES, Ooredoo, Ziggo, RED By SFR, Nine Communications.</p>
+  </div>
+</article>
+
+<!-- ISSUE 9 -->
+<article class="issue-card" id="issue-9">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">9</span> New to ranking — data operations</div>
+    <h3>Data export failures <span class="issue-freq">22 T3 cases · ~17 chat mentions</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Scheduled automated export did not run at the expected time.</li>
+      <li>Export file is corrupted or truncated — cannot be opened.</li>
+      <li>Raw data export is delayed by hours or missing entirely.</li>
+      <li>Duplicate thread IDs appearing in satisfaction survey export.</li>
+      <li>"Export requires sign in" — export URL requires re-authentication.</li>
+      <li>Graph cannot be exported as image — button fails silently.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>Automated exports are run by a background worker. When the worker fails (timeout, memory pressure, or MongoDB query overload), the export silently doesn't run — there is no retry, and no notification to the customer. Corrupted files usually mean the export was interrupted mid-write. Raw data delays are tied to the same <code>StatsDenormWorker</code> pipeline as analytics issues.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>For missed automated exports: check the worker log in Kibana for the tenant and the expected export time. Look for <code>cnv01</code> or the shard-specific worker log.</li>
+      <li>For corrupted files: have the customer re-trigger the export manually. If it fails again, narrow the date range — large exports are more likely to timeout.</li>
+      <li>For raw data delays: check <code>StatsDenormWorker</code> backlog status. If delayed by more than a few hours, escalate to engineering.</li>
+      <li>For "requires sign in": this is a session-token issue. The export URL contains a session token that expires. Customer should re-navigate to the export from within the admin UI.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>RC Internal, Ziggo, RED By SFR, ENGIE, SCC France, The Office Gurus, Mike's Carwash.</p>
+  </div>
+</article>
+
+<!-- ISSUE 10 -->
+<article class="issue-card" id="issue-10">
+  <header class="issue-head">
+    <div class="issue-rank"><span class="issue-rank-num">10</span> Persistent confusion</div>
+    <h3>Supervision metric discrepancies <span class="issue-freq">26 T3 cases · ~25 chat msgs</span></h3>
+  </header>
+  <div class="issue-body">
+    <h4>Symptoms</h4>
+    <ul>
+      <li>Agents view shows 217 pending but Channel Groups shows 0.</li>
+      <li>"Pending" count doesn't decrease after agents complete interactions.</li>
+      <li>Dashboard metrics (active time, handle time) exceed interval duration — e.g., 2100 seconds in a 1800-second interval.</li>
+    </ul>
+    <h4>Root cause</h4>
+    <p>The two views measure different things: Channel Groups counts <em>unassigned queue tasks</em>; Agents counts <em>tasks held by specific agents</em>. A high Agents count + low Channel Groups count = tasks were pushed to agents but not completed. Metrics exceeding interval duration occur because concurrent interactions are counted additively (agent handles 3 chats simultaneously → 3× the clock time). This is by design but counterintuitive. <code>StatsDenormWorker</code> backlog causes stale counts.</p>
+    <h4>Resolution playbook</h4>
+    <ol>
+      <li>Confirm which view the customer is quoting. Agents view = <code>/supervision/users</code>; Channels = <code>/supervision/channels</code>.</li>
+      <li>Walk the customer through the distinction.</li>
+      <li>For stuck interactions: impersonate agents, check workbins, manually complete or release.</li>
+      <li>For metrics exceeding interval: explain the additive-time model for concurrent interactions. This is expected behavior, not a bug.</li>
+      <li>For counts that never update: check <code>StatsDenormWorker</code> logs for the tenant in Kibana. If backlogged, escalate.</li>
+    </ol>
+    <h4>Typical customers</h4>
+    <p>Orange, Frontier Airlines, The Hut.com, Asiacell.</p>
+  </div>
+</article>
+
+<div class="callout t3">
+  <span class="callout-label">Training gaps identified</span>
+  The T3 case data revealed several topics that are underrepresented in the current training curriculum and should be added: (1) <strong>Routing &amp; queue configuration</strong> — 28% of all T3 cases, but no dedicated SCORM module exists. (2) <strong>Analytics / GoodData</strong> — listed as "optional" in onboarding but is the #4 issue. (3) <strong>RingCX Digital integration</strong> — 113 of 429 T3 cases involve RingCX Digital, which shares the same platform but has distinct queue event and disposition behavior. (4) <strong>API troubleshooting</strong> — 7.5% of T3 cases, with no training module covering common API failure patterns. (5) <strong>Salesforce / CRM integration</strong> — several PMU and Renault cases involve Salesforce sync failures, but there is no training material on this connector.
+</div>
+
+
+
+<!-- ============================================= -->
+<!-- SECTION 6: SUPPORT OPERATIONS                  -->
+<!-- ============================================= -->
+<section class="section-head" id="support-ops">
+  <div class="eyebrow">§ 06 — Operational procedures</div>
+  <h2 class="no-rule">Support Operations</h2>
+  <p class="lede">Internal processes, environments, and procedures from the GSS Support Reference wiki — the operational backbone that tells you how support is structured, not just what the product does.</p>
+</section>
+
+<h3 id="support-environment">Environments &amp; access</h3>
+
+<h4>Training / test environment</h4>
+<p>A shared training tenant exists for support staff to practice without affecting customer data:</p>
+<pre><code>https://rc-gss-training.engagement.dimelo.com/users/sign_in</code></pre>
+<p>Request access from your team lead or onboarding coordinator if you do not already have credentials.</p>
+
+<h4>Key internal resources</h4>
+<table>
+  <thead><tr><th>Resource</th><th>Location</th></tr></thead>
+  <tbody>
+    <tr><td>Support platform (Engage-based — we use ED to support ED)</td><td><code>support.engagement.dimelo.com</code> / <code>support.digital.ringcentral.com</code></td></tr>
+    <tr><td>List of current live customer accounts</td><td>GSS Support Reference wiki → "List of Current Live Accounts"</td></tr>
+    <tr><td>Engage Digital glossary</td><td>GSS Support Reference wiki → "Engage glossary"</td></tr>
+    <tr><td>Paris Engage Digital Customer Support — Welcome Page</td><td>Support Processes wiki page (CS space)</td></tr>
+    <tr><td>Network Requirements (IP allowlists, etc.)</td><td>Support Processes wiki → "Network Requirements" + Training Repository 1 attachment: <code>RC Engage Digital Network Requirements / IPs</code></td></tr>
+    <tr><td>IT Infrastructure &amp; Architecture Security doc</td><td>Training Repository 1 attachment: <code>RC Engage Digital-IT Infrastructure Architecture Security-1.9-en</code></td></tr>
+  </tbody>
+</table>
+
+<h4>Confluence wiki quick-access directory</h4>
+<p>These are the key wiki pages you should bookmark on day one.</p>
+<table>
+  <thead><tr><th>Page</th><th>Wiki URL</th></tr></thead>
+  <tbody>
+    <tr><td>Engage Digital Product Onboarding 2025</td><td><code>wiki.ringcentral.com/spaces/CCI/pages/777584965</code></td></tr>
+    <tr><td>GSS Support Reference (Engage section)</td><td><code>wiki.ringcentral.com/pages/viewpage.action?pageId=319183632</code></td></tr>
+    <tr><td>Training Repository 1 (SCORM modules + docs)</td><td><code>wiki.ringcentral.com/pages/viewpage.action?pageId=275979541</code></td></tr>
+    <tr><td>Support Processes</td><td><code>wiki.ringcentral.com/display/CS/Support+Processes</code></td></tr>
+    <tr><td>How-To Digital</td><td><code>wiki.ringcentral.com/display/CS/How-to+Digital</code></td></tr>
+    <tr><td>Off-Hours Case Handling</td><td><code>wiki.ringcentral.com/pages/viewpage.action?pageId=335387488</code></td></tr>
+    <tr><td>Advanced Analytics (BETA) Support Process</td><td><code>wiki.ringcentral.com/display/EDS/Engage+Digital+Advanced+Analytics+...</code></td></tr>
+    <tr><td>SMS/MMS Connector 411</td><td><code>wiki.ringcentral.com/pages/releaseview.action?pageId=384109855</code></td></tr>
+    <tr><td>Cobrowsing 411</td><td><code>wiki.ringcentral.com/display/public/RNU/RC+411+...Cobrowsing</code></td></tr>
+    <tr><td>Ask An Expert 411</td><td><code>wiki.ringcentral.com/display/public/RNU/RC+411+...Ask+an+expert</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="off-hours">Off-hours case handling</h3>
+<p>Engage Digital has a dedicated <strong>off-hours handling process</strong> documented on the wiki (<code>pageId=335387488</code>). The Paris engineering team is the primary development and Tier 4 support team, operating on Central European Time (CET/CEST). This means:</p>
+<ul>
+  <li><strong>During Paris business hours</strong> (roughly 9am–6pm CET) — engineering is available for live escalations. Tier 3 can engage directly via the internal chat rooms you saw in the source data.</li>
+  <li><strong>Outside Paris hours</strong> — follow the off-hours process. Critical issues (platform-wide outages, complete channel failure affecting a P1 customer) should still be escalated using the documented emergency procedure. Non-critical issues should be queued for next-business-day triage.</li>
+  <li><strong>Weekend support</strong> — a separate "Weekend Support Process" exists for social media channels, which are higher-urgency because public posts accumulate visibility while unattended.</li>
+</ul>
+
+<div class="callout warn">
+  <span class="callout-label">Time zones matter</span>
+  Many of the largest ED customers (Orange, SFR, La Poste, Engie, Odigo) are French enterprises. Their peak hours overlap with Paris engineering hours. NA customers (Direct Travel, Frontier Airlines, Bloomex, Music City PrEP Clinic) peak during NA business hours, which is the gap when Paris engineering is offline. Plan escalation timing accordingly.
+</div>
+
+<h3 id="feature-requests">Feature request process</h3>
+<p>When a customer asks for functionality that does not exist today, do not promise anything. Instead:</p>
+<ol>
+  <li>Check the wiki's <strong>Engage Digital Feature Request Submission</strong> page (linked from both the How-To Digital and Support Processes pages) for the current submission process.</li>
+  <li>Verify the request hasn't already been filed — search Jira for keywords under the <code>RD-*</code> or <code>EDEQ-*</code> projects.</li>
+  <li>If net-new, submit via the documented process. The request goes to Paris product management for prioritization.</li>
+  <li>Communicate to the customer: "I've submitted this as a feature request. Our product team reviews these and prioritizes based on demand and roadmap. I can't commit to a timeline, but it's in the queue."</li>
+</ol>
+
+<div class="callout tip">
+  <span class="callout-label">Common feature requests you'll hear</span>
+  Based on a year of internal discussions, these are the requests that come up repeatedly: (1) API support for Channel/Rule Engine CRUD operations, (2) blocking typed replies during SCC interactions, (3) conversation history preservation when migrating chat from authenticated to open mode, (4) ability to disable the thread-open pop-up in Inboxes view, (5) language detection improvements for short messages.
+</div>
+
+<!-- ============================================= -->
+<!-- APPENDIX                                       -->
+<!-- ============================================= -->
+<section class="section-head" id="appendix">
+  <div class="eyebrow">§ Appendix</div>
+  <h2 class="no-rule">References &amp; further notes</h2>
+</section>
+
+<h3>Resolution time benchmarks (from T3 case data)</h3>
+<p>Average time-to-answer (TTA) by issue category, from 429 T3 cases over 3 years. Use these as baselines when setting customer expectations.</p>
+<table>
+  <thead><tr><th>Issue category</th><th>Avg resolution</th><th>Max seen</th><th>Complexity</th></tr></thead>
+  <tbody>
+    <tr><td>Thread aggregation</td><td>26 days</td><td>29 days</td><td>Requires engineering — foreign_id diagnosis</td></tr>
+    <tr><td>API/SDK/Webhook</td><td>23 days</td><td>35 days</td><td>Often requires code-level fix or documentation update</td></tr>
+    <tr><td>Data exports</td><td>19 days</td><td>31 days</td><td>Worker-level investigation, sometimes infrastructure</td></tr>
+    <tr><td>Social channels</td><td>18 days</td><td>34 days</td><td>Depends on third-party (Meta, Google) response time</td></tr>
+    <tr><td>Email delivery</td><td>16 days</td><td>35 days</td><td>Postmark-side action usually resolves quickly; delays from DNS/reputation investigation</td></tr>
+    <tr><td>Chat/Messaging</td><td>15 days</td><td>35 days</td><td>Config changes vs. code fixes vary widely</td></tr>
+    <tr><td>Channel config</td><td>12 days</td><td>28 days</td><td>Usually T2-resolvable; T3 only for complex OAuth/DNS</td></tr>
+    <tr><td>Analytics/Reporting</td><td>12 days</td><td>34 days</td><td>Often StatsDenormWorker backlog — clears on its own</td></tr>
+    <tr><td>Routing/Queues</td><td>12 days</td><td>22 days</td><td>Fastest T3 resolution — mostly misconfiguration</td></tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+  <span class="callout-label">Trend alert</span>
+  Year-over-year data shows <strong>Routing cases exploded from 1 (2024) to 16 (2025)</strong> as more customers adopted RingCX Digital queue events. <strong>Analytics cases tripled</strong> from 7 to 24 over the same period. Email remains high but stable. API/SDK cases are declining as the product matures. Feature requests are also declining (21 → 7 → 0), suggesting product-market fit is stabilizing.
+</div>
+
+<h3>High-volume customer profiles</h3>
+<p>These are the accounts that generate the most T3 cases. Knowing their history before you pick up one of their tickets saves significant ramp-up time.</p>
+<table>
+  <thead><tr><th>Account</th><th>Cases</th><th>Brand</th><th>Primary issues</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Videotron / Fizz</strong></td><td>28</td><td>RingCentral Canada</td><td>Feature requests, analytics, chat/messaging. Heavy Engage Messaging user. Runs both Videotron and Fizz sub-brands on the same ED platform.</td></tr>
+    <tr><td><strong>Odigo</strong> (combined)</td><td>39</td><td>RingCentral EU</td><td>API/SDK (6), feature requests (6). Odigo is a <em>reseller/integrator</em> — they operate ED on behalf of their own clients (CNAV, Total Energie, La Redoute). Their cases are often technically complex and involve custom integrations.</td></tr>
+    <tr><td><strong>The Hut.com</strong></td><td>20</td><td>RingCentral UK</td><td>Routing (4), analytics (4). UK e-commerce group running multiple digital queues with Follow-the-Sun routing across regions.</td></tr>
+    <tr><td><strong>Zain Jordan</strong></td><td>18</td><td>RingCentral EU</td><td>Varied — channel config, analytics, WhatsApp, chat. Telecom company with high channel diversity.</td></tr>
+    <tr><td><strong>Henner</strong> (combined)</td><td>24</td><td>RingCentral EU</td><td>Feature requests (8), email (2), analytics (3). French insurance group running multiple instances (Henner Sales, Henner Medical, Henner France). Frequent enhancement requests.</td></tr>
+    <tr><td><strong>Direct Travel</strong></td><td>14</td><td>RingCentral</td><td>Email (9). Their email channel is the primary pain point — Postmark suppression list issues and forwarding behavior dominate.</td></tr>
+    <tr><td><strong>Arietis Health</strong></td><td>12</td><td>RingCentral</td><td>Analytics (11). Nearly all their cases are reporting discrepancies — if you get an Arietis ticket, it's almost certainly an analytics issue.</td></tr>
+    <tr><td><strong>RC Internal</strong></td><td>17</td><td>RingCentral</td><td>Data exports (5), analytics (2). RingCentral's own internal use of ED — raw data delays and missing data exports are recurring themes.</td></tr>
+    <tr><td><strong>Orange</strong> (all affiliates)</td><td>~25</td><td>RingCentral EU</td><td>Social channels, email, supervision. Orange SA, Orange Tunisie, Orange Côte d'Ivoire, Orange Sénégal, Orange RDC, Orange Business Services — each is a separate tenant with its own config.</td></tr>
+    <tr><td><strong>Ziggo</strong></td><td>10</td><td>RingCentral EU</td><td>Chat/Messaging (4), data exports (3). Dutch telco using Instagram Messaging and SCC features.</td></tr>
+  </tbody>
+</table>
+
+<h3>RingCX Digital vs. Engage Digital</h3>
+<p>Of the 429 T3 cases analyzed, <strong>225 (52%) are Engage Digital</strong> and <strong>112 (26%) are RingCX Digital</strong> (the remainder are ambiguous or cross-product). RingCX Digital is the same underlying platform rebranded for the RingCX contact center suite, with additional features like digital queue events, RingSense AI integration, and Cognigy bot connectors. The cases overlap significantly — the same channel config, routing, and analytics issues appear in both. Support staff should treat them as one platform with two front doors.</p>
+
+<h3>Known architectural patterns worth knowing</h3>
+
+<h4>The "Master Source" consolidation pattern</h4>
+<p>When a customer has many phone lines or mailboxes (one per team, one per location), they often create many content sources — one per line. This scales badly. The supported architecture is:</p>
+<ul>
+  <li>A single master source ingests everything.</li>
+  <li>The <strong>Rules Engine</strong> inspects the original dialed number / recipient address / forwarding "To" and applies a category.</li>
+  <li>The category routes the task to the correct channel group.</li>
+  <li>Category can be changed mid-thread to hand off between teams without duplicating the intervention.</li>
+</ul>
+<p>Recommend this pattern for customers presenting with "source sprawl."</p>
+
+<h4>SCC (Structured Content Components)</h4>
+<p>Menu-button components surfaced in Messaging channels. Currently there is no first-class way to <em>block</em> typed replies when an SCC is active — the chat accepts free text even during an SCC interaction. Customers (Ziggo, SFR, RED) have asked for this and it has been discussed in <code>EDEQ-518</code>. There is no ETA.</p>
+
+<h3>Jira ticket prefixes</h3>
+<table>
+  <thead><tr><th>Prefix</th><th>Scope</th></tr></thead>
+  <tbody>
+    <tr><td><code>RD-*</code></td><td>Core product (e.g., <code>RD-33293</code> — bypass transfer behavior; <code>RD-39577</code> — language detection fix)</td></tr>
+    <tr><td><code>EDEQ-*</code></td><td>Engage Digital Messaging / chat features</td></tr>
+    <tr><td><code>INIT-*</code></td><td>UX / agent workspace improvements</td></tr>
+    <tr><td><code>DMO-*</code></td><td>Legacy Dimelo bucket (rarely used for new work)</td></tr>
+  </tbody>
+</table>
+
+<h3>Customer-facing documentation</h3>
+<ul>
+  <li>End-user KB: <code>support.ringcentral.com</code> — search for "Engage Digital" or "ED"</li>
+  <li>Admin-oriented KB: <code>support.engagement.dimelo.com</code></li>
+  <li>API reference: <code>developers.ringcentral.com/engage/digital</code></li>
+  <li>Customer in-product help: <code>support.digital.ringcentral.com</code></li>
+</ul>
+
+<div class="callout warn">
+  <span class="callout-label">Known doc gap</span>
+  The documentation for <strong>Channel SDK connection settings</strong> has a broken hyperlink on the legacy admin-channels help page. Direct customers to <code>support.ringcentral.com/article-v2/Engage-Digital-Channel-SDK-connection-settings-in-RingCX.html</code> — the RingCX-scoped article covers the ED SDK case correctly despite the title.
+</div>
+
+<h3>Glossary — quick reference</h3>
+<table>
+  <thead><tr><th>Abbreviation</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>ED</td><td>Engage Digital</td></tr>
+    <tr><td>EDEQ</td><td>Engage Digital Messaging (Jira prefix)</td></tr>
+    <tr><td>RD</td><td>Ringcentral Digital (Jira prefix, core ED)</td></tr>
+    <tr><td>SCC</td><td>Structured Content Components — chat menu buttons</td></tr>
+    <tr><td>TN</td><td>Telephone Number (SMS / voice)</td></tr>
+    <tr><td>TID</td><td>Transaction ID (in logs — traces one request)</td></tr>
+    <tr><td>DM</td><td>Direct Message (X / Instagram / Messenger)</td></tr>
+    <tr><td>DMP</td><td>Digital Messaging Platform</td></tr>
+    <tr><td>PS</td><td>Professional Services</td></tr>
+    <tr><td>TAM</td><td>Technical Account Manager</td></tr>
+    <tr><td>CS</td><td>Customer Success</td></tr>
+    <tr><td>SFDC</td><td>Salesforce (CRM used for case tracking)</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  <p><strong>About this guide.</strong> This training document (v2.0) was compiled from: (1) one year of internal support-team chat transcripts (April 2025 – April 2026, four rooms, 752 messages), (2) the RingCentral Confluence wiki — specifically the CCI space "Engage Digital Product Onboarding 2025" page, the CS space "GSS Support Reference," "Support Processes," "How-to Digital," and "Training Repository 1" pages, (3) three years of Tier 3 support case data from our top T3 agent (429 unique cases, 5,159 case-comment rows, January 2024 – April 2026), and (4) publicly available RingCentral and Engage Digital documentation. It is intended as an onboarding and reference document for support staff and should be treated as living — flag inaccuracies or add new patterns as they emerge.</p>
+  <p style="margin-top:16px;">Engage Digital — Support Training v2.0 — ※</p>
+</footer>
+
+</main>
+</div>
+
+</body>
+</html>
