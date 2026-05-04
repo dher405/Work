@@ -5464,59 +5464,59 @@
     },
     "2026-05-02": {
       "early": {
-        "name": "John Glenn Bayron",
-        "email": "john.bayron@ringcentral.com",
-        "shift": "early",
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "shift": "day",
         "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "06:00-15:00",
-          "wed": "06:00-15:00",
-          "thu": "06:00-15:00",
-          "fri": "06:00-15:00",
-          "sat": "06:00-15:00"
+          "sun": "07:00-16:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "OFF",
+          "sat": "OFF"
         }
       },
       "evening": {
-        "name": "Love Lyn Cano",
-        "email": "love.cano@ringcentral.com",
+        "name": "James Belleza",
+        "email": "james.belleza@ringcentral.com",
         "shift": "evening",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "OFF",
+          "thu": "15:00-00:00",
           "fri": "OFF",
-          "sat": "15:00-00:00"
+          "sat": "OFF"
         }
       },
       "night": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
+        "name": "Jobon Chinel",
+        "email": "jobon.chinel@ringcentral.com",
         "shift": "night",
         "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
+          "sun": "00:00-09:00",
+          "mon": "00:00-09:00",
           "tue": "00:00-09:00",
           "wed": "00:00-09:00",
           "thu": "00:00-09:00",
-          "fri": "00:00-09:00",
-          "sat": "00:00-09:00"
+          "fri": "OFF",
+          "sat": "OFF"
         }
       },
       "day": {
-        "name": "Joseph Bendecio",
-        "email": "joseph.bendecio@ringcentral.com",
-        "shift": "night",
+        "name": "Edward Salvador",
+        "email": "edward.salvador@ringcentral.com",
+        "shift": "day",
         "schedule": {
-          "sun": "OFF",
-          "mon": "OFF",
-          "tue": "00:00-09:00",
-          "wed": "00:00-09:00",
-          "thu": "00:00-09:00",
-          "fri": "00:00-09:00",
-          "sat": "00:00-09:00"
+          "sun": "07:00-16:00",
+          "mon": "07:00-16:00",
+          "tue": "07:00-16:00",
+          "wed": "07:00-16:00",
+          "thu": "07:00-16:00",
+          "fri": "OFF",
+          "sat": "OFF"
         }
       }
     },
