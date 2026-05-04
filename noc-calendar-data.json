@@ -6104,15 +6104,15 @@
     },
     "2026-05-14": {
       "early": {
-        "name": "Jenny Deasy",
-        "email": "jenny.deasy@ringcentral.com",
+        "name": "Bo Lemecha",
+        "email": "Bo.Lemecha@ringcentral.com",
         "schedule": {
           "sun": "OFF",
-          "mon": "07:00-15:30",
-          "tue": "07:00-15:30",
-          "wed": "07:00-15:30",
-          "thu": "07:00-15:30",
-          "fri": "07:00-15:30",
+          "mon": "06:00-14:30",
+          "tue": "06:00-14:30",
+          "wed": "06:00-14:30",
+          "thu": "06:00-14:30",
+          "fri": "06:00-14:30",
           "sat": "OFF"
         },
         "shift": "early"
