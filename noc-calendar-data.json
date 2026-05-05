@@ -5796,16 +5796,16 @@
         }
       },
       "night": {
-        "name": "Colin Finn",
-        "email": "colin.finn@ringcentral.com",
+        "name": "Andrew Neill",
+        "email": "andrew.neill@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-08:00",
-          "tue": "02:00-08:00",
-          "wed": "02:00-08:00",
-          "thu": "02:00-08:00",
-          "fri": "02:00-08:00",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
           "sat": "OFF"
         }
       }
