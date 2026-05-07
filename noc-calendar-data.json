@@ -5870,17 +5870,17 @@
     },
     "2026-05-09": {
       "early": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "shift": "day",
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
+        "shift": "early",
         "schedule": {
-          "sun": "07:00-16:00",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "OFF",
-          "sat": "OFF"
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "06:00-15:00"
         }
       },
       "day": {
