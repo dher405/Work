@@ -5870,59 +5870,59 @@
     },
     "2026-05-09": {
       "early": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "shift": "day",
+        "name": "John Glenn Bayron",
+        "email": "john.bayron@ringcentral.com",
+        "shift": "early",
         "schedule": {
-          "sun": "07:00-16:00",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "OFF",
-          "sat": "OFF"
+          "sun": "OFF",
+          "mon": "OFF",
+          "tue": "06:00-15:00",
+          "wed": "06:00-15:00",
+          "thu": "06:00-15:00",
+          "fri": "06:00-15:00",
+          "sat": "06:00-15:00"
         }
       },
       "day": {
-        "name": "Edward Salvador",
-        "email": "edward.salvador@ringcentral.com",
-        "shift": "day",
-        "schedule": {
-          "sun": "07:00-16:00",
-          "mon": "07:00-16:00",
-          "tue": "07:00-16:00",
-          "wed": "07:00-16:00",
-          "thu": "07:00-16:00",
-          "fri": "OFF",
-          "sat": "OFF"
-        }
-      },
-      "evening": {
-        "name": "James Belleza",
-        "email": "james.belleza@ringcentral.com",
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
         "shift": "evening",
         "schedule": {
           "sun": "15:00-00:00",
           "mon": "15:00-00:00",
           "tue": "15:00-00:00",
           "wed": "15:00-00:00",
-          "thu": "15:00-00:00",
+          "thu": "OFF",
           "fri": "OFF",
-          "sat": "OFF"
+          "sat": "15:00-00:00"
+        }
+      },
+      "evening": {
+        "name": "Love Lyn Cano",
+        "email": "love.cano@ringcentral.com",
+        "shift": "evening",
+        "schedule": {
+          "sun": "15:00-00:00",
+          "mon": "15:00-00:00",
+          "tue": "15:00-00:00",
+          "wed": "15:00-00:00",
+          "thu": "OFF",
+          "fri": "OFF",
+          "sat": "15:00-00:00"
         }
       },
       "night": {
-        "name": "Jobon Chinel",
-        "email": "jobon.chinel@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "shift": "night",
         "schedule": {
-          "sun": "00:00-09:00",
-          "mon": "00:00-09:00",
+          "sun": "OFF",
+          "mon": "OFF",
           "tue": "00:00-09:00",
           "wed": "00:00-09:00",
           "thu": "00:00-09:00",
-          "fri": "OFF",
-          "sat": "OFF"
+          "fri": "00:00-09:00",
+          "sat": "00:00-09:00"
         }
       }
     },
