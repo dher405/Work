@@ -6666,17 +6666,17 @@
         }
       },
       "night": {
-        "name": "Ryan Hawkins",
-        "email": "ryan.hawkins@ringcentral.com",
+        "name": "Joseph Bendecio",
+        "email": "joseph.bendecio@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "01:00-07:00",
-          "tue": "01:00-07:00",
-          "wed": "01:00-07:00",
-          "thu": "01:00-07:00",
-          "fri": "01:00-07:00",
-          "sat": "OFF"
+          "mon": "OFF",
+          "tue": "00:00-09:00",
+          "wed": "00:00-09:00",
+          "thu": "00:00-09:00",
+          "fri": "00:00-09:00",
+          "sat": "00:00-09:00"
         }
       }
     },
