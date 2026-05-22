@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network & PC/Server Fundamentals — Interactive Training Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2235;--card:#141c2e;--border:rgba(99,179,255,0.12);--border2:rgba(99,179,255,0.22);--accent:#3b9eff;--accent2:#00d4aa;--accent3:#f59e0b;--accent4:#f472b6;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--mono:'JetBrains Mono',monospace;--head:'Syne',sans-serif;--body:'DM Sans',sans-serif;--radius:12px;--glow:0 0 40px rgba(59,158,255,0.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.7;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo .logo-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.sidebar-logo h1{font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
+.sidebar-nav{padding:12px 0;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;color:var(--text2);font-size:13px;font-family:var(--body);font-weight:400}
+.nav-item:hover{color:var(--text);background:rgba(59,158,255,0.05)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(59,158,255,0.08)}
+.nav-num{font-family:var(--mono);font-size:10px;color:var(--text3);width:20px;flex-shrink:0}
+.nav-item.active .nav-num{color:var(--accent)}
+.sidebar-progress{padding:16px 20px;border-top:1px solid var(--border)}
+.progress-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.progress-bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.4s ease;width:0%}
+.main{margin-left:260px;flex:1;min-height:100vh}
+.module{display:none;min-height:100vh;padding:48px 56px 80px;max-width:860px}
+.module.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.module-header{margin-bottom:40px}
+.module-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.module-num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+.module-badge{font-family:var(--mono);font-size:10px;background:rgba(59,158,255,0.12);color:var(--accent);padding:3px 10px;border-radius:20px;border:1px solid rgba(59,158,255,0.2)}
+.module-title{font-family:var(--head);font-size:32px;font-weight:800;color:var(--text);line-height:1.15;margin-bottom:12px}
+.module-subtitle{font-size:16px;color:var(--text2);font-weight:300;line-height:1.6;max-width:600px}
+.section-title{font-family:var(--head);font-size:18px;font-weight:700;color:var(--text);margin:36px 0 14px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:block;width:3px;height:18px;background:var(--accent);border-radius:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--glow)}
+.concept{border-left:3px solid var(--accent2);background:rgba(0,212,170,0.05);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+.concept-label{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.concept p{font-size:14px;color:var(--text2)}
+.concept strong{color:var(--text)}
+.note{border-left:3px solid var(--accent3);background:rgba(245,158,11,0.05);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+.note-label{font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.note p{font-size:14px;color:var(--text2)}
+.code-block{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:13px;color:#e6edf3;overflow-x:auto;margin:16px 0;line-height:1.6}
+.code-block .kw{color:#ff7b72}.code-block .str{color:#a5d6ff}.code-block .cm{color:#8b949e}.code-block .num{color:#79c0ff}
+.layer-table{width:100%;border-collapse:collapse;margin:16px 0}
+.layer-table th{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+.layer-table td{padding:10px 14px;border-bottom:1px solid rgba(99,179,255,0.06);font-size:13px;vertical-align:top}
+.layer-table tr:last-child td{border-bottom:none}
+.layer-num{font-family:var(--mono);font-size:12px;font-weight:600}
+.l7{color:#f472b6}.l6{color:#c084fc}.l5{color:#818cf8}.l4{color:#60a5fa}.l3{color:#34d399}.l2{color:#fbbf24}.l1{color:#f87171}
+.diagram-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0;position:relative}
+.diagram-title{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.osi-stack{display:flex;flex-direction:column;gap:4px}
+.osi-layer{display:flex;align-items:center;border-radius:8px;padding:10px 16px;cursor:pointer;transition:all 0.25s;border:1px solid transparent;position:relative;flex-wrap:wrap}
+.osi-layer.expanded{border-color:var(--border2)}
+.osi-layer-num{font-family:var(--mono);font-size:18px;font-weight:600;width:32px;flex-shrink:0}
+.osi-layer-name{font-family:var(--head);font-size:14px;font-weight:600;flex:1;margin-left:10px}
+.osi-layer-proto{font-family:var(--mono);font-size:11px;color:var(--text3);margin-right:10px}
+.osi-layer-arrow{font-size:12px;color:var(--text3);transition:transform 0.2s}
+.osi-layer.expanded .osi-layer-arrow{transform:rotate(90deg)}
+.osi-detail{display:none;padding:12px 16px 4px;border-top:1px solid var(--border);margin-top:8px;width:100%}
+.osi-detail.open{display:block}
+.osi-detail p{font-size:13px;color:var(--text2);margin-bottom:8px}
+.osi-l7{background:rgba(244,114,182,0.06)}.osi-l7 .osi-layer-num,.osi-l7.expanded .osi-layer-name{color:#f472b6}
+.osi-l6{background:rgba(192,132,252,0.06)}.osi-l6 .osi-layer-num,.osi-l6.expanded .osi-layer-name{color:#c084fc}
+.osi-l5{background:rgba(129,140,248,0.06)}.osi-l5 .osi-layer-num,.osi-l5.expanded .osi-layer-name{color:#818cf8}
+.osi-l4{background:rgba(96,165,250,0.06)}.osi-l4 .osi-layer-num,.osi-l4.expanded .osi-layer-name{color:#60a5fa}
+.osi-l3{background:rgba(52,211,153,0.06)}.osi-l3 .osi-layer-num,.osi-l3.expanded .osi-layer-name{color:#34d399}
+.osi-l2{background:rgba(251,191,36,0.06)}.osi-l2 .osi-layer-num,.osi-l2.expanded .osi-layer-name{color:#fbbf24}
+.osi-l1{background:rgba(248,113,113,0.06)}.osi-l1 .osi-layer-num,.osi-l1.expanded .osi-layer-name{color:#f87171}
+.btn{font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.btn:hover{background:rgba(59,158,255,0.1);color:var(--accent);border-color:rgba(59,158,255,0.3)}
+.btn.primary{background:rgba(59,158,255,0.15);color:var(--accent);border-color:rgba(59,158,255,0.3)}
+.btn.primary:hover{background:rgba(59,158,255,0.25)}
+.hs-controls{display:flex;gap:10px;margin-top:12px}
+.stepper-track{display:flex;gap:0;margin-bottom:24px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.stepper-tab{flex:1;padding:10px 8px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer;border-right:1px solid var(--border);transition:all 0.2s;background:var(--bg2)}
+.stepper-tab:last-child{border-right:none}
+.stepper-tab:hover{color:var(--text2);background:var(--bg3)}
+.stepper-tab.active{background:rgba(59,158,255,0.12);color:var(--accent)}
+.stepper-panel{display:none}
+.stepper-panel.active{display:block}
+.step-num{font-family:var(--mono);font-size:32px;font-weight:600;color:rgba(59,158,255,0.2);float:right;margin-left:12px}
+.subnet-calc{display:flex;flex-direction:column;gap:12px}
+.calc-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.calc-label{font-family:var(--mono);font-size:12px;color:var(--text3);min-width:100px}
+.calc-input{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;transition:border-color 0.2s}
+.calc-input:focus{border-color:var(--accent)}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.calc-field{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px}
+.calc-field-label{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+.calc-field-val{font-family:var(--mono);font-size:14px;color:var(--accent2);font-weight:600}
+.dns-chain{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:12px 0}
+.dns-node{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;font-size:12px;min-width:90px;transition:all 0.3s}
+.dns-node.active{border-color:var(--accent);background:rgba(59,158,255,0.1);box-shadow:0 0 16px rgba(59,158,255,0.2)}
+.dns-node.done{border-color:var(--accent2);background:rgba(0,212,170,0.08)}
+.dns-node-label{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px}
+.dns-arrow{font-size:18px;color:var(--text3);padding:0 6px;transition:color 0.3s}
+.dns-arrow.active{color:var(--accent)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.quiz-wrap{margin-top:32px;padding-top:28px;border-top:1px solid var(--border)}
+.quiz-title{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.quiz-badge{font-family:var(--mono);font-size:10px;background:rgba(244,114,182,0.12);color:var(--accent4);padding:3px 10px;border-radius:20px;border:1px solid rgba(244,114,182,0.2)}
+.question{margin-bottom:24px}
+.question-text{font-size:14px;color:var(--text);margin-bottom:12px;font-weight:500}
+.question-num{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:6px}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;font-size:13px;color:var(--text2)}
+.option:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,0.02)}
+.option.correct{border-color:var(--accent2);background:rgba(0,212,170,0.08);color:var(--accent2)}
+.option.wrong{border-color:#f87171;background:rgba(248,113,113,0.08);color:#f87171}
+.option-letter{font-family:var(--mono);font-size:11px;width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);display:flex;align-items:center;justify-content: center;flex-shrink:0}
+.quiz-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:8px;display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.ok{background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);color:var(--accent2)}
+.quiz-feedback.bad{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:#f87171}
+.https-flow{display:flex;flex-direction:column;gap:3px}
+.https-step{display:flex;align-items:stretch;gap:16px;cursor:pointer}
+.https-step-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:32px}
+.https-step-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:var(--bg);flex-shrink:0;transition:all 0.2s;margin-top:16px}
+.https-step:hover .https-step-dot,.https-step.active .https-step-dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 10px rgba(59,158,255,0.4)}
+.https-step-line{flex:1;width:1px;background:var(--border);margin:4px 0;min-height:8px}
+.https-step-body{flex:1;padding:12px 16px;border-radius:8px;border:1px solid transparent;margin-bottom:3px;transition:all 0.2s}
+.https-step:hover .https-step-body,.https-step.active .https-step-body{border-color:var(--border2);background:rgba(59,158,255,0.04)}
+.https-step-num{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px}
+.https-step-title{font-family:var(--head);font-size:15px;font-weight:700;margin-bottom:4px}
+.https-step-sub{font-size:13px;color:var(--text2);display:none;line-height:1.6}
+.https-step.active .https-step-sub{display:block}
+.https-step-layers{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.layer-pill{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:12px;border:1px solid}
+.module-nav{display:flex;justify-content:space-between;margin-top:48px;padding-top:24px;border-top:1px solid var(--border)}
+.welcome-hero{padding:80px 56px 0;max-width:860px}
+.welcome-tag{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px}
+.welcome-title{font-family:var(--head);font-size:48px;font-weight:800;line-height:1.1;margin-bottom:20px;background:linear-gradient(135deg,#e2e8f0 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.welcome-subtitle{font-size:17px;color:var(--text2);font-weight:300;line-height:1.7;max-width:580px;margin-bottom:40px}
+.welcome-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:40px 0 60px}
+.welcome-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all 0.2s}
+.welcome-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.welcome-card-num{font-family:var(--mono);font-size:22px;font-weight:600;color:rgba(59,158,255,0.25);margin-bottom:8px}
+.welcome-card-title{font-family:var(--head);font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
+.welcome-card-sub{font-size:12px;color:var(--text3);line-height:1.4}
+.start-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-family:var(--head);font-size:14px;font-weight:700;padding:14px 28px;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.start-btn:hover{background:#5aabff;transform:translateY(-1px);box-shadow:0 8px 24px rgba(59,158,255,0.3)}
+@media(max-width:800px){
+  .sidebar{transform:translateX(-260px);transition:transform 0.3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .module{padding:32px 24px 60px}
+  .welcome-hero{padding:60px 24px 0}
+  .welcome-title{font-size:32px}
+  .welcome-grid{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr 1fr}
+  .mob-toggle{display:flex !important}
+}
+.mob-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="mob-toggle" onclick="toggleSidebar()">☰</div>
+<div class="app">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-tag">RingCentral Training</div>
+    <h1>Network &amp; Server Fundamentals</h1>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-item active" onclick="showModule('welcome')"><span class="nav-num">00</span><span>Overview</span></div>
+    <div class="nav-item" onclick="showModule('m1')"><span class="nav-num">01</span><span>The OSI Model</span></div>
+    <div class="nav-item" onclick="showModule('m2')"><span class="nav-num">02</span><span>TCP/IP Addressing</span></div>
+    <div class="nav-item" onclick="showModule('m3')"><span class="nav-num">03</span><span>TCP Connections</span></div>
+    <div class="nav-item" onclick="showModule('m4')"><span class="nav-num">04</span><span>Client/Server &amp; Firewalls</span></div>
+    <div class="nav-item" onclick="showModule('m5')"><span class="nav-num">05</span><span>TLS / HTTPS Security</span></div>
+    <div class="nav-item" onclick="showModule('m6')"><span class="nav-num">06</span><span>Switching &amp; Routing</span></div>
+    <div class="nav-item" onclick="showModule('m7')"><span class="nav-num">07</span><span>Internet Fundamentals</span></div>
+    <div class="nav-item" onclick="showModule('m8')"><span class="nav-num">08</span><span>Troubleshooting Tools</span></div>
+    <div class="nav-item" onclick="showModule('m9')"><span class="nav-num">09</span><span>Capstone: HTTPS Request</span></div>
+  </div>
+  <div class="sidebar-progress">
+    <div class="progress-label">Progress</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</nav>
+<main class="main">
+
+<!-- WELCOME -->
+<div class="module active" id="welcome">
+<div class="welcome-hero">
+  <div class="welcome-tag">Interactive Training Guide</div>
+  <div class="welcome-title">Network &amp;<br>Server<br>Fundamentals</div>
+  <p class="welcome-subtitle">A complete curriculum for RingCentral support engineers — from OSI layers to live HTTPS connections. Each module includes interactive diagrams, animations, and knowledge checks.</p>
+  <button class="start-btn" onclick="showModule('m1')">Start Module 1 →</button>
+  <div class="welcome-grid">
+    <div class="welcome-card" onclick="showModule('m1')"><div class="welcome-card-num">01</div><div class="welcome-card-title">The OSI Model</div><div class="welcome-card-sub">7 layers, interactive expand</div></div>
+    <div class="welcome-card" onclick="showModule('m2')"><div class="welcome-card-num">02</div><div class="welcome-card-title">TCP/IP Addressing</div><div class="welcome-card-sub">Subnet calculator, DHCP, DNS</div></div>
+    <div class="welcome-card" onclick="showModule('m3')"><div class="welcome-card-num">03</div><div class="welcome-card-title">TCP Connections</div><div class="welcome-card-sub">Animated 3-way handshake</div></div>
+    <div class="welcome-card" onclick="showModule('m4')"><div class="welcome-card-num">04</div><div class="welcome-card-title">Client/Server &amp; Firewalls</div><div class="welcome-card-sub">Stateful inspection, ports</div></div>
+    <div class="welcome-card" onclick="showModule('m5')"><div class="welcome-card-num">05</div><div class="welcome-card-title">TLS / HTTPS</div><div class="welcome-card-sub">Handshake stepper, certs</div></div>
+    <div class="welcome-card" onclick="showModule('m6')"><div class="welcome-card-num">06</div><div class="welcome-card-title">Switching &amp; Routing</div><div class="welcome-card-sub">L2 vs L3, NAT, VLANs</div></div>
+    <div class="welcome-card" onclick="showModule('m7')"><div class="welcome-card-num">07</div><div class="welcome-card-title">Internet Fundamentals</div><div class="welcome-card-sub">BGP, AS, peering, LAN/WAN</div></div>
+    <div class="welcome-card" onclick="showModule('m8')"><div class="welcome-card-num">08</div><div class="welcome-card-title">Troubleshooting Tools</div><div class="welcome-card-sub">ping, traceroute, dig, netstat</div></div>
+    <div class="welcome-card" onclick="showModule('m9')"><div class="welcome-card-num">09</div><div class="welcome-card-title">Capstone: HTTPS Request</div><div class="welcome-card-sub">Everything working together</div></div>
+  </div>
+</div>
+</div>
+
+<!-- MODULE 1: OSI -->
+<div class="module" id="m1">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 01</span><span class="module-badge">Foundation</span></div>
+  <div class="module-title">The OSI Model</div>
+  <p class="module-subtitle">The 7-layer Open Systems Interconnect model is the universal language of networking. Every protocol, device, and troubleshooting conversation maps to these layers.</p>
+</div>
+<div class="concept"><div class="concept-label">Core Idea</div><p>OSI breaks network communication into <strong>7 discrete layers</strong>. Each layer has a specific job and talks only to the layers directly above and below it. Data passes through all 7 layers twice — once on the way out (encapsulation), once on the way in (decapsulation).</p></div>
+<div class="section-title">Interactive Layer Reference</div>
+<p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Click any layer to expand its details and see which protocols and devices operate there.</p>
+<div class="diagram-wrap">
+  <div class="diagram-title">OSI 7-Layer Model — click to explore</div>
+  <div class="osi-stack">
+    <div class="osi-layer osi-l7" onclick="toggleOSI(this,'l7')">
+      <span class="osi-layer-num">7</span><span class="osi-layer-name">Application</span><span class="osi-layer-proto">HTTP · DNS · FTP · SMTP · SIP</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l7"><p>The layer <strong>users and applications interact with</strong>. Protocols here define how data is formatted — web browsers (HTTP/HTTPS), email (SMTP/IMAP), VoIP phones (SIP), and DNS resolvers all operate here. <strong>RingCentral relevance:</strong> SIP signaling, HTTP REST APIs, and WebSocket connections are all Layer 7.</p></div>
+    </div>
+    <div class="osi-layer osi-l6" onclick="toggleOSI(this,'l6')">
+      <span class="osi-layer-num">6</span><span class="osi-layer-name">Presentation</span><span class="osi-layer-proto">TLS · SSL · JPEG · MPEG</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l6"><p>Responsible for <strong>data translation, encryption, and compression</strong>. TLS/SSL operates here — transforming plaintext HTTP into encrypted HTTPS before handing to Transport. Think of it as the "translator" ensuring both sides understand the data format.</p></div>
+    </div>
+    <div class="osi-layer osi-l5" onclick="toggleOSI(this,'l5')">
+      <span class="osi-layer-num">5</span><span class="osi-layer-name">Session</span><span class="osi-layer-proto">NetBIOS · RPC · SQL sessions</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l5"><p>Manages the <strong>opening, maintaining, and closing of sessions</strong> between applications. Handles checkpointing and recovery for long transfers. In modern protocols, TCP handles much of this. Authentication handshakes often occur at this layer.</p></div>
+    </div>
+    <div class="osi-layer osi-l4" onclick="toggleOSI(this,'l4')">
+      <span class="osi-layer-num">4</span><span class="osi-layer-name">Transport</span><span class="osi-layer-proto">TCP · UDP · port numbers</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l4"><p><strong>End-to-end delivery between applications</strong> using port numbers. <strong>TCP</strong>: reliable, ordered, error-checked — for web and APIs. <strong>UDP</strong>: fast, connectionless — for voice/video where speed beats perfection. <strong>RingCentral:</strong> Voice uses UDP/RTP; signaling and APIs use TCP.</p></div>
+    </div>
+    <div class="osi-layer osi-l3" onclick="toggleOSI(this,'l3')">
+      <span class="osi-layer-num">3</span><span class="osi-layer-name">Network</span><span class="osi-layer-proto">IP · ICMP · routing · NAT</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l3"><p>Responsible for <strong>logical addressing and routing</strong> between networks. IP addresses live here. <strong>Routers</strong> are Layer 3 devices — they read IP headers to forward packets. NAT (translating private to public IPs) and ICMP (ping) both operate here.</p></div>
+    </div>
+    <div class="osi-layer osi-l2" onclick="toggleOSI(this,'l2')">
+      <span class="osi-layer-num">2</span><span class="osi-layer-name">Data Link</span><span class="osi-layer-proto">Ethernet · MAC · VLANs · switches</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l2"><p>Governs <strong>physical addressing within a local network</strong> using MAC addresses. <strong>Switches</strong> are Layer 2 devices — forwarding frames based on MAC tables. VLANs are a Layer 2 concept for logically segmenting a network. Ethernet frames carry source and destination MAC addresses.</p></div>
+    </div>
+    <div class="osi-layer osi-l1" onclick="toggleOSI(this,'l1')">
+      <span class="osi-layer-num">1</span><span class="osi-layer-name">Physical</span><span class="osi-layer-proto">Cables · Wi-Fi · PoE · signals</span><span class="osi-layer-arrow">▶</span>
+      <div class="osi-detail" id="l1"><p>The actual <strong>transmission of raw bits</strong> — electrical signals on copper, light on fiber, radio for Wi-Fi. NICs, cables, and connectors live here. <strong>PoE (Power over Ethernet)</strong> delivers electrical power through Cat5e/6 cables — used to power IP phones and access points without separate power supplies.</p></div>
+    </div>
+  </div>
+</div>
+<div class="section-title">Encapsulation — How Data Travels</div>
+<div class="card">
+  <p style="margin-bottom:12px;">Each layer <strong>wraps data with its own header</strong> as it passes down the stack. At the destination, each layer <strong>unwraps its header</strong> as data travels up.</p>
+  <div style="font-family:var(--mono);font-size:12px;line-height:2.2;">
+    <div style="color:#f472b6;">[ L7 HTTP Header | Data ]</div>
+    <div style="color:#c084fc;">[ L6 TLS — encrypts everything above ]</div>
+    <div style="color:#60a5fa;">[ L4 TCP Header | L6+L7 payload ]</div>
+    <div style="color:#34d399;">[ L3 IP Header | L4+L6+L7 payload ]</div>
+    <div style="color:#fbbf24;">[ L2 Ethernet Header | L3+L4+L6+L7 | Ethernet Trailer ]</div>
+    <div style="color:#f87171;">[ L1: raw bits on the wire → ]</div>
+  </div>
+</div>
+<div class="section-title">Layers 1–4 in RingCentral Support</div>
+<div class="two-col">
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:8px;">LAYERS 1–2 (PHYSICAL/DATA LINK)</div><p style="font-size:13px;color:var(--text2);">Cable faults, switch port errors, VLAN misconfig, PoE insufficient for phones. Check: link status, duplex mismatch</p></div>
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:8px;">LAYERS 3–4 (NETWORK/TRANSPORT)</div><p style="font-size:13px;color:var(--text2);">IP routing, NAT issues, UDP blocked by firewall, TCP timeouts. Check: ping, traceroute, netstat</p></div>
+</div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 01</span></div>
+  <div class="question" id="q1_1">
+    <div class="question-num">Question 1 of 2</div>
+    <div class="question-text">A customer's IP phone powers on but cannot register. You find the switch port is negotiating at half-duplex. Which OSI layer is this problem at?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q1_1',1)"><span class="option-letter">A</span>Layer 4 — Transport</div>
+      <div class="option" onclick="answer(this,'q1_1',1)"><span class="option-letter">B</span>Layer 2 — Data Link</div>
+      <div class="option" onclick="answer(this,'q1_1',1)"><span class="option-letter">C</span>Layer 7 — Application</div>
+      <div class="option" onclick="answer(this,'q1_1',1)"><span class="option-letter">D</span>Layer 1 — Physical</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q1_1"></div>
+  </div>
+  <div class="question" id="q1_2">
+    <div class="question-num">Question 2 of 2</div>
+    <div class="question-text">RingCentral voice traffic uses RTP. Which Layer 4 protocol does RTP use, and why?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q1_2',2)"><span class="option-letter">A</span>TCP — because it guarantees delivery</div>
+      <div class="option" onclick="answer(this,'q1_2',2)"><span class="option-letter">B</span>ICMP — because it's fast</div>
+      <div class="option" onclick="answer(this,'q1_2',2)"><span class="option-letter">C</span>UDP — because low latency matters more than retransmission</div>
+      <div class="option" onclick="answer(this,'q1_2',2)"><span class="option-letter">D</span>TCP — because voice packets must arrive in order</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q1_2"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('welcome')">← Overview</button>
+  <button class="btn primary" onclick="showModule('m2')">Module 02: TCP/IP Addressing →</button>
+</div>
+</div>
+
+<!-- MODULE 2: TCP/IP ADDRESSING -->
+<div class="module" id="m2">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 02</span><span class="module-badge">Addressing</span></div>
+  <div class="module-title">TCP/IP Addressing &amp; Protocols</div>
+  <p class="module-subtitle">IP addresses locate devices. DHCP assigns them automatically. DNS translates names to addresses. NTP keeps clocks in sync. These work together on every connection.</p>
+</div>
+<div class="section-title">IPv4 Address Structure</div>
+<div class="card">
+  <p style="margin-bottom:12px;">An IPv4 address is <strong>32 bits written as four octets</strong> separated by dots. Each octet is 0–255.</p>
+  <div class="code-block"><span class="cm">// Example address breakdown</span>
+192    .  168   .   1    .  100
+11000000.10101000.00000001.01100100
+<span class="cm">// Network portion | Host portion — split by subnet mask</span></div>
+  <div class="note"><div class="note-label">Private vs Public</div><p>Private ranges (RFC 1918) are <strong>not routable on the internet</strong>: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. All other IPs are public. NAT bridges the gap between private and public.</p></div>
+</div>
+<div class="section-title">Interactive Subnet Calculator</div>
+<div class="diagram-wrap">
+  <div class="diagram-title">Subnet Calculator</div>
+  <div class="subnet-calc">
+    <div class="calc-row">
+      <span class="calc-label">IP Address</span>
+      <input class="calc-input" id="ipInput" value="192.168.1.100" oninput="calcSubnet()">
+      <span style="color:var(--text3);font-size:12px;">/</span>
+      <input class="calc-input" id="cidrInput" value="24" style="width:60px;" oninput="calcSubnet()" type="number" min="1" max="30">
+      <span class="calc-label">CIDR prefix</span>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-field"><div class="calc-field-label">Network Address</div><div class="calc-field-val" id="sc_net">192.168.1.0</div></div>
+      <div class="calc-field"><div class="calc-field-label">Broadcast Address</div><div class="calc-field-val" id="sc_bc">192.168.1.255</div></div>
+      <div class="calc-field"><div class="calc-field-label">Subnet Mask</div><div class="calc-field-val" id="sc_mask">255.255.255.0</div></div>
+      <div class="calc-field"><div class="calc-field-label">Usable Hosts</div><div class="calc-field-val" id="sc_hosts">254</div></div>
+      <div class="calc-field"><div class="calc-field-label">First Host</div><div class="calc-field-val" id="sc_first">192.168.1.1</div></div>
+      <div class="calc-field"><div class="calc-field-label">Last Host</div><div class="calc-field-val" id="sc_last">192.168.1.254</div></div>
+    </div>
+  </div>
+</div>
+<div class="section-title">DHCP — Dynamic Host Configuration Protocol</div>
+<div class="card">
+  <p style="margin-bottom:14px;">DHCP automatically assigns IP, subnet mask, default gateway, and DNS. The exchange is called <strong>DORA</strong>:</p>
+  <div style="display:flex;gap:0;flex-wrap:wrap;margin-bottom:12px;">
+    <div style="flex:1;min-width:100px;padding:12px;text-align:center;border-right:1px solid var(--border);background:rgba(59,158,255,0.05);border-radius:8px 0 0 8px;">
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);margin-bottom:4px;">D</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:2px;">Discover</div>
+      <div style="font-size:11px;color:var(--text3);">Client broadcasts: "Any DHCP servers?"</div>
+    </div>
+    <div style="flex:1;min-width:100px;padding:12px;text-align:center;border-right:1px solid var(--border);background:rgba(0,212,170,0.05);">
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent2);margin-bottom:4px;">O</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:2px;">Offer</div>
+      <div style="font-size:11px;color:var(--text3);">Server offers an IP lease</div>
+    </div>
+    <div style="flex:1;min-width:100px;padding:12px;text-align:center;border-right:1px solid var(--border);background:rgba(245,158,11,0.05);">
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent3);margin-bottom:4px;">R</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:2px;">Request</div>
+      <div style="font-size:11px;color:var(--text3);">Client accepts the offer</div>
+    </div>
+    <div style="flex:1;min-width:100px;padding:12px;text-align:center;background:rgba(244,114,182,0.05);border-radius:0 8px 8px 0;">
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent4);margin-bottom:4px;">A</div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:2px;">Acknowledge</div>
+      <div style="font-size:11px;color:var(--text3);">Server confirms the lease</div>
+    </div>
+  </div>
+</div>
+<div class="section-title">DNS Resolution Chain</div>
+<div class="diagram-wrap">
+  <div class="diagram-title">DNS Resolution — click to animate</div>
+  <div class="dns-chain" id="dnsChain">
+    <div class="dns-node" id="dn0"><div class="dns-node-label">Client</div><div>Your PC</div></div>
+    <div class="dns-arrow" id="da0">→</div>
+    <div class="dns-node" id="dn1"><div class="dns-node-label">Resolver</div><div>Local DNS</div></div>
+    <div class="dns-arrow" id="da1">→</div>
+    <div class="dns-node" id="dn2"><div class="dns-node-label">Root</div><div>Root Server</div></div>
+    <div class="dns-arrow" id="da2">→</div>
+    <div class="dns-node" id="dn3"><div class="dns-node-label">TLD</div><div>.com Server</div></div>
+    <div class="dns-arrow" id="da3">→</div>
+    <div class="dns-node" id="dn4"><div class="dns-node-label">Auth NS</div><div>rc.com NS</div></div>
+    <div class="dns-arrow" id="da4">→</div>
+    <div class="dns-node" id="dn5"><div class="dns-node-label">Result</div><div>IP Address</div></div>
+  </div>
+  <div style="margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--text3);min-height:20px;" id="dnsStatus">Click Animate to walk through DNS resolution</div>
+  <div class="hs-controls" style="margin-top:8px;">
+    <button class="btn primary" onclick="animateDNS()">▶ Animate</button>
+    <button class="btn" onclick="resetDNS()">Reset</button>
+  </div>
+</div>
+<div class="section-title">NAT, NTP, and PoE</div>
+<div class="three-col">
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px;">NAT</div><p style="font-size:13px;color:var(--text2);">Translates private IPs to a public IP. Router keeps a translation table. <strong>Critical VoIP issue:</strong> SIP ALG often corrupts SIP headers — usually needs to be <strong>disabled</strong> for RingCentral.</p></div>
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--accent2);margin-bottom:8px;">NTP</div><p style="font-size:13px;color:var(--text2);">Keeps all devices time-synchronized. <strong>Certificate validation requires accurate time.</strong> A clock skewed more than 5 minutes causes TLS failures and authentication errors.</p></div>
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--accent3);margin-bottom:8px;">PoE</div><p style="font-size:13px;color:var(--text2);">Delivers up to <strong>30W (PoE+)</strong> through Cat5e/6. IP phones and WAPs use PoE. Insufficient PoE budget on a switch causes intermittent phone reboots.</p></div>
+</div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 02</span></div>
+  <div class="question" id="q2_1">
+    <div class="question-num">Question 1 of 2</div>
+    <div class="question-text">A customer's IP phone loses its IP every 8 hours and needs a reboot. The DHCP lease time is 8 hours. What is the most likely cause?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q2_1',1)"><span class="option-letter">A</span>DNS is failing to resolve the phone's hostname</div>
+      <div class="option" onclick="answer(this,'q2_1',1)"><span class="option-letter">B</span>The phone is not renewing its DHCP lease before expiry</div>
+      <div class="option" onclick="answer(this,'q2_1',1)"><span class="option-letter">C</span>The subnet mask is misconfigured</div>
+      <div class="option" onclick="answer(this,'q2_1',1)"><span class="option-letter">D</span>NAT is blocking the renewal packet</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q2_1"></div>
+  </div>
+  <div class="question" id="q2_2">
+    <div class="question-num">Question 2 of 2</div>
+    <div class="question-text">A site has 192.168.10.0/26. How many usable host addresses does this subnet provide?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q2_2',2)"><span class="option-letter">A</span>30</div>
+      <div class="option" onclick="answer(this,'q2_2',2)"><span class="option-letter">B</span>64</div>
+      <div class="option" onclick="answer(this,'q2_2',2)"><span class="option-letter">C</span>62</div>
+      <div class="option" onclick="answer(this,'q2_2',2)"><span class="option-letter">D</span>126</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q2_2"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m1')">← Module 01</button>
+  <button class="btn primary" onclick="showModule('m3')">Module 03: TCP Connections →</button>
+</div>
+</div>
+
+<!-- MODULE 3: TCP -->
+<div class="module" id="m3">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 03</span><span class="module-badge">Transport Layer</span></div>
+  <div class="module-title">TCP Connections</div>
+  <p class="module-subtitle">TCP is the reliable workhorse of the internet. Before any data flows, a connection must be established with the three-way handshake. Understanding this is essential for troubleshooting.</p>
+</div>
+<div class="section-title">TCP vs UDP</div>
+<div class="two-col">
+  <div class="card" style="border-color:rgba(96,165,250,0.25);">
+    <div style="font-family:var(--head);font-size:16px;font-weight:700;color:#60a5fa;margin-bottom:12px;">TCP</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Connection-oriented</strong> — handshake required</li>
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Reliable</strong> — ACK for every segment</li>
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Ordered</strong> — sequence numbers</li>
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Flow control</strong> — prevents overrun</li>
+      <li style="font-size:13px;color:var(--text2);">✗ Higher overhead, higher latency</li>
+    </ul>
+    <div style="margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--text3);">Used by: HTTP/S, SIP signaling, APIs, file transfer</div>
+  </div>
+  <div class="card" style="border-color:rgba(245,158,11,0.25);">
+    <div style="font-family:var(--head);font-size:16px;font-weight:700;color:var(--accent3);margin-bottom:12px;">UDP</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Connectionless</strong> — fire and forget</li>
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Very low latency</strong> — no ACK overhead</li>
+      <li style="font-size:13px;color:var(--text2);">✓ <strong style="color:var(--text)">Tiny header</strong> — 8 bytes vs 20</li>
+      <li style="font-size:13px;color:var(--text2);">✗ No guaranteed delivery</li>
+      <li style="font-size:13px;color:var(--text2);">✗ No ordering guarantee</li>
+    </ul>
+    <div style="margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--text3);">Used by: RTP voice/video, DNS, NTP, DHCP</div>
+  </div>
+</div>
+<div class="section-title">The Three-Way Handshake</div>
+<div class="diagram-wrap">
+  <div class="diagram-title">TCP Three-Way Handshake — animated</div>
+  <div style="position:relative;height:270px;" id="hsWrap">
+    <div style="position:absolute;top:0;left:0;width:120px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center;">
+      <div style="font-family:var(--head);font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;">Browser</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);">CLIENT</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:4px;">port 51234</div>
+    </div>
+    <div style="position:absolute;top:0;right:0;width:120px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center;">
+      <div style="font-family:var(--head);font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:4px;">Server</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);">SERVER</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:4px;">port 443</div>
+    </div>
+    <svg id="hsSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;" viewBox="0 0 600 270" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="ha2" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M8 1L2 5L8 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/></marker>
+      </defs>
+      <line x1="70" y1="70" x2="70" y2="255" stroke="rgba(99,179,255,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="530" y1="70" x2="530" y2="255" stroke="rgba(99,179,255,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+      <g id="hs_syn" style="opacity:0;transition:opacity 0.6s">
+        <line x1="82" y1="100" x2="516" y2="135" stroke="#3b9eff" stroke-width="2" marker-end="url(#ha)"/>
+        <rect x="220" y="86" width="160" height="22" rx="4" fill="rgba(59,158,255,0.15)"/>
+        <text x="300" y="101" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#3b9eff" font-weight="600">SYN  seq=1000</text>
+      </g>
+      <g id="hs_synack" style="opacity:0;transition:opacity 0.6s">
+        <line x1="518" y1="152" x2="84" y2="178" stroke="#00d4aa" stroke-width="2" marker-end="url(#ha2)"/>
+        <rect x="215" y="148" width="170" height="22" rx="4" fill="rgba(0,212,170,0.15)"/>
+        <text x="300" y="163" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#00d4aa" font-weight="600">SYN-ACK  ack=1001</text>
+      </g>
+      <g id="hs_ack" style="opacity:0;transition:opacity 0.6s">
+        <line x1="82" y1="196" x2="516" y2="216" stroke="#f59e0b" stroke-width="2" marker-end="url(#ha)"/>
+        <rect x="220" y="196" width="160" height="22" rx="4" fill="rgba(245,158,11,0.15)"/>
+        <text x="300" y="211" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#f59e0b" font-weight="600">ACK  ack=1002</text>
+      </g>
+      <g id="hs_conn" style="opacity:0;transition:opacity 0.6s">
+        <text x="300" y="248" text-anchor="middle" font-family="Syne,sans-serif" font-size="13" fill="#00d4aa" font-weight="700">✓  CONNECTION ESTABLISHED</text>
+      </g>
+    </svg>
+  </div>
+  <div style="font-family:var(--mono);font-size:12px;color:var(--text3);min-height:20px;margin-top:8px;" id="hsStatus">Click Animate to walk through the handshake</div>
+  <div class="hs-controls">
+    <button class="btn primary" onclick="animateHandshake()">▶ Animate Handshake</button>
+    <button class="btn" onclick="resetHandshake()">Reset</button>
+  </div>
+</div>
+<div class="section-title">Ports and Sockets</div>
+<div class="card">
+  <p style="margin-bottom:12px;">A <strong>socket</strong> uniquely identifies one connection: <code style="font-family:var(--mono);font-size:12px;color:var(--accent2)">Source IP:Port → Destination IP:Port</code></p>
+  <div class="code-block">
+<span class="cm">// One unique TCP socket:</span>
+192.168.1.100 : <span class="num">51234</span>  →  104.18.32.45 : <span class="num">443</span>
+
+<span class="cm">// Key port numbers:</span>
+HTTP     → <span class="num">80</span>       HTTPS    → <span class="num">443</span>
+SIP/UDP  → <span class="num">5060</span>     SIP/TLS  → <span class="num">5061</span>
+DNS      → <span class="num">53</span>       NTP      → <span class="num">123</span>
+WSS      → <span class="num">8083</span>     RTP      → <span class="num">16384–32767</span></div>
+</div>
+<div class="note"><div class="note-label">RingCentral: Port 8083</div><p>Port <strong>8083</strong> (WSS/WebSocket Secure) is used by RingCentral softphones for SIP signaling over TLS. Blocking this port causes zero successful registrations. In logs: 254 code-1006 closures with no successful SIP WebSocket connections.</p></div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 03</span></div>
+  <div class="question" id="q3_1">
+    <div class="question-num">Question 1 of 2</div>
+    <div class="question-text">During a TCP three-way handshake, what does the server send in response to the client's initial SYN?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q3_1',1)"><span class="option-letter">A</span>ACK only</div>
+      <div class="option" onclick="answer(this,'q3_1',1)"><span class="option-letter">B</span>SYN-ACK</div>
+      <div class="option" onclick="answer(this,'q3_1',1)"><span class="option-letter">C</span>RST (reset)</div>
+      <div class="option" onclick="answer(this,'q3_1',1)"><span class="option-letter">D</span>FIN-ACK</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q3_1"></div>
+  </div>
+  <div class="question" id="q3_2">
+    <div class="question-num">Question 2 of 2</div>
+    <div class="question-text">A customer's softphone shows "Unable to Register." Logs show hundreds of TCP SYN packets to port 8083 with no SYN-ACK responses. What does this indicate?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q3_2',1)"><span class="option-letter">A</span>The RingCentral server is down</div>
+      <div class="option" onclick="answer(this,'q3_2',1)"><span class="option-letter">B</span>Port 8083 is blocked by a firewall — TCP handshake never completes</div>
+      <div class="option" onclick="answer(this,'q3_2',1)"><span class="option-letter">C</span>The client's IP address is wrong</div>
+      <div class="option" onclick="answer(this,'q3_2',1)"><span class="option-letter">D</span>DNS is not resolving the server hostname</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q3_2"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m2')">← Module 02</button>
+  <button class="btn primary" onclick="showModule('m4')">Module 04: Client/Server →</button>
+</div>
+</div>
+
+<!-- MODULE 4: CLIENT/SERVER & FIREWALLS -->
+<div class="module" id="m4">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 04</span><span class="module-badge">Architecture</span></div>
+  <div class="module-title">Client/Server Model &amp; Firewalls</div>
+  <p class="module-subtitle">Every network application follows the client/server model. Firewalls control connections based on rules and state. Understanding stateful inspection is critical for diagnosing RingCentral connectivity.</p>
+</div>
+<div class="section-title">The Client/Server Model</div>
+<div class="card">
+  <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+    <div style="flex:1;min-width:160px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;color:var(--accent);margin-bottom:8px;">CLIENT</div>
+      <div style="font-size:13px;color:var(--text2);">Initiates connections. Sends requests. Receives responses. Your browser, softphone, mobile app.</div>
+    </div>
+    <div style="font-size:28px;color:var(--text3);">⇄</div>
+    <div style="flex:1;min-width:160px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;color:var(--accent2);margin-bottom:8px;">SERVER</div>
+      <div style="font-size:13px;color:var(--text2);">Listens on known ports. Accepts connections. Processes requests. Returns responses.</div>
+    </div>
+  </div>
+  <div class="concept"><div class="concept-label">Key Principle</div><p>Connections are <strong>always initiated by the client</strong>. Servers listen — they never contact a client first. This asymmetry is fundamental to how firewalls work.</p></div>
+</div>
+<div class="section-title">Stateful Firewall Inspection</div>
+<div class="card">
+  <p style="margin-bottom:12px;">A <strong>stateful firewall</strong> tracks every connection in a state table. When your browser initiates outbound, the firewall records it. When the server's response arrives, the firewall matches it to the existing entry — and allows it automatically.</p>
+  <div class="code-block"><span class="cm">// Firewall state table entry (simplified):</span>
+SRC IP        SRC PORT  DST IP         DST PORT  PROTO  STATE
+192.168.1.5   51234     104.18.32.45   443       TCP    <span class="kw">ESTABLISHED</span>
+<span class="cm">→ Return traffic matching this entry is automatically permitted</span></div>
+</div>
+<div class="section-title">Inbound vs Outbound Rules</div>
+<div class="two-col">
+  <div class="card" style="border-color:rgba(52,211,153,0.2);">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent2);margin-bottom:10px;">OUTBOUND (CLIENT → INTERNET)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:8px;">Most firewalls <strong>allow all outbound by default</strong>. Restrictive environments may block specific ports — the most common cause of RingCentral failures at enterprise sites.</p>
+  </div>
+  <div class="card" style="border-color:rgba(248,113,113,0.2);">
+    <div style="font-family:var(--mono);font-size:11px;color:#f87171;margin-bottom:10px;">INBOUND (INTERNET → INTERNAL)</div>
+    <p style="font-size:13px;color:var(--text2);">Almost always <strong>blocked by default</strong>. Return traffic from outbound connections is automatically permitted by stateful inspection — it's not counted as "inbound."</p>
+  </div>
+</div>
+<div class="note"><div class="note-label">SIP ALG — Always Disable for RingCentral</div><p><strong>SIP ALG</strong> attempts to inspect and rewrite SIP packets. It <strong>frequently corrupts SIP headers</strong> and breaks registration and calls. First troubleshooting step for any SIP issue at a customer firewall: <strong>disable SIP ALG immediately</strong>.</p></div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 04</span></div>
+  <div class="question" id="q4_1">
+    <div class="question-num">Question 1 of 1</div>
+    <div class="question-text">A customer's RingCentral app works on mobile data but fails on office Wi-Fi. Port 443 is open. What should you check next?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q4_1',1)"><span class="option-letter">A</span>Whether the RingCentral server is down</div>
+      <div class="option" onclick="answer(this,'q4_1',1)"><span class="option-letter">B</span>Whether ports 8083 (WSS) and UDP 16384–32767 (RTP) are allowed outbound, and whether SIP ALG is enabled</div>
+      <div class="option" onclick="answer(this,'q4_1',1)"><span class="option-letter">C</span>The DNS TTL of ringcentral.com</div>
+      <div class="option" onclick="answer(this,'q4_1',1)"><span class="option-letter">D</span>Whether SIP ALG is enabled — and leave it enabled to fix SIP issues</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q4_1"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m3')">← Module 03</button>
+  <button class="btn primary" onclick="showModule('m5')">Module 05: TLS/HTTPS →</button>
+</div>
+</div>
+
+<!-- MODULE 5: TLS -->
+<div class="module" id="m5">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 05</span><span class="module-badge">Security</span></div>
+  <div class="module-title">TLS / HTTPS Security</div>
+  <p class="module-subtitle">TLS is the security layer encrypting all RingCentral communications. RC requires TLS 1.2 minimum. Understanding the handshake helps diagnose certificate and connectivity failures.</p>
+</div>
+<div class="section-title">SSL → TLS Evolution</div>
+<div class="card">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+    <div style="padding:10px 14px;background:rgba(248,113,113,0.08);border-radius:8px;text-align:center;flex:1;min-width:80px;"><div style="font-family:var(--mono);font-size:10px;color:#f87171;margin-bottom:4px;">DEPRECATED</div><div style="font-size:13px;font-weight:600;">SSL 2/3</div></div>
+    <div style="padding:10px 14px;background:rgba(248,113,113,0.08);border-radius:8px;text-align:center;flex:1;min-width:80px;"><div style="font-family:var(--mono);font-size:10px;color:#f87171;margin-bottom:4px;">DEPRECATED</div><div style="font-size:13px;font-weight:600;">TLS 1.0/1.1</div></div>
+    <div style="padding:10px 14px;background:rgba(59,158,255,0.1);border:1px solid rgba(59,158,255,0.25);border-radius:8px;text-align:center;flex:1;min-width:80px;"><div style="font-family:var(--mono);font-size:10px;color:var(--accent);margin-bottom:4px;">REQUIRED</div><div style="font-size:13px;font-weight:600;">TLS 1.2</div></div>
+    <div style="padding:10px 14px;background:rgba(0,212,170,0.08);border-radius:8px;text-align:center;flex:1;min-width:80px;"><div style="font-family:var(--mono);font-size:10px;color:var(--accent2);margin-bottom:4px;">PREFERRED</div><div style="font-size:13px;font-weight:600;">TLS 1.3</div></div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);">RingCentral requires <strong>TLS 1.2 or higher</strong>. Unpatched Windows 7 and older Android versions may not support TLS 1.2, causing handshake failures.</p>
+</div>
+<div class="section-title">TLS 1.2 Handshake — Step by Step</div>
+<div class="diagram-wrap">
+  <div class="diagram-title">TLS Handshake Stepper — click tabs to advance</div>
+  <div class="stepper">
+    <div class="stepper-track">
+      <div class="stepper-tab active" onclick="tlsStep(0)">1. ClientHello</div>
+      <div class="stepper-tab" onclick="tlsStep(1)">2. ServerHello</div>
+      <div class="stepper-tab" onclick="tlsStep(2)">3. Certificate</div>
+      <div class="stepper-tab" onclick="tlsStep(3)">4. Key Exchange</div>
+      <div class="stepper-tab" onclick="tlsStep(4)">5. Finished</div>
+    </div>
+    <div class="stepper-panel active" id="tls0">
+      <span class="step-num">1</span>
+      <div style="font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:10px;">ClientHello</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Your browser announces what it supports: highest TLS version, a list of cipher suites, a random nonce, and extensions like SNI (Server Name Indication — tells the server which domain to use).</p>
+      <div class="code-block">ClientHello:
+  max_version: <span class="str">TLSv1.2</span>
+  random: <span class="num">a4f3c2...</span>
+  cipher_suites: [TLS_AES_256_GCM_SHA384, ...]
+  extensions: SNI=<span class="str">ringcentral.com</span></div>
+    </div>
+    <div class="stepper-panel" id="tls1">
+      <span class="step-num">2</span>
+      <div style="font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:10px;">ServerHello</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">The server picks one TLS version and one cipher suite from the client's list. It sends its own random nonce for key derivation.</p>
+      <div class="code-block">ServerHello:
+  version: <span class="str">TLSv1.2</span>
+  chosen_cipher: <span class="str">TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</span>
+  random: <span class="num">b7e1d9...</span></div>
+    </div>
+    <div class="stepper-panel" id="tls2">
+      <span class="step-num">3</span>
+      <div style="font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:10px;">Certificate &amp; Validation</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">The server sends its <strong>TLS certificate</strong> — signed by a trusted Certificate Authority (CA). Your browser validates: right domain? not expired? CA trusted? not revoked (CRL/OCSP)?</p>
+      <div class="concept"><div class="concept-label">Certificate Chain</div><p>Server Cert → Intermediate CA → Root CA. Your OS has a trusted root store. If any link is broken, the connection is rejected.</p></div>
+      <div class="note"><div class="note-label">CRYPT_E_NO_REVOCATION_CHECK</div><p>Windows Schannel cannot reach the CRL distribution point to check revocation. Often caused by a proxy blocking CRL URLs. Result: TLS handshake fails.</p></div>
+    </div>
+    <div class="stepper-panel" id="tls3">
+      <span class="step-num">4</span>
+      <div style="font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:10px;">Key Exchange</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Using ECDHE (Elliptic Curve Diffie-Hellman Ephemeral), both sides derive the same <strong>session key</strong> without ever transmitting it over the network.</p>
+      <div class="code-block"><span class="cm">// The session key is never transmitted:</span>
+Client: client_private + server_public → <span class="str">session_key</span>
+Server: server_private + client_public → <span class="str">session_key</span>
+<span class="cm">// Same result from different inputs — Diffie-Hellman</span></div>
+    </div>
+    <div class="stepper-panel" id="tls4">
+      <span class="step-num">5</span>
+      <div style="font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:10px;">Finished — Encrypted Channel Open</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Both sides send a <strong>Finished</strong> message encrypted with the new session key. If the other side decrypts it successfully, the handshake is complete. All subsequent traffic — HTTP, SIP, APIs — is now AES-256 encrypted.</p>
+      <div class="concept"><div class="concept-label">What RingCentral Encrypts with TLS</div><p>All <strong>SIP signaling</strong> (WSS port 8083), all <strong>REST API calls</strong> (port 443), all <strong>SRTP media</strong>, and all <strong>admin portal access</strong>. Blocking or intercepting TLS breaks everything.</p></div>
+    </div>
+    <div class="hs-controls" style="margin-top:16px;">
+      <button class="btn" onclick="tlsStep(Math.max(0,tlsCurrent-1))">← Previous</button>
+      <button class="btn primary" onclick="tlsStep(Math.min(4,tlsCurrent+1))">Next →</button>
+    </div>
+  </div>
+</div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 05</span></div>
+  <div class="question" id="q5_1">
+    <div class="question-num">Question 1 of 2</div>
+    <div class="question-text">A customer running unpatched Windows 7 SP1 gets a TLS handshake failure with RingCentral Desktop. What is the most likely root cause?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q5_1',1)"><span class="option-letter">A</span>Their DNS is not resolving ringcentral.com</div>
+      <div class="option" onclick="answer(this,'q5_1',1)"><span class="option-letter">B</span>Windows 7 SP1 does not support TLS 1.2 by default — must be enabled via registry or Windows Update</div>
+      <div class="option" onclick="answer(this,'q5_1',1)"><span class="option-letter">C</span>The server certificate has expired</div>
+      <div class="option" onclick="answer(this,'q5_1',1)"><span class="option-letter">D</span>Port 443 is blocked</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q5_1"></div>
+  </div>
+  <div class="question" id="q5_2">
+    <div class="question-num">Question 2 of 2</div>
+    <div class="question-text">During the TLS handshake, which component proves the server's identity to the client?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q5_2',2)"><span class="option-letter">A</span>The session key</div>
+      <div class="option" onclick="answer(this,'q5_2',2)"><span class="option-letter">B</span>The TCP SYN packet</div>
+      <div class="option" onclick="answer(this,'q5_2',2)"><span class="option-letter">C</span>The server's TLS certificate, signed by a trusted Certificate Authority</div>
+      <div class="option" onclick="answer(this,'q5_2',2)"><span class="option-letter">D</span>The cipher suite selection</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q5_2"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m4')">← Module 04</button>
+  <button class="btn primary" onclick="showModule('m6')">Module 06: Switching &amp; Routing →</button>
+</div>
+</div>
+
+<!-- MODULE 6: SWITCHING & ROUTING -->
+<div class="module" id="m6">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 06</span><span class="module-badge">Infrastructure</span></div>
+  <div class="module-title">Switching &amp; Routing</div>
+  <p class="module-subtitle">Switches connect devices within a network at Layer 2. Routers connect different networks at Layer 3. VLANs and QoS are essential for enterprise VoIP deployments.</p>
+</div>
+<div class="section-title">Layer 2 Switching</div>
+<div class="card">
+  <p style="margin-bottom:12px;">A <strong>switch</strong> is a Layer 2 device that forwards <strong>Ethernet frames</strong> based on MAC addresses. It learns which device is on which port and builds a MAC table — unlike a hub, it only sends frames to the correct port.</p>
+  <div class="code-block"><span class="cm">// Switch MAC address table:</span>
+Port   MAC Address          VLAN
+Gi0/1  00:1A:2B:3C:4D:5E   10   <span class="cm">← IP Phone</span>
+Gi0/2  AA:BB:CC:DD:EE:FF   20   <span class="cm">← PC</span>
+Gi0/3  11:22:33:44:55:66   10   <span class="cm">← IP Phone</span></div>
+  <div class="concept"><div class="concept-label">VLANs for Voice</div><p>Best practice: put IP phones on a <strong>dedicated Voice VLAN</strong> (e.g., VLAN 10) separate from data (VLAN 20). This allows QoS policies and separate DHCP scopes. Ports with both a phone and PC need voice VLAN trunk configuration.</p></div>
+</div>
+<div class="section-title">Layer 3 Routing</div>
+<div class="card">
+  <p style="margin-bottom:12px;">A <strong>router</strong> is a Layer 3 device that forwards <strong>IP packets</strong> between networks. It consults its routing table and forwards packets toward the next hop. Your default gateway is a router.</p>
+  <div class="code-block"><span class="cm">// Routing table (simplified):</span>
+Destination     Mask           Gateway        Interface
+0.0.0.0         0.0.0.0        203.0.113.1    WAN0  <span class="cm">← default route</span>
+192.168.1.0     255.255.255.0  0.0.0.0        LAN1  <span class="cm">← local subnet</span>
+10.0.0.0        255.0.0.0      192.168.1.254  LAN2  <span class="cm">← static route</span></div>
+</div>
+<div class="section-title">NAT and VoIP</div>
+<div class="two-col">
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px;">HOW NAT WORKS</div><p style="font-size:13px;color:var(--text2);">Router rewrites source IP from private to public when packets leave, and reverses this for responses. PAT also rewrites source port so multiple devices share one public IP.</p></div>
+  <div class="card"><div style="font-family:var(--mono);font-size:11px;color:#f87171;margin-bottom:8px;">NAT PROBLEM FOR VOIP</div><p style="font-size:13px;color:var(--text2);">SIP embeds IP addresses <em>inside</em> the payload. NAT rewrites the outer IP header but not the SIP body — so INVITE says "contact me at 192.168.1.5" which is unreachable from the internet. SIP ALG makes this worse.</p></div>
+</div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 06</span></div>
+  <div class="question" id="q6_1">
+    <div class="question-num">Question 1 of 1</div>
+    <div class="question-text">A customer has IP phones on the same VLAN as PCs and reports choppy calls during business hours. What is the best architectural fix?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q6_1',1)"><span class="option-letter">A</span>Increase the DHCP lease time</div>
+      <div class="option" onclick="answer(this,'q6_1',1)"><span class="option-letter">B</span>Move phones to a dedicated Voice VLAN and apply QoS to prioritize RTP traffic</div>
+      <div class="option" onclick="answer(this,'q6_1',1)"><span class="option-letter">C</span>Disable STP on the switch</div>
+      <div class="option" onclick="answer(this,'q6_1',1)"><span class="option-letter">D</span>Assign static IPs to the phones</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q6_1"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m5')">← Module 05</button>
+  <button class="btn primary" onclick="showModule('m7')">Module 07: Internet Fundamentals →</button>
+</div>
+</div>
+
+<!-- MODULE 7: INTERNET -->
+<div class="module" id="m7">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 07</span><span class="module-badge">Internet</span></div>
+  <div class="module-title">Internet Fundamentals</div>
+  <p class="module-subtitle">The internet is a network of networks. BGP, autonomous systems, and peering agreements are the invisible infrastructure routing packets from your customer's office to RingCentral's data centers.</p>
+</div>
+<div class="section-title">LAN vs WAN</div>
+<div class="two-col">
+  <div class="card" style="border-color:rgba(59,158,255,0.2);">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px;">LAN — Local Area Network</div>
+    <p style="font-size:13px;color:var(--text2);">A network you own and control. Your office, home, or data center. Ethernet + Wi-Fi within a building. Speeds: 1–10 Gbps. You manage it. Low latency (&lt;1ms).</p>
+  </div>
+  <div class="card" style="border-color:rgba(0,212,170,0.2);">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent2);margin-bottom:8px;">WAN — Wide Area Network</div>
+    <p style="font-size:13px;color:var(--text2);">The internet, or private circuits between sites. You pay an ISP. You don't control the path. Variable latency (10–200ms+). Performance depends on ISP routing, peering, and congestion.</p>
+  </div>
+</div>
+<div class="section-title">BGP, Autonomous Systems &amp; Peering</div>
+<div class="card">
+  <p style="margin-bottom:14px;">The internet is thousands of <strong>Autonomous Systems (AS)</strong> — independently managed networks each with a unique ASN. BGP (Border Gateway Protocol) is how they advertise reachable IP prefixes to each other.</p>
+  <div class="two-col" style="margin-top:12px;">
+    <div><div style="font-family:var(--mono);font-size:11px;color:var(--accent3);margin-bottom:6px;">AUTONOMOUS SYSTEM</div><p style="font-size:13px;color:var(--text2);">A collection of IP prefixes under one administrative policy. Your ISP has an ASN. RingCentral has an ASN. AWS has one. Each announces what IPs it can route to.</p></div>
+    <div><div style="font-family:var(--mono);font-size:11px;color:var(--accent4);margin-bottom:6px;">PEERING vs TRANSIT</div><p style="font-size:13px;color:var(--text2);"><strong>Peering:</strong> two ASes directly exchanging traffic (often free at IXPs). <strong>Transit:</strong> paying an upstream provider to carry your traffic to the broader internet.</p></div>
+  </div>
+  <div class="note" style="margin-top:12px;"><div class="note-label">RingCentral Relevance</div><p>Poor call quality between a customer and RingCentral can be caused by <strong>suboptimal BGP routing</strong> — an ISP that doesn't peer efficiently with RingCentral's edge. <code style="font-family:var(--mono);font-size:12px;color:var(--accent2)">traceroute</code> reveals hop count and where latency spikes, helping identify whether the problem is LAN, ISP, or internet transit.</p></div>
+</div>
+<div class="quiz-wrap">
+  <div class="quiz-title">Knowledge Check <span class="quiz-badge">Module 07</span></div>
+  <div class="question" id="q7_1">
+    <div class="question-num">Question 1 of 1</div>
+    <div class="question-text">A customer reports 200ms+ call latency to external calls only. Internal calls are fine. Traceroute shows 5ms to gateway, 8ms to ISP, then a jump to 220ms at hop 6. Where is the problem?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'q7_1',1)"><span class="option-letter">A</span>LAN problem — VLAN misconfiguration at the customer site</div>
+      <div class="option" onclick="answer(this,'q7_1',1)"><span class="option-letter">B</span>WAN/Internet problem — ISP routing to RingCentral is inefficient; escalate to ISP with traceroute evidence</div>
+      <div class="option" onclick="answer(this,'q7_1',1)"><span class="option-letter">C</span>TLS handshake is adding latency</div>
+      <div class="option" onclick="answer(this,'q7_1',1)"><span class="option-letter">D</span>DNS is resolving to a distant server</div>
+    </div>
+    <div class="quiz-feedback" id="fb_q7_1"></div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m6')">← Module 06</button>
+  <button class="btn primary" onclick="showModule('m8')">Module 08: Troubleshooting Tools →</button>
+</div>
+</div>
+
+<!-- MODULE 8: TROUBLESHOOTING -->
+<div class="module" id="m8">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 08</span><span class="module-badge">Practical Skills</span></div>
+  <div class="module-title">Troubleshooting Tools</div>
+  <p class="module-subtitle">These command-line tools are your diagnostic toolkit. Each probes a specific layer. Knowing which tool to reach for — and how to read the output — is the difference between systematic diagnosis and random guessing.</p>
+</div>
+
+<div class="section-title">ping — Layer 3 Reachability</div>
+<div class="card">
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Tests whether a host is reachable and measures round-trip latency. Uses ICMP Echo. <strong>Does not test TCP/UDP connectivity</strong> — a host can be pingable but have all TCP ports blocked.</p>
+  <div class="code-block"><span class="cm"># Test reachability and latency</span>
+ping ringcentral.com
+
+64 bytes from 104.18.32.45: icmp_seq=0 time=<span class="num">18.4</span> ms
+64 bytes from 104.18.32.45: icmp_seq=1 time=<span class="num">17.9</span> ms
+<span class="cm"># Good: &lt;50ms, 0% loss. Concerning: &gt;150ms or any packet loss</span></div>
+</div>
+
+<div class="section-title">traceroute / tracert — Path Discovery</div>
+<div class="card">
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Shows every router (hop) on the path to a destination and latency at each hop. Identifies where latency spikes or packet loss occurs. Essential for ISP escalations.</p>
+  <div class="code-block"><span class="cm"># Windows: tracert    Linux/Mac: traceroute</span>
+tracert ringcentral.com
+
+ 1    1ms  192.168.1.1       <span class="cm">← Your router (LAN)</span>
+ 2   12ms  10.0.0.1          <span class="cm">← ISP first hop</span>
+ 3   14ms  ae7.isp.net       <span class="cm">← ISP backbone</span>
+ 4  <span class="kw">180ms</span> transit.isp.net   <span class="cm">← ⚠ Latency spike here = ISP issue</span>
+ 5  182ms  104.18.32.45      <span class="cm">← RingCentral edge</span></div>
+</div>
+
+<div class="section-title">nslookup / dig — DNS Diagnostics</div>
+<div class="card">
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Tests DNS resolution. Always verify DNS works before deeper troubleshooting. <code style="font-family:var(--mono);font-size:12px;color:var(--accent2)">dig</code> provides more detail including which server responded and query time.</p>
+  <div class="code-block"><span class="cm"># Test DNS resolution</span>
+nslookup ringcentral.com
+Server:  192.168.1.1      <span class="cm">← DNS server that answered</span>
+Name:    ringcentral.com
+Address: <span class="num">104.18.32.45</span>
+
+<span class="cm"># Test against a specific server (bypasses local resolver)</span>
+nslookup ringcentral.com 8.8.8.8</div>
+</div>
+
+<div class="section-title">netstat — Active Connections</div>
+<div class="card">
+  <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Shows all active TCP/UDP connections. Use to verify whether a RingCentral connection is ESTABLISHED or stuck in SYN_SENT (firewall blocking).</p>
+  <div class="code-block"><span class="cm"># Show active connections</span>
+netstat -an | findstr :8083
+
+TCP  192.168.1.5:51235  104.18.32.45:8083  <span class="kw">ESTABLISHED</span>  <span class="cm">← good</span>
+TCP  192.168.1.5:51236  104.18.32.45:8083  <span class="num">SYN_SENT</span>     <span class="cm">← ⚠ blocked</span></div>
+</div>
+
+<div class="section-title">Systematic OSI Bottom-Up Methodology</div>
+<div class="card">
+  <p style="margin-bottom:12px;">Always work <strong>bottom-up through the OSI model</strong>. Fix lower-layer problems first.</p>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(248,113,113,0.06);border-radius:8px;border-left:3px solid #f87171;">
+      <span style="font-family:var(--mono);font-size:11px;color:#f87171;min-width:50px;margin-top:2px;">L1–2</span>
+      <span style="font-size:13px;color:var(--text2);">Can they ping the default gateway? Cable connected? Switch port errors? PoE status?</span>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(52,211,153,0.06);border-radius:8px;border-left:3px solid #34d399;">
+      <span style="font-family:var(--mono);font-size:11px;color:#34d399;min-width:50px;margin-top:2px;">L3</span>
+      <span style="font-size:13px;color:var(--text2);">Can they ping 8.8.8.8? Valid IP/gateway/DNS via DHCP? Routing correct?</span>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(96,165,250,0.06);border-radius:8px;border-left:3px solid #60a5fa;">
+      <span style="font-family:var(--mono);font-size:11px;color:#60a5fa;min-width:50px;margin-top:2px;">L4</span>
+      <span style="font-size:13px;color:var(--text2);">Can they reach port 443 and 8083? ESTABLISHED or SYN_SENT? UDP 16384–32767 blocked?</span>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(244,114,182,0.06);border-radius:8px;border-left:3px solid #f472b6;">
+      <span style="font-family:var(--mono);font-size:11px;color:#f472b6;min-width:50px;margin-top:2px;">L7</span>
+      <span style="font-size:13px;color:var(--text2);">Does DNS resolve? Can they load HTTPS in a browser? Any certificate errors?</span>
+    </div>
+  </div>
+</div>
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m7')">← Module 07</button>
+  <button class="btn primary" onclick="showModule('m9')">Module 09: Capstone →</button>
+</div>
+</div>
+
+<!-- MODULE 9: CAPSTONE -->
+<div class="module" id="m9">
+<div class="module-header">
+  <div class="module-eyebrow"><span class="module-num">Module 09</span><span class="module-badge">Capstone</span></div>
+  <div class="module-title">How a Browser Loads HTTPS</div>
+  <p class="module-subtitle">Every concept from this curriculum — working together in a single 3-second action. You type <code style="font-family:var(--mono);font-size:14px;color:var(--accent2);background:rgba(0,212,170,0.1);padding:2px 8px;border-radius:4px;">https://ringcentral.com</code> — here is exactly what happens.</p>
+</div>
+<div class="section-title">The Complete Journey — click each step to expand</div>
+<div class="https-flow" id="httpsFlow">
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div><div class="https-step-line"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 1 · Module 2</div>
+      <div class="https-step-title">DNS Resolution</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;">OS checks local DNS cache — miss. Queries the <strong>DNS resolver</strong> assigned by DHCP. Resolver walks the hierarchy: Root → .com TLD → ringcentral.com authoritative NS → IP address returned.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#f472b6;border-color:rgba(244,114,182,0.3);background:rgba(244,114,182,0.08);">L7 Application</span>
+          <span class="layer-pill" style="color:#34d399;border-color:rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);">L3 Network</span>
+          <span class="layer-pill" style="color:var(--accent3);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">UDP port 53</span>
+        </div>
+        <div class="code-block" style="margin-top:10px;font-size:12px;">nslookup ringcentral.com → 104.18.32.45</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div><div class="https-step-line"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 2 · Modules 2, 6, 7</div>
+      <div class="https-step-title">Routing &amp; NAT</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;">OS builds an IP packet destined for 104.18.32.45. Routing table: not local → send to default gateway. Router performs <strong>NAT</strong> (private IP → public IP). Packet travels across ISP networks via <strong>BGP</strong> between autonomous systems to RingCentral's edge.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#34d399;border-color:rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);">L3 Routing</span>
+          <span class="layer-pill" style="color:var(--accent);border-color:rgba(59,158,255,0.3);background:rgba(59,158,255,0.08);">NAT</span>
+          <span class="layer-pill" style="color:var(--accent3);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">BGP / AS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div><div class="https-step-line"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 3 · Modules 3, 4</div>
+      <div class="https-step-title">TCP Three-Way Handshake (port 443)</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;">Browser opens a TCP connection to port 443. <strong>SYN → SYN-ACK → ACK.</strong> The firewall records this as a stateful outbound connection — return traffic will be automatically permitted. Connection is ESTABLISHED.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#60a5fa;border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);">L4 Transport</span>
+          <span class="layer-pill" style="color:#60a5fa;border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);">TCP port 443</span>
+          <span class="layer-pill" style="color:var(--accent4);border-color:rgba(244,114,182,0.3);background:rgba(244,114,182,0.08);">Firewall state entry created</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div><div class="https-step-line"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 4 · Module 5</div>
+      <div class="https-step-title">TLS 1.2 Handshake</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;"><strong>ClientHello</strong> → ServerHello + certificate → certificate validation (CA root store, CRL check) → ECDHE key exchange → both sides derive session key → <strong>Finished.</strong> All subsequent data is AES-256 encrypted.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#c084fc;border-color:rgba(192,132,252,0.3);background:rgba(192,132,252,0.08);">L6 Presentation</span>
+          <span class="layer-pill" style="color:#818cf8;border-color:rgba(129,140,248,0.3);background:rgba(129,140,248,0.08);">L5 Session</span>
+          <span class="layer-pill" style="color:var(--accent);border-color:rgba(59,158,255,0.3);background:rgba(59,158,255,0.08);">TLS 1.2 / AES-256</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div><div class="https-step-line"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 5 · Modules 4, 5</div>
+      <div class="https-step-title">HTTP GET Request &amp; Response</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;">Browser sends encrypted <strong>HTTP GET /</strong> through the TLS tunnel. Server decrypts, processes, returns HTML/CSS/JS — also encrypted. Firewall permits the response (stateful match). Data flows back through NAT and ISP to your machine.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#f472b6;border-color:rgba(244,114,182,0.3);background:rgba(244,114,182,0.08);">L7 HTTP</span>
+          <span class="layer-pill" style="color:#c084fc;border-color:rgba(192,132,252,0.3);background:rgba(192,132,252,0.08);">inside TLS</span>
+          <span class="layer-pill" style="color:#60a5fa;border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);">inside TCP</span>
+          <span class="layer-pill" style="color:#34d399;border-color:rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);">inside IP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="https-step" onclick="toggleHttpsStep(this)">
+    <div class="https-step-spine"><div class="https-step-dot"></div></div>
+    <div class="https-step-body">
+      <div class="https-step-num">STEP 6 · Modules 2, 3</div>
+      <div class="https-step-title">Page Renders — Additional Connections</div>
+      <div class="https-step-sub">
+        <p style="margin-bottom:8px;">Browser parses HTML and finds images, CSS, JS, CDN resources. <strong>Each triggers a new DNS lookup + TCP handshake + TLS handshake</strong> — or reuses an existing connection (HTTP keep-alive / HTTP/2 multiplexing). When done, connections close with a <strong>TCP FIN/ACK</strong> exchange.</p>
+        <div class="https-step-layers">
+          <span class="layer-pill" style="color:#f472b6;border-color:rgba(244,114,182,0.3);background:rgba(244,114,182,0.08);">L7 HTML/CSS/JS</span>
+          <span class="layer-pill" style="color:var(--accent2);border-color:rgba(0,212,170,0.3);background:rgba(0,212,170,0.08);">Multiple DNS lookups</span>
+          <span class="layer-pill" style="color:#60a5fa;border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);">TCP FIN/ACK teardown</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-title" style="margin-top:40px;">OSI Layer Summary</div>
+<div class="card">
+  <table class="layer-table">
+    <tr><th>Step</th><th>OSI Layer(s)</th><th>Protocol</th><th>Module</th></tr>
+    <tr><td>DNS Resolution</td><td><span class="layer-num l7">L7</span> + <span class="layer-num l3">L3</span></td><td>DNS / UDP 53</td><td>Module 2</td></tr>
+    <tr><td>Routing &amp; NAT</td><td><span class="layer-num l3">L3</span></td><td>IP / BGP</td><td>Modules 2, 6, 7</td></tr>
+    <tr><td>TCP Handshake</td><td><span class="layer-num l4">L4</span></td><td>TCP port 443</td><td>Module 3</td></tr>
+    <tr><td>TLS Handshake</td><td><span class="layer-num l6">L6</span> + <span class="layer-num l5">L5</span></td><td>TLS 1.2</td><td>Module 5</td></tr>
+    <tr><td>HTTP Request</td><td><span class="layer-num l7">L7</span></td><td>HTTP inside TLS/TCP/IP</td><td>Module 4</td></tr>
+    <tr><td>Connection Close</td><td><span class="layer-num l4">L4</span></td><td>TCP FIN/ACK</td><td>Module 3</td></tr>
+  </table>
+</div>
+
+<div class="quiz-wrap">
+  <div class="quiz-title">Final Assessment <span class="quiz-badge">Capstone</span></div>
+  <div class="question" id="qc_1">
+    <div class="question-num">Question 1 of 3</div>
+    <div class="question-text">A customer says "RingCentral doesn't work at our office but works on my phone." You ask them to open a browser and go to https://ringcentral.com — it loads fine. What does this tell you?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'qc_1',2)"><span class="option-letter">A</span>The RingCentral servers are down</div>
+      <div class="option" onclick="answer(this,'qc_1',2)"><span class="option-letter">B</span>DNS is broken</div>
+      <div class="option" onclick="answer(this,'qc_1',2)"><span class="option-letter">C</span>Port 443/TCP and basic connectivity work — the issue is likely the specific port the app uses (8083/WSS or UDP/RTP)</div>
+      <div class="option" onclick="answer(this,'qc_1',2)"><span class="option-letter">D</span>The customer's TCP stack is corrupted</div>
+    </div>
+    <div class="quiz-feedback" id="fb_qc_1"></div>
+  </div>
+  <div class="question" id="qc_2">
+    <div class="question-num">Question 2 of 3</div>
+    <div class="question-text">Correct order for loading https://example.com: (1) TLS handshake, (2) DNS lookup, (3) TCP SYN sent, (4) HTTP GET sent</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'qc_2',1)"><span class="option-letter">A</span>1 → 2 → 3 → 4</div>
+      <div class="option" onclick="answer(this,'qc_2',1)"><span class="option-letter">B</span>2 → 3 → 1 → 4</div>
+      <div class="option" onclick="answer(this,'qc_2',1)"><span class="option-letter">C</span>3 → 2 → 1 → 4</div>
+      <div class="option" onclick="answer(this,'qc_2',1)"><span class="option-letter">D</span>2 → 1 → 3 → 4</div>
+    </div>
+    <div class="quiz-feedback" id="fb_qc_2"></div>
+  </div>
+  <div class="question" id="qc_3">
+    <div class="question-num">Question 3 of 3</div>
+    <div class="question-text">A traceroute shows 5ms to gateway, 8ms to ISP, then a jump to 220ms at hop 6, then 222ms at RingCentral's edge. Where is the problem and who owns it?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,'qc_3',1)"><span class="option-letter">A</span>Customer LAN — check the switch</div>
+      <div class="option" onclick="answer(this,'qc_3',1)"><span class="option-letter">B</span>Internet/WAN at hop 6 — ISP or transit routing issue, not fixable on the customer's LAN; escalate to ISP</div>
+      <div class="option" onclick="answer(this,'qc_3',1)"><span class="option-letter">C</span>RingCentral servers are overloaded</div>
+      <div class="option" onclick="answer(this,'qc_3',1)"><span class="option-letter">D</span>Customer firewall is adding latency</div>
+    </div>
+    <div class="quiz-feedback" id="fb_qc_3"></div>
+  </div>
+</div>
+
+<div style="margin-top:32px;padding:24px;background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);border-radius:12px;text-align:center;">
+  <div style="font-family:var(--head);font-size:20px;font-weight:700;color:var(--accent2);margin-bottom:8px;">Training Complete</div>
+  <p style="font-size:14px;color:var(--text2);">You've completed the Network &amp; Server Fundamentals curriculum. Use the sidebar to revisit any module, or retake knowledge checks to reinforce the concepts.</p>
+</div>
+
+<div class="module-nav">
+  <button class="btn" onclick="showModule('m8')">← Module 08</button>
+  <button class="btn primary" onclick="showModule('welcome')">↩ Back to Overview</button>
+</div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── MODULE NAVIGATION ──
+const moduleOrder=['welcome','m1','m2','m3','m4','m5','m6','m7','m8','m9'];
+let visitedModules=new Set(['welcome']);
+function showModule(id){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const mod=document.getElementById(id);
+  if(mod){mod.classList.add('active');window.scrollTo(0,0);}
+  const idx=moduleOrder.indexOf(id);
+  if(idx>=0){document.querySelectorAll('.nav-item')[idx]?.classList.add('active');visitedModules.add(id);updateProgress();}
+  if(window.innerWidth<=800)document.getElementById('sidebar').classList.remove('open');
+}
+function updateProgress(){
+  document.getElementById('progressFill').style.width=Math.round(visitedModules.size/moduleOrder.length*100)+'%';
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+// ── OSI TOGGLE ──
+function toggleOSI(el,detailId){
+  const detail=document.getElementById(detailId);
+  const wasOpen=detail.classList.contains('open');
+  document.querySelectorAll('.osi-detail').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.osi-layer').forEach(l=>l.classList.remove('expanded'));
+  if(!wasOpen){detail.classList.add('open');el.classList.add('expanded');}
+}
+
+// ── TCP HANDSHAKE ──
+let hsRunning=false;
+function animateHandshake(){
+  if(hsRunning)return;
+  hsRunning=true;
+  resetHandshake();
+  const steps=[
+    {el:'hs_syn',msg:'Step 1: Client sends SYN (seq=1000) — "I want to connect"'},
+    {el:'hs_synack',msg:'Step 2: Server replies SYN-ACK (ack=1001) — "OK, I\'m ready"'},
+    {el:'hs_ack',msg:'Step 3: Client sends ACK (ack=1002) — "Great, let\'s go"'},
+    {el:'hs_conn',msg:'✓ Connection ESTABLISHED — data can now flow'}
+  ];
+  steps.forEach((s,i)=>setTimeout(()=>{
+    document.getElementById(s.el).style.opacity='1';
+    document.getElementById('hsStatus').textContent=s.msg;
+    if(i===steps.length-1)hsRunning=false;
+  },i*900));
+}
+function resetHandshake(){
+  ['hs_syn','hs_synack','hs_ack','hs_conn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.opacity='0';});
+  document.getElementById('hsStatus').textContent='Click Animate to walk through the handshake';
+  hsRunning=false;
+}
+
+// ── TLS STEPPER ──
+let tlsCurrent=0;
+function tlsStep(n){
+  n=Math.max(0,Math.min(4,n));
+  document.querySelectorAll('.stepper-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.stepper-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  tlsCurrent=n;
+}
+
+// ── DNS ANIMATION ──
+function animateDNS(){
+  resetDNS();
+  const msgs=['OS checks local cache — cache miss','Query sent to local DNS resolver','Resolver asks root: "Who handles .com?"','Root directs to .com TLD nameserver','TLD directs to ringcentral.com NS','✓ IP returned: 104.18.32.45'];
+  for(let i=0;i<=5;i++){
+    setTimeout(()=>{
+      for(let j=0;j<6;j++){
+        const dn=document.getElementById('dn'+j);
+        const da=document.getElementById('da'+j);
+        if(dn){dn.classList.toggle('active',j===i);dn.classList.toggle('done',j<i);}
+        if(da)da.classList.toggle('active',j===i-1);
+      }
+      document.getElementById('dnsStatus').textContent=msgs[i];
+    },i*700);
+  }
+}
+function resetDNS(){
+  for(let i=0;i<6;i++){
+    const dn=document.getElementById('dn'+i);const da=document.getElementById('da'+i);
+    if(dn){dn.classList.remove('active','done');}if(da)da.classList.remove('active');
+  }
+  document.getElementById('dnsStatus').textContent='Click Animate to walk through DNS resolution';
+}
+
+// ── SUBNET CALCULATOR ──
+function calcSubnet(){
+  const ipStr=document.getElementById('ipInput').value.trim();
+  const cidr=parseInt(document.getElementById('cidrInput').value);
+  if(isNaN(cidr)||cidr<1||cidr>30)return;
+  const parts=ipStr.split('.').map(Number);
+  if(parts.length!==4||parts.some(p=>isNaN(p)||p<0||p>255))return;
+  const ipInt=((parts[0]<<24)|(parts[1]<<16)|(parts[2]<<8)|parts[3])>>>0;
+  const maskInt=(cidr===0?0:(~0<<(32-cidr)))>>>0;
+  const netInt=(ipInt&maskInt)>>>0;
+  const bcInt=(netInt|(~maskInt>>>0))>>>0;
+  const hosts=Math.max(0,(1<<(32-cidr))-2);
+  const fmt=n=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+  document.getElementById('sc_net').textContent=fmt(netInt);
+  document.getElementById('sc_bc').textContent=fmt(bcInt);
+  document.getElementById('sc_mask').textContent=fmt(maskInt);
+  document.getElementById('sc_hosts').textContent=hosts.toLocaleString();
+  document.getElementById('sc_first').textContent=hosts>0?fmt(netInt+1):'N/A';
+  document.getElementById('sc_last').textContent=hosts>0?fmt(bcInt-1):'N/A';
+}
+calcSubnet();
+
+// ── HTTPS STEP TOGGLE ──
+function toggleHttpsStep(el){
+  const wasActive=el.classList.contains('active');
+  document.querySelectorAll('.https-step').forEach(s=>s.classList.remove('active'));
+  if(!wasActive)el.classList.add('active');
+}
+
+// ── QUIZ ENGINE ──
+const answers={
+  q1_1:{correct:1,ok:'Correct! Half-duplex is a Layer 2 (Data Link) issue — it affects how Ethernet frames are sent and received on the segment.',bad:'Not quite. Half-duplex negotiation is a Layer 2 (Data Link) issue, affecting Ethernet frame transmission.'},
+  q1_2:{correct:2,ok:'Correct! RTP uses UDP because voice is latency-sensitive. A retransmitted voice packet arriving 200ms late is useless.',bad:'Not quite. RTP uses UDP — voice needs low latency more than guaranteed delivery. A late retransmit is useless.'},
+  q2_1:{correct:1,ok:'Correct! The phone should renew its lease at 50% of the lease time. If it fails, the lease expires and the IP is lost.',bad:'Not quite. The phone should renew at 50% of lease time (4 hours). If renewal fails, the IP is lost at expiry.'},
+  q2_2:{correct:2,ok:'Correct! /26 = 64 total IPs. Subtract 2 (network + broadcast) = 62 usable hosts.',bad:'Not quite. /26 = 2^(32-26) = 64 total. Minus network and broadcast = 62 usable hosts.'},
+  q3_1:{correct:1,ok:'Correct! The server always responds to a client SYN with SYN-ACK. Step 2 of the three-way handshake.',bad:'Not quite. The correct response is SYN-ACK — acknowledging the SYN and sending the server\'s own SYN.'},
+  q3_2:{correct:1,ok:'Correct! SYN with no SYN-ACK = firewall is dropping the packet. The TCP handshake never completes.',bad:'Not quite. If DNS had failed, there would be no packets at all. SYN with no SYN-ACK means the firewall is blocking port 8083.'},
+  q4_1:{correct:1,ok:'Correct! Port 443 handles the portal but the app also needs 8083 (WSS signaling) and UDP 16384–32767 (RTP voice). SIP ALG should be disabled.',bad:'Not quite. Port 443 works but RC also needs 8083 for WSS and UDP for RTP. SIP ALG should always be disabled for RingCentral.'},
+  q5_1:{correct:1,ok:'Correct! Windows 7 SP1 ships with TLS 1.0 by default. TLS 1.2 requires Windows Updates or registry changes.',bad:'Not quite. Windows 7 SP1 does not support TLS 1.2 by default — it must be explicitly enabled.'},
+  q5_2:{correct:2,ok:'Correct! The TLS certificate is signed by a trusted CA and proves the server\'s identity. The browser validates the chain, expiry, domain, and revocation.',bad:'Not quite. The TLS certificate, signed by a trusted Certificate Authority, is what proves identity.'},
+  q6_1:{correct:1,ok:'Correct! Mixing voice and data causes RTP to compete with large transfers. A Voice VLAN + QoS ensures phones get priority.',bad:'Not quite. The fix is a dedicated Voice VLAN with QoS prioritization of RTP traffic.'},
+  q7_1:{correct:1,ok:'Correct! LAN latency is fine (1–8ms). The jump at hop 6 is deep in the internet path — an ISP or transit routing issue. Provide traceroute to the ISP.',bad:'Not quite. The LAN hops are healthy. The spike at hop 6 is in the internet path — an ISP issue.'},
+  qc_1:{correct:2,ok:'Correct! HTTPS loading means DNS and port 443/TCP work. The app\'s failure points to a different port — likely 8083 (WSS) or UDP (RTP) being blocked.',bad:'Not quite. If the website loads, DNS and port 443 work. The app failure points to port 8083 or UDP being blocked.'},
+  qc_2:{correct:1,ok:'Correct! DNS first (get the IP), then TCP SYN (open connection), then TLS (secure it), then HTTP (send the request).',bad:'Not quite. The order is: DNS lookup → TCP SYN → TLS handshake → HTTP GET.'},
+  qc_3:{correct:1,ok:'Correct! LAN hops are fine (1–8ms). The spike at hop 6 is in the internet path — an ISP or transit routing issue outside the customer\'s control.',bad:'Not quite. The latency spike at hop 6 is in the WAN/internet path — an ISP routing problem, not a LAN issue.'}
+};
+
+function answer(optEl,qId,selectedIdx){
+  const q=document.getElementById(qId);
+  if(q.dataset.answered)return;
+  q.dataset.answered='true';
+  const opts=q.querySelectorAll('.option');
+  const correct=answers[qId].correct;
+  const isRight=selectedIdx===correct;
+  opts.forEach((o,i)=>{
+    if(i===correct)o.classList.add('correct');
+    else if(i===selectedIdx)o.classList.add('wrong');
+    o.style.pointerEvents='none';
+  });
+  const fb=document.getElementById('fb_'+qId);
+  if(fb){
+    fb.textContent=(isRight?'✓ ':'✗ ')+(isRight?answers[qId].ok:answers[qId].bad);
+    fb.className='quiz-feedback show '+(isRight?'ok':'bad');
+  }
+}
+</script>
+</body>
+</html>
