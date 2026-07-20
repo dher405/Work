@@ -10262,16 +10262,16 @@
         }
       },
       "night": {
-        "name": "Baranee Selvendran",
-        "email": "baranee.selvendran@ringcentral.com",
+        "name": "Andy Connolly",
+        "email": "andy.connolly@ringcentral.com",
         "shift": "night",
         "schedule": {
           "sun": "OFF",
-          "mon": "02:00-10:00",
-          "tue": "02:00-10:00",
-          "wed": "02:00-10:00",
-          "thu": "02:00-10:00",
-          "fri": "02:00-10:00",
+          "mon": "03:00-09:00",
+          "tue": "03:00-09:00",
+          "wed": "03:00-09:00",
+          "thu": "03:00-09:00",
+          "fri": "03:00-09:00",
           "sat": "OFF"
         }
       }
