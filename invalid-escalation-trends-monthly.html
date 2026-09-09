@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invalid Escalation Trends — Monthly View</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 32px 24px; }
+  .dashboard { max-width: 920px; margin: 0 auto; }
+  .header { margin-bottom: 18px; }
+  .header h1 { font-size: 21px; font-weight: 700; margin-bottom: 4px; }
+  .header .subtitle { font-size: 13px; color: #666; }
+  .kpi-row { display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 110px; background: #f7f7f8; border-radius: 8px; padding: 13px 15px; }
+  .kpi .label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: #666; margin-bottom: 3px; }
+  .kpi .value { font-size: 23px; font-weight: 700; }
+  .kpi .sub { font-size: 10px; color: #666; margin-top: 2px; }
+  .kpi .sub.good { color: #16a34a; }
+  .section { margin-bottom: 26px; }
+  .section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .chart-box { background: #f7f7f8; border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+  canvas { width: 100% !important; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 7px 10px; border-bottom: 2px solid #e0e0e0; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .3px; font-size: 10px; }
+  td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+  tr:hover td { background: #f9f9f9; }
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .badge-red { background: #fecaca; color: #991b1b; }
+  .badge-yellow { background: #fef08a; color: #854d0e; }
+  .badge-green { background: #bbf7d0; color: #166534; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+  .tab { padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: transparent; color: #1a1a1a; }
+  .tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .mom-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .mom-card { flex: 1; min-width: 180px; border-radius: 8px; padding: 14px 16px; }
+  .mom-card h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: #666; margin-bottom: 6px; }
+  .mom-card .big { font-size: 28px; font-weight: 700; }
+  .mom-card .detail { font-size: 11px; margin-top: 4px; color: #555; line-height: 1.5; }
+  .mom-jul { background: #eff6ff; }
+  .mom-aug { background: #fef3c7; }
+  .mom-sep { background: #f0fdf4; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="header">
+    <h1>Invalid Escalation Trends</h1>
+    <div class="subtitle">Jul 23 to Sep 9, 2026 · T3-rejection-confirmed cases only · 22 total</div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">This Week</div><div class="value">3</div><div class="sub good">↓ 25% vs last week</div></div>
+    <div class="kpi"><div class="label">7-Week Avg</div><div class="value">3.1</div><div class="sub">per week</div></div>
+    <div class="kpi"><div class="label">Peak Week</div><div class="value">8</div><div class="sub">Aug 20</div></div>
+    <div class="kpi"><div class="label">Top Reason</div><div class="value" style="font-size:14px">Poor Docs</div><div class="sub">36% of confirmed rejections</div></div>
+  </div>
+
+  <!-- Weekly Trend Chart -->
+  <div class="section">
+    <div class="section-title">Weekly Confirmed Rejections</div>
+    <div class="chart-box"><canvas id="weeklyChart" height="220"></canvas></div>
+  </div>
+
+  <!-- Top 3 Reasons -->
+  <div class="section">
+    <div class="section-title">Top 3 Reasons</div>
+    <div class="chart-box" style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+      <div style="flex:0 0 200px;"><canvas id="reasonChart" height="200"></canvas></div>
+      <div style="flex:1; min-width:200px; font-size:13px; line-height:1.7;">
+        <strong style="color:#f59e0b;">1. Poor Case Documentation (8)</strong> — Missing T3 template, incomplete reproduction steps, no call samples or timestamps.<br>
+        <strong style="color:#ef4444;">2. Insufficient Troubleshooting (7)</strong> — Escalated before completing expected diagnostic steps (logs, HAR, no-ring diagnostic).<br>
+        <strong style="color:#94a3b8;">3. Others (6)</strong> — Wrong team/category, process violations, billing issues sent to technical T3.
+      </div>
+    </div>
+  </div>
+
+  <!-- Reason Trend by MONTH (replaces weekly) -->
+  <div class="section">
+    <div class="section-title">Reason Trend by Month</div>
+    <div class="mom-row">
+      <div class="mom-card mom-jul">
+        <h3>July (partial: Jul 23–31)</h3>
+        <div class="big">3</div>
+        <div class="detail">
+          Poor Docs: 3 · No TS: 0 · Others: 0<br>
+          Avg 1.5/wk across 2 weeks<br>
+          All 3 were documentation gaps
+        </div>
+      </div>
+      <div class="mom-card mom-aug">
+        <h3>August</h3>
+        <div class="big">16</div>
+        <div class="detail">
+          Poor Docs: 4 · No TS: 5 · Others: 6 · Inaccurate: 1<br>
+          Avg 3.6/wk across 4.4 weeks<br>
+          <strong style="color:#dc2626">↑ 433% vs Jul</strong> · "No Troubleshooting" emerged as a new category
+        </div>
+      </div>
+      <div class="mom-card mom-sep">
+        <h3>September (partial: Sep 1–9)</h3>
+        <div class="big">3</div>
+        <div class="detail">
+          Poor Docs: 1 · No TS: 1 · Others: 1<br>
+          Avg 3.0/wk (1 week so far)<br>
+          <strong style="color:#16a34a">↓ 17% weekly run-rate vs Aug</strong> · Evenly split across reasons
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box" style="margin-top:14px;"><canvas id="momStackedChart" height="220"></canvas></div>
+
+    <!-- Monthly detail table -->
+    <div style="overflow-x:auto; margin-top:12px;">
+      <table>
+        <thead><tr><th>Month</th><th>Total</th><th>Poor Doc</th><th>No TS</th><th>Others</th><th>Inaccurate</th><th>Avg/Wk</th><th>MoM Change</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>July</strong> <span style="color:#999;font-size:10px">(partial)</span></td>
+            <td><strong>3</strong></td><td>3</td><td>0</td><td>0</td><td>0</td>
+            <td>1.5</td><td>—</td>
+          </tr>
+          <tr>
+            <td><strong>August</strong></td>
+            <td><strong>16</strong></td><td>4</td><td>5</td><td>6</td><td>1</td>
+            <td>3.6</td><td style="color:#dc2626">+433%</td>
+          </tr>
+          <tr>
+            <td><strong>September</strong> <span style="color:#999;font-size:10px">(partial)</span></td>
+            <td><strong>3</strong></td><td>1</td><td>1</td><td>1</td><td>0</td>
+            <td>3.0</td><td style="color:#16a34a">-17% run-rate</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- People & Managers -->
+  <div class="section">
+    <div class="section-title">Who Needs Coaching?</div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('people')">By T2 Escalator</button>
+      <button class="tab" onclick="showTab('managers')">By Manager</button>
+    </div>
+    <div id="people-tab">
+      <table>
+        <thead><tr><th>T2 Escalator</th><th>Manager</th><th>Rejections</th><th>Weeks</th><th>Most Common Gap</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Stuart Seckington</strong></td><td>Dave Herron</td><td>3</td><td>Jul 23, Aug 6, Aug 20</td><td>Poor documentation</td><td><span class="badge badge-green">None since Aug</span></td></tr>
+          <tr><td><strong>Bozhidar Velinov</strong></td><td>Ivan Belchev</td><td>2</td><td>Aug 20, Aug 27</td><td>No troubleshooting / Others</td><td><span class="badge badge-green">None since Aug</span></td></tr>
+          <tr><td><strong>Stanislav Ilev</strong></td><td>Ivan Belchev</td><td>2</td><td>Aug 13, Aug 20</td><td>Poor documentation</td><td><span class="badge badge-green">None since Aug</span></td></tr>
+          <tr><td><strong>Paulo Lagradante</strong></td><td>Alejandro Dineros</td><td>1</td><td>Sep 3</td><td>Missing repro steps</td><td><span class="badge badge-yellow">This week</span></td></tr>
+          <tr><td><strong>Thomas Taylor</strong></td><td>Jeffrey Perkins</td><td>1</td><td>Sep 3</td><td>Missing HAR + recording</td><td><span class="badge badge-yellow">This week</span></td></tr>
+          <tr><td><strong>Fatima Flores</strong></td><td>Alejandro Dineros</td><td>1</td><td>Sep 3</td><td>Billing → wrong team</td><td><span class="badge badge-yellow">This week</span></td></tr>
+          <tr><td><strong>Daniela Petkova</strong></td><td>Konstantin Grozev</td><td>1</td><td>Aug 13</td><td>Poor documentation</td><td>—</td></tr>
+          <tr><td><strong>Marina Stambaugh</strong></td><td>Al Lennon</td><td>1</td><td>Aug 20</td><td>Others</td><td>—</td></tr>
+          <tr><td><strong>Julian Bottoms-Pittman</strong></td><td>Al Lennon</td><td>1</td><td>Aug 20</td><td>No troubleshooting</td><td>—</td></tr>
+          <tr><td><strong>Lawrence Napoleon</strong></td><td>Al Lennon</td><td>1</td><td>Aug 27</td><td>No troubleshooting</td><td>—</td></tr>
+          <tr><td><strong>Tsvetan Tabakov</strong></td><td>Andrea Viscuso</td><td>1</td><td>Aug 6</td><td>Wrong team (Presence Sync)</td><td>—</td></tr>
+          <tr><td><strong>Kimberlyn Alacre</strong></td><td>Genalyn Villanueva</td><td>1</td><td>Aug 20</td><td>Others</td><td>—</td></tr>
+          <tr><td><strong>Khevin R. Quezada</strong></td><td>Robin Gajudo</td><td>1</td><td>Aug 20</td><td>Poor documentation</td><td>—</td></tr>
+          <tr style="color:#999"><td><em>Unable to identify</em></td><td>—</td><td>5</td><td>Various</td><td>Various</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="managers-tab" style="display:none">
+      <table>
+        <thead><tr><th>Manager</th><th>Confirmed Rejections</th><th>Unique Escalators</th><th>Improving?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ivan Belchev</strong></td><td>4</td><td>2 (Bozhidar, Stanislav)</td><td><span class="badge badge-green">No rejections since Aug 27</span></td></tr>
+          <tr><td><strong>Al Lennon</strong></td><td>3</td><td>3 (Marina, Julian, Lawrence)</td><td><span class="badge badge-green">No rejections since Aug 27</span></td></tr>
+          <tr><td><strong>Dave Herron</strong></td><td>3</td><td>1 (Stuart Seckington)</td><td><span class="badge badge-green">No rejections since Aug 20</span></td></tr>
+          <tr><td><strong>Alejandro Dineros</strong></td><td>2</td><td>2 (Paulo, Fatima)</td><td><span class="badge badge-yellow">2 this week — new</span></td></tr>
+          <tr><td><strong>Konstantin Grozev</strong></td><td>1</td><td>1 (Daniela)</td><td>—</td></tr>
+          <tr><td><strong>Andrea Viscuso</strong></td><td>1</td><td>1 (Tsvetan)</td><td>—</td></tr>
+          <tr><td><strong>Genalyn Villanueva</strong></td><td>1</td><td>1 (Kimberlyn)</td><td>—</td></tr>
+          <tr><td><strong>Jeffrey Perkins</strong></td><td>1</td><td>1 (Thomas)</td><td><span class="badge badge-yellow">1 this week — new</span></td></tr>
+          <tr><td><strong>Robin Gajudo</strong></td><td>1</td><td>1 (Khevin)</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Week-by-week detail -->
+  <div class="section">
+    <div class="section-title">Week-over-Week Detail</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Week</th><th>Confirmed</th><th>Poor Doc</th><th>No TS</th><th>Others</th><th>Inaccurate</th><th>WoW</th></tr></thead>
+        <tbody>
+          <tr><td>Jul 23</td><td><strong>1</strong></td><td>1</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Jul 30</td><td><strong>2</strong></td><td>2</td><td>—</td><td>—</td><td>—</td><td style="color:#dc2626">+1</td></tr>
+          <tr><td>Aug 6</td><td><strong>2</strong></td><td>—</td><td>—</td><td>2</td><td>—</td><td style="color:#9ca3af">0</td></tr>
+          <tr><td>Aug 13</td><td><strong>2</strong></td><td>—</td><td>—</td><td>2</td><td>—</td><td style="color:#9ca3af">0</td></tr>
+          <tr><td>Aug 20</td><td><strong>8</strong></td><td>3</td><td>3</td><td>2</td><td>—</td><td style="color:#dc2626">+6</td></tr>
+          <tr><td>Aug 27</td><td><strong>4</strong></td><td>1</td><td>2</td><td>—</td><td>1</td><td style="color:#16a34a">-4</td></tr>
+          <tr><td>Sep 3</td><td><strong>3</strong></td><td>1</td><td>1</td><td>1</td><td>—</td><td style="color:#16a34a">-1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const WEEKS = ['Jul 23','Jul 30','Aug 6','Aug 13','Aug 20','Aug 27','Sep 3'];
+const TOTALS = [1,2,2,2,8,4,3];
+const POOR_DOC = [1,2,0,0,3,1,1];
+const NO_TS = [0,0,0,0,3,2,1];
+const OTHERS = [0,0,2,2,2,0,1];
+const INACCURATE = [0,0,0,0,0,1,0];
+
+new Chart(document.getElementById('weeklyChart').getContext('2d'), {
+  type:'bar', data:{labels:WEEKS, datasets:[
+    {label:'Confirmed Rejections', data:TOTALS, backgroundColor:TOTALS.map((_,i)=>i>=6?'#3b82f6':'#93c5fd'), borderRadius:4},
+    {label:'7-week avg (3.1)', data:Array(7).fill(3.1), type:'line', borderColor:'#f59e0b', borderWidth:2, borderDash:[6,3], pointRadius:0, backgroundColor:'transparent'}
+  ]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:2},max:10}}}
+});
+
+new Chart(document.getElementById('reasonChart').getContext('2d'), {
+  type:'doughnut', data:{labels:['Poor Docs (8)','No TS (7)','Others (6)','Inaccurate (1)'],
+  datasets:[{data:[8,7,6,1],backgroundColor:['#f59e0b','#ef4444','#94a3b8','#8b5cf6'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:false}}}
+});
+
+// Monthly stacked chart
+new Chart(document.getElementById('momStackedChart').getContext('2d'), {
+  type:'bar', data:{
+    labels:['July (partial)','August','September (partial)'],
+    datasets:[
+      {label:'Poor Documentation',data:[3,4,1],backgroundColor:'#f59e0b',stack:'a'},
+      {label:'No Troubleshooting',data:[0,5,1],backgroundColor:'#ef4444',stack:'a'},
+      {label:'Others',data:[0,6,1],backgroundColor:'#94a3b8',stack:'a'},
+      {label:'Inaccurate Doc',data:[0,1,0],backgroundColor:'#8b5cf6',stack:'a'},
+      {label:'Monthly total (trend)',data:[3,16,3],type:'line',borderColor:'#1e40af',backgroundColor:'transparent',borderWidth:2,pointRadius:4,tension:0.3,stack:'b'}
+    ]
+  }, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{stepSize:4}}}}
+});
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('people-tab').style.display = tab==='people'?'':'none';
+  document.getElementById('managers-tab').style.display = tab==='managers'?'':'none';
+}
+</script>
+</body>
+</html>
