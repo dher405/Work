@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physicians RX Pharmacies - Interactive Slide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --rc-navy: #0B1E36;
+      --rc-blue: #0684BC;
+      --rc-orange: #FF7A00;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --bg-slide: #ffffff;
+      --bg-page: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* 16:9 Slide Container */
+    .slide-container {
+      width: 100%;
+      max-width: 1200px;
+      background: var(--bg-slide);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      position: relative;
+      padding: 24px 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--rc-orange);
+    }
+
+    .slide-title-group h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--rc-navy);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .slide-title-group p {
+      font-size: 18px;
+      color: #666666;
+      font-weight: 500;
+    }
+
+    .slide-branding {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .slide-branding .ring { color: var(--rc-blue); }
+    .slide-branding .central { color: var(--rc-orange); }
+
+    /* Presentation Table */
+    .agenda-table {
+      width: 100%;
+      border-collapse: collapse;
+      flex-grow: 1;
+      table-layout: fixed;
+    }
+
+    .agenda-table th {
+      background-color: var(--rc-navy);
+      color: #ffffff;
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 10px 16px;
+      text-align: left;
+    }
+
+    /* Column Widths */
+    .col-focus { width: 32%; }
+    .col-owner { width: 16%; }
+    .col-status { width: 20%; }
+    .col-notes { width: 32%; }
+
+    .agenda-table td {
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      vertical-align: middle;
+    }
+
+    /* Table Content Styling */
+    .focus-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .focus-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .owner-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--rc-navy);
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rc-blue);
+      line-height: 1.4;
+    }
+
+    /* Interactive Elements */
+    .status-select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      background-color: #f8fafc;
+      color: var(--text-main);
+      transition: all 0.2s;
+      appearance: none; /* remove default arrow to save space */
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
+      padding-right: 24px;
+    }
+
+    .status-select:focus {
+      border-color: var(--rc-blue);
+      box-shadow: 0 0 0 2px rgba(6, 132, 188, 0.1);
+    }
+
+    /* Dropdown colors via class */
+    .sel-action { color: var(--rc-orange); border-color: rgba(255, 122, 0, 0.4); background-color: rgba(255, 122, 0, 0.05); }
+    .sel-clarity { color: var(--rc-blue); border-color: rgba(6, 132, 188, 0.4); background-color: rgba(6, 132, 188, 0.05); }
+    .sel-progress { color: #8b5cf6; border-color: rgba(139, 92, 246, 0.4); background-color: rgba(139, 92, 246, 0.05); }
+    .sel-resolved { color: #10b981; border-color: rgba(16, 185, 129, 0.4); background-color: rgba(16, 185, 129, 0.05); }
+
+    .notes-area {
+      width: 100%;
+      height: 52px;
+      resize: none;
+      padding: 8px 10px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      outline: none;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+
+    .notes-area:focus {
+      border-style: solid;
+      border-color: var(--rc-blue);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(6, 132, 188, 0.1);
+    }
+    
+    /* Footer branding / auto-save indiciator */
+    .slide-footer {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+    }
+    .save-indicator {
+      width: 6px;
+      height: 6px;
+      background-color: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .save-indicator.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slide-container">
+    
+    <!-- Header -->
+    <header class="slide-header">
+      <div class="slide-title-group">
+        <h1>Physicians RX Pharmacies</h1>
+        <p>Account Review & Technical Action Tracker</p>
+      </div>
+      <div class="slide-branding">
+        <span class="ring">Ring</span><span class="central">Central</span>
+      </div>
+    </header>
+
+    <!-- Table content -->
+    <table class="agenda-table">
+      <thead>
+        <tr>
+          <th class="col-focus">Operational Focus</th>
+          <th class="col-owner">Stakeholder</th>
+          <th class="col-status">Current Status</th>
+          <th class="col-notes">Live Meeting Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Row 1 -->
+        <tr>
+          <td>
+            <div class="focus-title">Reporting Accuracy</div>
+            <div class="focus-desc">Abandoned call metric flaws; hold vs. abandon discrepancies; high manual validation burden.</div>
+          </td>
+          <td class="owner-text">Dave Herron<br>Gurpreet Singh</td>
+          <td>
+            <div class="status-text">Being worked by Analytics Team<br><span style="color:var(--rc-orange);">(Case #32647948)</span></div>
+          </td>
+          <td>
+            <textarea id="note-row-1" class="notes-area" placeholder="Add specific commitments or timeline updates..."></textarea>
+          </td>
+        </tr>
+
+        <!-- Row 2 -->
+        <tr>
+          <td>
+            <div class="focus-title">Business Analytics Platform</div>
+            <div class="focus-desc">Missing KPIs vs Performance Reports; poor automated extraction; unclear parity roadmap.</div>
+          </td>
+          <td class="owner-text">Gurpreet Singh</td>
+          <td>
+            <select id="status-row-2" class="status-select">
+              <option value="needs_clarity">Needs Clarity</option>
+              <option value="action_required">Action Required</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </td>
+          <td>
+            <textarea id="note-row-2" class="notes-area" placeholder="Record feedback on missing KPIs..."></textarea>
+          </td>
+        </tr>
+
+        <!-- Row 3 -->
+        <tr>
+          <td>
+            <div class="focus-title">Support Experience</div>
+            <div class="focus-desc">Acknowledged data flaws without escalation; manual workarounds suggested; need product specialist access.</div>
+          </td>
+          <td class="owner-text">Dave Herron</td>
+          <td>
+            <select id="status-row-3" class="status-select">
+              <option value="action_required">Action Required</option>
+              <option value="needs_clarity">Needs Clarity</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </td>
+          <td>
+            <textarea id="note-row-3" class="notes-area" placeholder="Document agreed new escalation paths..."></textarea>
+          </td>
+        </tr>
+
+        <!-- Row 4 -->
+        <tr>
+          <td>
+            <div class="focus-title">Account Management</div>
+            <div class="focus-desc">Unfinished account consolidation; legacy AMs departed; multi-account confusion delays support.</div>
+          </td>
+          <td class="owner-text">Ayub Mohammed</td>
+          <td>
+            <select id="status-row-4" class="status-select">
+              <option value="needs_clarity">Needs Clarity</option>
+              <option value="action_required">Action Required</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </td>
+          <td>
+            <textarea id="note-row-4" class="notes-area" placeholder="Note next steps for resolving account structure..."></textarea>
+          </td>
+        </tr>
+
+        <!-- Row 5 -->
+        <tr>
+          <td>
+            <div class="focus-title">Roadmap & Communication</div>
+            <div class="focus-desc">Unclear Performance Reports retirement timeline; advanced reporting gaps vs promoted capabilities.</div>
+          </td>
+          <td class="owner-text">Gurpreet Singh</td>
+          <td>
+            <select id="status-row-5" class="status-select">
+              <option value="needs_clarity">Needs Clarity</option>
+              <option value="action_required">Action Required</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </td>
+          <td>
+            <textarea id="note-row-5" class="notes-area" placeholder="Document communication plans & timeline commitments..."></textarea>
+          </td>
+        </tr>
+
+        <!-- Row 6 -->
+        <tr>
+          <td>
+            <div class="focus-title">Phone Mgmt & Admin Access</div>
+            <div class="focus-desc">Need site-specific local NTP/Syslog persistence; settings wipe on reboot.</div>
+          </td>
+          <td class="owner-text">Dave Herron<br>Ashu Varshney</td>
+          <td>
+            <div class="status-text">Yealink: Q3 2026 <span style="color:var(--text-muted); font-size:11px;">(UIA-90656)</span><br>Poly: Q1 2027 <span style="color:var(--text-muted); font-size:11px;">(INIT-31742)</span></div>
+          </td>
+          <td>
+            <textarea id="note-row-6" class="notes-area" placeholder="Record any timeline updates or workarounds..."></textarea>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+    
+    <div class="slide-footer">
+      <span class="save-indicator" id="saveIcon"></span> Notes Auto-Saved Locally
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const inputs = document.querySelectorAll('.notes-area, .status-select');
+      const saveIcon = document.getElementById('saveIcon');
+      let saveTimeout;
+
+      // Function to apply colors to selects based on value
+      const styleSelect = (select) => {
+        select.classList.remove('sel-action', 'sel-clarity', 'sel-progress', 'sel-resolved');
+        if(select.value === 'action_required') select.classList.add('sel-action');
+        if(select.value === 'needs_clarity') select.classList.add('sel-clarity');
+        if(select.value === 'in_progress') select.classList.add('sel-progress');
+        if(select.value === 'resolved') select.classList.add('sel-resolved');
+      };
+
+      // Flash save indicator
+      const flashSave = () => {
+        saveIcon.classList.add('active');
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => saveIcon.classList.remove('active'), 1000);
+      };
+
+      // Load saved data
+      inputs.forEach(input => {
+        const savedValue = localStorage.getItem('prx_' + input.id);
+        if (savedValue !== null) {
+          input.value = savedValue;
+        }
+        
+        // Initial style for selects
+        if (input.tagName === 'SELECT') {
+          styleSelect(input);
+        }
+
+        // Add event listeners for auto-save
+        input.addEventListener('input', (e) => {
+          localStorage.setItem('prx_' + e.target.id, e.target.value);
+          if (e.target.tagName === 'SELECT') {
+            styleSelect(e.target);
+          }
+          flashSave();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
